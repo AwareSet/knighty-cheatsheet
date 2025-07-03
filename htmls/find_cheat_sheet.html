@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Find Cheat Sheet</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 15px;
+            line-height: 1.3;
+        }
+        .main-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: rgba(15, 23, 42, 0.95);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        .header { text-align: center; margin-bottom: 20px; position: relative; }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+        .subtitle { font-size: 1.1rem; color: #94a3b8; font-weight: 300; }
+        .search-container { margin: 20px 0; position: relative; }
+        .search-box {
+            width: 100%;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            background: rgba(30, 41, 59, 0.8);
+            color: #ffffff;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        .search-box:focus {
+            background: rgba(30, 41, 59, 0.9);
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.4);
+        }
+        .search-box::placeholder { color: #94a3b8; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .card {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+        .card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .cmd-group {
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-left: 3px solid #667eea;
+        }
+        .cmd {
+            color: #22d3ee;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        .desc {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+        .icon { font-size: 1.2rem; }
+        .highlight { color: #f59e0b; font-weight: 600; }
+        .tag {
+            background: rgba(102, 126, 234, 0.2);
+            color: #667eea;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+            h1 { font-size: 2.2rem; }
+            .card { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header">
+            <h1>Find Cheat Sheet</h1>
+            <p class="subtitle">File Search Commands & Filters</p>
+        </div>
+        
+        <div class="search-container">
+            <input type="text" class="search-box" placeholder="Search find commands..." id="searchBox">
+        </div>
+
+        <div class="grid" id="commandGrid">
+            <div class="card">
+                <h3><span class="icon">🔍</span> Basic Search</h3>
+                <div class="cmd-group">
+                    <div class="cmd">find . -name "filename"</div>
+                    <div class="desc">Find files by exact name</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -name "*.txt"</div>
+                    <div class="desc">Find files by pattern</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -iname "*.TXT"</div>
+                    <div class="desc">Case-insensitive search</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find /path -name "file*"</div>
+                    <div class="desc">Search in specific directory</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -type f -name "*.log"</div>
+                    <div class="desc">Find files only (not directories)</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><span class="icon">📁</span> File Types</h3>
+                <div class="cmd-group">
+                    <div class="cmd">find . -type f</div>
+                    <div class="desc">Find regular files</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -type d</div>
+                    <div class="desc">Find directories</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -type l</div>
+                    <div class="desc">Find symbolic links</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -type b</div>
+                    <div class="desc">Find block devices</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -type c</div>
+                    <div class="desc">Find character devices</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><span class="icon">📏</span> Size Filters</h3>
+                <div class="cmd-group">
+                    <div class="cmd">find . -size +100M</div>
+                    <div class="desc">Files larger than 100MB</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -size -1G</div>
+                    <div class="desc">Files smaller than 1GB</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -size 50c</div>
+                    <div class="desc">Files exactly 50 bytes</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -empty</div>
+                    <div class="desc">Find empty files and directories</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -size +10k -size -100k</div>
+                    <div class="desc">Files between 10KB and 100KB</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><span class="icon">🕒</span> Time Filters</h3>
+                <div class="cmd-group">
+                    <div class="cmd">find . -mtime -7</div>
+                    <div class="desc">Modified within last 7 days</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -mtime +30</div>
+                    <div class="desc">Modified more than 30 days ago</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -atime -1</div>
+                    <div class="desc">Accessed within last 24 hours</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -ctime -3</div>
+                    <div class="desc">Changed within last 3 days</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -mmin -60</div>
+                    <div class="desc">Modified within last 60 minutes</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -newer file.txt</div>
+                    <div class="desc">Files newer than file.txt</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><span class="icon">🔒</span> Permissions</h3>
+                <div class="cmd-group">
+                    <div class="cmd">find . -perm 755</div>
+                    <div class="desc">Files with exact permissions 755</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -perm -755</div>
+                    <div class="desc">Files with at least 755 permissions</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -perm +755</div>
+                    <div class="desc">Files with any of 755 permissions</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -perm -u+w</div>
+                    <div class="desc">Files writable by owner</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -executable</div>
+                    <div class="desc">Find executable files</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -readable</div>
+                    <div class="desc">Find readable files</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><span class="icon">👤</span> Ownership</h3>
+                <div class="cmd-group">
+                    <div class="cmd">find . -user username</div>
+                    <div class="desc">Files owned by specific user</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -group groupname</div>
+                    <div class="desc">Files owned by specific group</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -uid 1000</div>
+                    <div class="desc">Files with specific user ID</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -gid 1000</div>
+                    <div class="desc">Files with specific group ID</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -nouser</div>
+                    <div class="desc">Files with no owner</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -nogroup</div>
+                    <div class="desc">Files with no group</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><span class="icon">⚙️</span> Actions</h3>
+                <div class="cmd-group">
+                    <div class="cmd">find . -name "*.tmp" -delete</div>
+                    <div class="desc">Delete matching files</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -name "*.log" -exec rm {} \;</div>
+                    <div class="desc">Execute command on each file</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -name "*.txt" -exec grep "pattern" {} \;</div>
+                    <div class="desc">Search content in found files</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -type f -exec chmod 644 {} \;</div>
+                    <div class="desc">Change permissions of found files</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -name "*.bak" -ok rm {} \;</div>
+                    <div class="desc">Confirm before executing command</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><span class="icon">🔗</span> Logical Operators</h3>
+                <div class="cmd-group">
+                    <div class="cmd">find . -name "*.txt" -o -name "*.log"</div>
+                    <div class="desc">OR condition (either match)</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -name "*.txt" -a -size +1M</div>
+                    <div class="desc">AND condition (both must match)</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . ! -name "*.txt"</div>
+                    <div class="desc">NOT condition (negation)</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . \( -name "*.txt" -o -name "*.log" \) -size +1M</div>
+                    <div class="desc">Grouped conditions with parentheses</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><span class="icon">🚫</span> Exclusions</h3>
+                <div class="cmd-group">
+                    <div class="cmd">find . -name "*.txt" -not -path "*/backup/*"</div>
+                    <div class="desc">Exclude specific paths</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -name "*.log" -prune -o -name "*.txt" -print</div>
+                    <div class="desc">Exclude directories from search</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -path "*/.*" -prune -o -name "*.txt" -print</div>
+                    <div class="desc">Exclude hidden directories</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -name ".git" -prune -o -type f -print</div>
+                    <div class="desc">Exclude .git directories</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><span class="icon">🎯</span> Advanced Examples</h3>
+                <div class="cmd-group">
+                    <div class="cmd">find . -type f -name "*.txt" -exec wc -l {} + | sort -n</div>
+                    <div class="desc">Count lines in files and sort</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -type f -mtime +7 -size +100M -exec ls -lh {} \;</div>
+                    <div class="desc">Large files older than 7 days</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -name "*.log" -exec basename {} \; | sort | uniq -c</div>
+                    <div class="desc">Count files by basename</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">find . -type f -printf "%s %p\n" | sort -nr | head -10</div>
+                    <div class="desc">Find 10 largest files</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('searchBox').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const cards = document.querySelectorAll('.card');
+            
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

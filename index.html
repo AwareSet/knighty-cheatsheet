@@ -167,7 +167,117 @@
         padding-top: 20px;
         border-top: 1px solid var(--border-color);
         color: var(--text-secondary);
+        line-height: 1.6;
       }
+      .footer a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+      }
+      .footer a:hover {
+        color: #4facfe;
+        text-decoration: underline;
+      }
+
+      /* Newsletter Styles */
+      .newsletter-section {
+        margin: 50px 0 30px 0;
+        padding: 40px 30px;
+        background: var(--card-bg);
+        border-radius: 16px;
+        border: 1px solid var(--border-color);
+        text-align: center;
+      }
+      .newsletter-container h3 {
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: var(--text-primary);
+      }
+      .newsletter-container p {
+        color: var(--text-secondary);
+        margin-bottom: 30px;
+        font-size: 1rem;
+      }
+      .newsletter-form {
+        max-width: 400px;
+        margin: 0 auto;
+      }
+      .input-group {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+      .newsletter-input {
+        flex: 1;
+        padding: 15px 20px;
+        background: var(--search-bg);
+        border: 2px solid rgba(102, 126, 234, 0.3);
+        border-radius: 12px;
+        color: var(--text-primary);
+        font-size: 1rem;
+        outline: none;
+        transition: all 0.3s ease;
+      }
+      .newsletter-input:focus {
+        border-color: var(--accent-color);
+        box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+      }
+      .newsletter-input::placeholder {
+        color: var(--text-secondary);
+      }
+      .newsletter-btn {
+        padding: 15px 25px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 12px;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        min-width: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .newsletter-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+      }
+      .newsletter-btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+      }
+      .loader-small {
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-left-color: white;
+        border-radius: 50%;
+        width: 16px;
+        height: 16px;
+        animation: spin 0.8s linear infinite;
+      }
+      .newsletter-message {
+        padding: 10px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        min-height: 20px;
+        transition: all 0.3s ease;
+      }
+      .newsletter-message.success {
+        background: rgba(34, 197, 94, 0.2);
+        color: #22c55e;
+        border: 1px solid rgba(34, 197, 94, 0.3);
+      }
+      .newsletter-message.error {
+        background: rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+      }
+
       [dir="rtl"] .header {
         text-align: center;
       }
@@ -282,6 +392,36 @@
 
       <div class="cheat-sheets-grid" id="sheetsGrid">
         <!-- Cards will be inserted here by JavaScript -->
+      </div>
+
+      <!-- Newsletter Section -->
+      <div class="newsletter-section" id="newsletterSection">
+        <div class="newsletter-container">
+          <h3 id="newsletter-title">Stay Updated!</h3>
+          <p id="newsletter-subtitle">
+            Get notified when new cheat sheets are added
+          </p>
+          <form class="newsletter-form" id="newsletterForm">
+            <div class="input-group">
+              <input
+                type="email"
+                id="emailInput"
+                class="newsletter-input"
+                required
+                autocomplete="email"
+              />
+              <button type="submit" class="newsletter-btn" id="subscribeBtn">
+                <span id="btn-text">Subscribe</span>
+                <span
+                  class="loader-small"
+                  id="btnLoader"
+                  style="display: none"
+                ></span>
+              </button>
+            </div>
+            <div class="newsletter-message" id="newsletterMessage"></div>
+          </form>
+        </div>
       </div>
 
       <div class="footer">
@@ -571,6 +711,16 @@
       const footerText = document.getElementById("footer-text");
       const htmlEl = document.documentElement;
 
+      // Newsletter elements
+      const newsletterTitle = document.getElementById("newsletter-title");
+      const newsletterSubtitle = document.getElementById("newsletter-subtitle");
+      const emailInput = document.getElementById("emailInput");
+      const subscribeBtn = document.getElementById("subscribeBtn");
+      const btnText = document.getElementById("btn-text");
+      const btnLoader = document.getElementById("btnLoader");
+      const newsletterMessage = document.getElementById("newsletterMessage");
+      const newsletterForm = document.getElementById("newsletterForm");
+
       const modalOverlay = document.getElementById("modalOverlay");
       const modalContainer = document.getElementById("modalContainer");
       const modalHeader = document.getElementById("modalHeader");
@@ -698,7 +848,15 @@
           mainSubtitle.textContent =
             "أدلة مرجعية تفاعلية للمطورين ومهندسي DevOps";
           searchBox.placeholder = "🔍 ابحث في أوراق الغش...";
-          footerText.textContent = "بنيด้วย ❤️ بواسطة @night_knightz";
+          footerText.innerHTML =
+            "صُنع بـ ❤️ بواسطة @night_knightz<br/>&copy; 2024 <a href='https://knighty.app' target='_blank' style='color: #667eea; text-decoration: none;'>knighty.app</a>";
+
+          // Newsletter Arabic text
+          newsletterTitle.textContent = "ابق على اطلاع!";
+          newsletterSubtitle.textContent =
+            "احصل على إشعار عند إضافة أوراق غش جديدة";
+          emailInput.placeholder = "أدخل بريدك الإلكتروني...";
+          btnText.textContent = "اشتراك";
         } else {
           htmlEl.dir = "ltr";
           langToggle.textContent = "العربية";
@@ -706,7 +864,15 @@
           mainSubtitle.textContent =
             "Interactive Reference Guides for Developers & DevOps";
           searchBox.placeholder = "🔍 Search cheat sheets...";
-          footerText.textContent = "Built with ❤️ by @night_knightz";
+          footerText.innerHTML =
+            "Built with ❤️ by @night_knightz<br/>&copy; 2024 <a href='https://knighty.app' target='_blank' style='color: #667eea; text-decoration: none;'>knighty.app</a>";
+
+          // Newsletter English text
+          newsletterTitle.textContent = "Stay Updated!";
+          newsletterSubtitle.textContent =
+            "Get notified when new cheat sheets are added";
+          emailInput.placeholder = "Enter your email...";
+          btnText.textContent = "Subscribe";
         }
       }
 
@@ -719,6 +885,62 @@
           }
         }
       }
+
+      // Newsletter form submission
+      newsletterForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const email = emailInput.value.trim();
+        if (!email) return;
+
+        // Show loading state
+        subscribeBtn.disabled = true;
+        btnText.style.display = "none";
+        btnLoader.style.display = "inline-block";
+        newsletterMessage.textContent = "";
+        newsletterMessage.className = "newsletter-message";
+
+        try {
+          const response = await fetch("/api/subscribe", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email: email }),
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            // Success
+            newsletterMessage.textContent =
+              currentLang === "ar"
+                ? "شكراً لك! تم الاشتراك بنجاح."
+                : "Thank you! Successfully subscribed.";
+            newsletterMessage.className = "newsletter-message success";
+            emailInput.value = "";
+          } else {
+            // Error from server
+            newsletterMessage.textContent =
+              currentLang === "ar"
+                ? result.message || "حدث خطأ. يرجى المحاولة مرة أخرى."
+                : result.message || "Error occurred. Please try again.";
+            newsletterMessage.className = "newsletter-message error";
+          }
+        } catch (error) {
+          // Network error
+          newsletterMessage.textContent =
+            currentLang === "ar"
+              ? "خطأ في الشبكة. يرجى التحقق من اتصالك بالإنترنت."
+              : "Network error. Please check your connection.";
+          newsletterMessage.className = "newsletter-message error";
+        } finally {
+          // Reset button state
+          subscribeBtn.disabled = false;
+          btnText.style.display = "inline";
+          btnLoader.style.display = "none";
+        }
+      });
 
       searchBox.addEventListener("input", () => renderCards(searchBox.value));
       langToggle.addEventListener("click", toggleLanguage);

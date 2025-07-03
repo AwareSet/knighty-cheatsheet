@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate SSH Cheat Sheet</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 15px;
+            line-height: 1.3;
+        }
+        .main-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: rgba(15, 23, 42, 0.95);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        .header { text-align: center; margin-bottom: 20px; position: relative; }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+        .subtitle { font-size: 1.1rem; color: #94a3b8; font-weight: 300; }
+        .search-container { margin: 20px 0; position: relative; }
+        .search-box {
+            width: 100%;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            background: rgba(30, 41, 59, 0.8);
+            color: #ffffff;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        .search-box:focus {
+            background: rgba(30, 41, 59, 0.9);
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.4);
+        }
+        .search-box::placeholder { color: #94a3b8; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .card {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+        .card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .cmd-group {
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-left: 3px solid #667eea;
+        }
+        .cmd {
+            color: #22d3ee;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        .desc {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+        .icon { font-size: 1.2rem; }
+        .highlight { color: #f59e0b; font-weight: 600; }
+        .tag {
+            background: rgba(102, 126, 234, 0.2);
+            color: #667eea;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+            h1 { font-size: 2.2rem; }
+            .card { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header">
+            <h1>SSH Cheat Sheet</h1>
+            <p class="subtitle">Secure Shell Commands & Configuration</p>
+        </div>
+        
+        <div class="search-container">
+            <input type="text" class="search-box" placeholder="Search SSH commands..." id="searchBox">
+        </div>
+
+        <div class="grid" id="commandGrid">
+            <div class="card">
+                <h3><span class="icon">🔐</span> Basic Connection</h3>
+                <div class="cmd-group">
+                    <div class="cmd">ssh username@hostname</div>
+                    <div class="desc">Connect to remote server</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">ssh -p 2222 username@hostname</div>
+                    <div class="desc">Connect using specific port</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">ssh -i ~/.ssh/key.pem username@hostname</div>
+                    <div class="desc">Connect using private key</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">ssh -v username@hostname</div>
+                    <div class="desc">Verbose output for debugging</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><span class="icon">🔑</span> Key Management</h3>
+                <div class="cmd-group">
+                    <div class="cmd">ssh-keygen -t rsa -b 4096</div>
+                    <div class="desc">Generate RSA key pair</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">ssh-keygen -t ed25519 -C "email@example.com"</div>
+                    <div class="desc">Generate Ed25519 key (recommended)</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">ssh-copy-id username@hostname</div>
+                    <div class="desc">Copy public key to remote server</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">ssh-add ~/.ssh/private_key</div>
+                    <div class="desc">Add key to SSH agent</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">ssh-add -l</div>
+                    <div class="desc">List loaded keys</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><span class="icon">🌐</span> Port Forwarding</h3>
+                <div class="cmd-group">
+                    <div class="cmd">ssh -L 8080:localhost:80 username@hostname</div>
+                    <div class="desc">Local port forwarding</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">ssh -R 9090:localhost:3000 username@hostname</div>
+                    <div class="desc">Remote port forwarding</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">ssh -D 1080 username@hostname</div>
+                    <div class="desc">Dynamic port forwarding (SOCKS proxy)</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">ssh -N -f -L 8080:localhost:80 username@hostname</div>
+                    <div class="desc">Background tunnel (no shell)</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><span class="icon">📂</span> File Transfer</h3>
+                <div class="cmd-group">
+                    <div class="cmd">scp file.txt username@hostname:/path/to/destination</div>
+                    <div class="desc">Copy file to remote server</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">scp username@hostname:/path/to/file.txt ./</div>
+                    <div class="desc">Copy file from remote server</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">scp -r directory/ username@hostname:/path/</div>
+                    <div class="desc">Copy directory recursively</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">sftp username@hostname</div>
+                    <div class="desc">Start SFTP session</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><span class="icon">⚙️</span> SSH Config</h3>
+                <div class="cmd-group">
+                    <div class="cmd">~/.ssh/config</div>
+                    <div class="desc">SSH client configuration file</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">Host myserver<br>&nbsp;&nbsp;HostName example.com<br>&nbsp;&nbsp;User username<br>&nbsp;&nbsp;Port 2222<br>&nbsp;&nbsp;IdentityFile ~/.ssh/key</div>
+                    <div class="desc">Host alias configuration</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">ssh myserver</div>
+                    <div class="desc">Connect using host alias</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><span class="icon">🛡️</span> Security Options</h3>
+                <div class="cmd-group">
+                    <div class="cmd">ssh -o StrictHostKeyChecking=no username@hostname</div>
+                    <div class="desc">Skip host key verification</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">ssh -o UserKnownHostsFile=/dev/null username@hostname</div>
+                    <div class="desc">Don't save host key</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">ssh -o PasswordAuthentication=no username@hostname</div>
+                    <div class="desc">Disable password authentication</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">ssh -o ConnectTimeout=10 username@hostname</div>
+                    <div class="desc">Set connection timeout</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><span class="icon">🔧</span> Advanced Usage</h3>
+                <div class="cmd-group">
+                    <div class="cmd">ssh -t username@hostname 'command'</div>
+                    <div class="desc">Execute command on remote server</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">ssh -X username@hostname</div>
+                    <div class="desc">Enable X11 forwarding</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">ssh -A username@hostname</div>
+                    <div class="desc">Enable agent forwarding</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">ssh -C username@hostname</div>
+                    <div class="desc">Enable compression</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">ssh -o ServerAliveInterval=60 username@hostname</div>
+                    <div class="desc">Keep connection alive</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><span class="icon">📊</span> Troubleshooting</h3>
+                <div class="cmd-group">
+                    <div class="cmd">ssh -vvv username@hostname</div>
+                    <div class="desc">Maximum verbose output</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">ssh-keyscan hostname</div>
+                    <div class="desc">Get server's public key</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">ssh -o LogLevel=DEBUG3 username@hostname</div>
+                    <div class="desc">Debug level logging</div>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd">ssh -T git@github.com</div>
+                    <div class="desc">Test Git SSH connection</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('searchBox').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const cards = document.querySelectorAll('.card');
+            
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
