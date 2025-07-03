@@ -30,3 +30,6 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+
+# Newsletter data (sensitive)
+newsletter_subscriptions.json
