@@ -1,11 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
+	"path"
+	"strings"
 )
 
 func main() {
@@ -15,38 +15,91 @@ func main() {
 		port = "8080"
 	}
 
-	// Serve static files from current directory
-	fs := http.FileServer(http.Dir("."))
+	// Create a custom file server handler
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		// Add CORS headers for development
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "*")
 
-	// Handle all routes with static file server
-	http.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Add security headers
 		w.Header().Set("X-Content-Type-Options", "nosniff")
-		w.Header().Set("X-Frame-Options", "DENY")
+		w.Header().Set("X-Frame-Options", "SAMEORIGIN")
 		w.Header().Set("X-XSS-Protection", "1; mode=block")
 
+		// Log the request
+		log.Printf("Request: %s %s", r.Method, r.URL.Path)
+
 		// Handle root path
-		if r.URL.Path == "/" {
+		if r.URL.Path == "/" || r.URL.Path == "" {
 			http.ServeFile(w, r, "index.html")
 			return
 		}
+
+		// Clean the path and remove leading slash
+		cleanPath := path.Clean(r.URL.Path)
+		if strings.HasPrefix(cleanPath, "/") {
+			cleanPath = cleanPath[1:]
+		}
+
+		// Log what file we're trying to serve
+		log.Printf("Trying to serve file: %s", cleanPath)
 
 		// Check if file exists
-		filePath := filepath.Clean(r.URL.Path[1:]) // Remove leading slash
-		if _, err := os.Stat(filePath); os.IsNotExist(err) {
-			// If file doesn't exist, serve index.html (for SPA routing)
+		if _, err := os.Stat(cleanPath); err != nil {
+			log.Printf("File not found: %s, error: %v", cleanPath, err)
+			// For HTML files in htmls directory, try to serve index.html as fallback
+			if strings.HasPrefix(cleanPath, "htmls/") && strings.HasSuffix(cleanPath, ".html") {
+				http.Error(w, "File not found", http.StatusNotFound)
+				return
+			}
+			// For other paths, serve index.html (SPA fallback)
 			http.ServeFile(w, r, "index.html")
 			return
 		}
 
-		// Serve the requested file
-		fs.ServeHTTP(w, r)
-	}))
+		// Set proper content type based on file extension
+		if strings.HasSuffix(cleanPath, ".html") {
+			w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		} else if strings.HasSuffix(cleanPath, ".css") {
+			w.Header().Set("Content-Type", "text/css")
+		} else if strings.HasSuffix(cleanPath, ".js") {
+			w.Header().Set("Content-Type", "application/javascript")
+		}
 
-	fmt.Printf("Server starting on port %s\n", port)
-	fmt.Printf("Visit: http://localhost:%s\n", port)
+		// Serve the file
+		http.ServeFile(w, r, cleanPath)
+	})
 
-	if err := http.ListenAndServe(":"+port, nil); err != nil {
+	// Health check endpoint
+	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("OK"))
+	})
+
+	log.Printf("Server starting on port %s", port)
+	log.Printf("Visit: http://localhost:%s", port)
+
+	// List files in current directory for debugging
+	files, err := os.ReadDir(".")
+	if err == nil {
+		log.Println("Files in current directory:")
+		for _, file := range files {
+			log.Printf("  %s", file.Name())
+		}
+	}
+
+	// Check if htmls directory exists
+	if _, err := os.Stat("htmls"); err != nil {
+		log.Printf("Warning: htmls directory not found: %v", err)
+	} else {
+		log.Println("htmls directory found")
+	}
+
+	// Railway requires binding to 0.0.0.0
+	addr := "0.0.0.0:" + port
+	log.Printf("Starting server on %s", addr)
+	if err := http.ListenAndServe(addr, nil); err != nil {
 		log.Fatal("Server failed to start:", err)
 	}
 }

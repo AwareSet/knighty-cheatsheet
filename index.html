@@ -1,466 +1,737 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tech Cheat Sheets | @night_knightz</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cairo:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
-            --glass-bg: rgba(15, 23, 42, 0.95);
-            --text-primary: #ffffff;
-            --text-secondary: #94a3b8;
-            --border-color: rgba(255, 255, 255, 0.1);
-            --card-bg: rgba(30, 41, 59, 0.8);
-            --search-bg: rgba(30, 41, 59, 0.8);
-            --accent-color: #667eea;
-            --modal-header-bg: rgba(45, 55, 72, 0.9);
-        }
+      :root {
+        --primary-gradient: linear-gradient(
+          135deg,
+          #667eea 0%,
+          #764ba2 25%,
+          #f093fb 50%,
+          #f5576c 75%,
+          #4facfe 100%
+        );
+        --glass-bg: rgba(15, 23, 42, 0.95);
+        --text-primary: #ffffff;
+        --text-secondary: #94a3b8;
+        --border-color: rgba(255, 255, 255, 0.1);
+        --card-bg: rgba(30, 41, 59, 0.8);
+        --search-bg: rgba(30, 41, 59, 0.8);
+        --accent-color: #667eea;
+        --modal-header-bg: rgba(45, 55, 72, 0.9);
+      }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
-        body {
-            font-family: 'Inter', 'Cairo', sans-serif;
-            background: var(--primary-gradient);
-            color: var(--text-primary);
-            min-height: 100vh;
-            padding: 15px;
-            line-height: 1.5;
-            overflow-x: hidden;
-        }
-        .main-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: var(--glass-bg);
-            border-radius: 16px;
-            padding: 30px;
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border-color);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-        }
-        .header { text-align: center; margin-bottom: 20px; position: relative; }
-        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .lang-toggle {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid var(--border-color);
-            padding: 8px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            color: var(--text-primary);
-            font-weight: 500;
-        }
-        h1 {
-            font-size: 3.2rem;
-            font-weight: 800;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 12px;
-        }
-        .subtitle { font-size: 1.2rem; color: var(--text-secondary); font-weight: 300; }
-        .search-container { margin: 30px 0; position: relative; }
-        .search-box {
-            width: 100%;
-            max-width: 500px;
-            margin: 0 auto;
-            display: block;
-            padding: 15px 20px;
-            background: var(--search-bg);
-            border: 2px solid rgba(102, 126, 234, 0.3);
-            border-radius: 12px;
-            color: var(--text-primary);
-            font-size: 1.1rem;
-            outline: none;
-            transition: all 0.3s ease;
-        }
-        .search-box:focus { border-color: var(--accent-color); box-shadow: 0 0 20px rgba(102, 126, 234, 0.3); }
-        .search-box::placeholder { color: var(--text-secondary); }
-        .cheat-sheets-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
-        .cheat-sheet-card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 25px;
-            border: 1px solid var(--border-color);
-            transition: all 0.3s ease;
-            cursor: pointer;
-            text-decoration: none;
-            color: inherit;
-            display: flex;
-            flex-direction: column;
-        }
-        .cheat-sheet-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); border-color: rgba(102, 126, 234, 0.5); }
-        .card-icon { font-size: 2.5rem; margin-bottom: 15px; }
-        .card-title { font-size: 1.4rem; font-weight: 600; margin-bottom: 10px; color: var(--text-primary); }
-        .card-description { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.4; flex-grow: 1; }
-        .card-category { margin-top: 15px; background: rgba(102, 126, 234, 0.2); padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 500; align-self: flex-start; }
-        .footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border-color); color: var(--text-secondary); }
-        [dir="rtl"] .header { text-align: center; }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: "Inter", "Cairo", sans-serif;
+        background: var(--primary-gradient);
+        color: var(--text-primary);
+        min-height: 100vh;
+        padding: 15px;
+        line-height: 1.5;
+        overflow-x: hidden;
+      }
+      .main-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        background: var(--glass-bg);
+        border-radius: 16px;
+        padding: 30px;
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--border-color);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 20px;
+        position: relative;
+      }
+      .header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+      .lang-toggle {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--border-color);
+        padding: 8px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        color: var(--text-primary);
+        font-weight: 500;
+      }
+      h1 {
+        font-size: 3.2rem;
+        font-weight: 800;
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 12px;
+      }
+      .subtitle {
+        font-size: 1.2rem;
+        color: var(--text-secondary);
+        font-weight: 300;
+      }
+      .search-container {
+        margin: 30px 0;
+        position: relative;
+      }
+      .search-box {
+        width: 100%;
+        max-width: 500px;
+        margin: 0 auto;
+        display: block;
+        padding: 15px 20px;
+        background: var(--search-bg);
+        border: 2px solid rgba(102, 126, 234, 0.3);
+        border-radius: 12px;
+        color: var(--text-primary);
+        font-size: 1.1rem;
+        outline: none;
+        transition: all 0.3s ease;
+      }
+      .search-box:focus {
+        border-color: var(--accent-color);
+        box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+      }
+      .search-box::placeholder {
+        color: var(--text-secondary);
+      }
+      .cheat-sheets-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 20px;
+      }
+      .cheat-sheet-card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 25px;
+        border: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        text-decoration: none;
+        color: inherit;
+        display: flex;
+        flex-direction: column;
+      }
+      .cheat-sheet-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        border-color: rgba(102, 126, 234, 0.5);
+      }
+      .card-icon {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+      }
+      .card-title {
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: var(--text-primary);
+      }
+      .card-description {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        line-height: 1.4;
+        flex-grow: 1;
+      }
+      .card-category {
+        margin-top: 15px;
+        background: rgba(102, 126, 234, 0.2);
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        align-self: flex-start;
+      }
+      .footer {
+        text-align: center;
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border-color);
+        color: var(--text-secondary);
+      }
+      [dir="rtl"] .header {
+        text-align: center;
+      }
 
-        /* Modal Styles */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            animation: fadeIn 0.3s;
+      /* Modal Styles */
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(5px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        animation: fadeIn 0.3s;
+      }
+      .modal-container {
+        background: var(--glass-bg);
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        width: 90%;
+        max-width: 1200px;
+        height: 90vh;
+        display: flex;
+        flex-direction: column;
+        resize: both;
+        overflow: hidden;
+        position: absolute; /* For dragging */
+      }
+      .modal-header {
+        background: var(--modal-header-bg);
+        padding: 10px 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: move;
+        border-bottom: 1px solid var(--border-color);
+      }
+      .modal-title {
+        font-weight: 600;
+      }
+      .modal-header .close-btn {
+        background: none;
+        border: none;
+        color: var(--text-secondary);
+        font-size: 24px;
+        cursor: pointer;
+        transition: color 0.2s;
+      }
+      .modal-header .close-btn:hover {
+        color: var(--text-primary);
+      }
+      .modal-content {
+        flex-grow: 1;
+        position: relative;
+      }
+      .modal-content iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .loader {
+        border: 4px solid rgba(255, 255, 255, 0.2);
+        border-left-color: var(--accent-color);
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin-top: -25px;
+        margin-left: -25px;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
         }
-        .modal-container {
-            background: var(--glass-bg);
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            width: 90%;
-            max-width: 1200px;
-            height: 90vh;
-            display: flex;
-            flex-direction: column;
-            resize: both;
-            overflow: hidden;
-            position: absolute; /* For dragging */
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
         }
-        .modal-header {
-            background: var(--modal-header-bg);
-            padding: 10px 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: move;
-            border-bottom: 1px solid var(--border-color);
+        to {
+          opacity: 1;
         }
-        .modal-title { font-weight: 600; }
-        .modal-header .close-btn {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 24px;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-        .modal-header .close-btn:hover { color: var(--text-primary); }
-        .modal-content { flex-grow: 1; position: relative; }
-        .modal-content iframe { width: 100%; height: 100%; border: none; opacity: 0; transition: opacity 0.3s; }
-        .loader {
-            border: 4px solid rgba(255, 255, 255, 0.2);
-            border-left-color: var(--accent-color);
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            margin-top: -25px;
-            margin-left: -25px;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="main-container">
-        <div class="header">
-            <div class="header-top">
-                <div></div>
-                <button class="lang-toggle" id="langToggle">العربية</button>
-            </div>
-            <h1 id="main-title">Tech Cheat Sheets</h1>
-            <div id="main-subtitle" class="subtitle">Interactive Reference Guides for Developers & DevOps</div>
+      <div class="header">
+        <div class="header-top">
+          <div></div>
+          <button class="lang-toggle" id="langToggle">العربية</button>
         </div>
+        <h1 id="main-title">Tech Cheat Sheets</h1>
+        <div id="main-subtitle" class="subtitle">
+          Interactive Reference Guides for Developers & DevOps
+        </div>
+      </div>
 
-        <div class="search-container">
-            <input type="text" class="search-box" id="searchBox">
-        </div>
+      <div class="search-container">
+        <input type="text" class="search-box" id="searchBox" />
+      </div>
 
-        <div class="cheat-sheets-grid" id="sheetsGrid">
-            <!-- Cards will be inserted here by JavaScript -->
-        </div>
+      <div class="cheat-sheets-grid" id="sheetsGrid">
+        <!-- Cards will be inserted here by JavaScript -->
+      </div>
 
-        <div class="footer">
-            <p id="footer-text">Built with ❤️ by @night_knightz</p>
-        </div>
+      <div class="footer">
+        <p id="footer-text">Built with ❤️ by @night_knightz</p>
+      </div>
     </div>
 
     <div class="modal-overlay" id="modalOverlay">
-        <div class="modal-container" id="modalContainer">
-            <div class="modal-header" id="modalHeader">
-                <span class="modal-title" id="modalTitle"></span>
-                <button class="close-btn" id="closeModalBtn">&times;</button>
-            </div>
-            <div class="modal-content">
-                <div class="loader" id="modalLoader"></div>
-                <iframe id="modalIframe"></iframe>
-            </div>
+      <div class="modal-container" id="modalContainer">
+        <div class="modal-header" id="modalHeader">
+          <span class="modal-title" id="modalTitle"></span>
+          <button class="close-btn" id="closeModalBtn">&times;</button>
         </div>
+        <div class="modal-content">
+          <div class="loader" id="modalLoader"></div>
+          <iframe id="modalIframe"></iframe>
+        </div>
+      </div>
     </div>
 
     <script>
-        const sheetsData = [
-            {
-                "id": "kubernetes",
-                "en": { "title": "Kubernetes", "description": "Complete K8s reference with kubectl commands, deployments, services, and debugging techniques.", "category": "DevOps", "keywords": "kubernetes k8s container orchestration pods deployments" },
-                "ar": { "title": "كيبرنيتيس", "description": "مرجع K8s الكامل مع أوامر kubectl والنشر والخدمات وتقنيات التصحيح.", "category": "DevOps", "keywords": "كيبرنيتيس حاويات تنسيق بودز نشر" },
-                "icon": "⚙️",
-                "link": "htmls/kubernetes_cheat_sheet.html"
-            },
-            {
-                "id": "fabric-ai",
-                "en": { "title": "Fabric AI", "description": "AI-powered text processing and automation patterns for modern workflows.", "category": "AI/ML", "keywords": "fabric ai automation text processing patterns" },
-                "ar": { "title": "Fabric AI", "description": "أنماط معالجة النصوص والأتمتة المدعومة بالذكاء الاصطناعي لسير العمل الحديث.", "category": "الذكاء الاصطناعي", "keywords": "fabric ai أتمتة معالجة النصوص" },
-                "icon": "🤖",
-                "link": "htmls/fabric_ai_cheat_sheet.html"
-            },
-            {
-                "id": "awk",
-                "en": { "title": "AWK", "description": "Powerful text processing and data extraction with AWK programming language.", "category": "Scripting", "keywords": "awk text processing unix linux scripting" },
-                "ar": { "title": "AWK", "description": "معالجة النصوص واستخراج البيانات القوية باستخدام لغة برمجة AWK.", "category": "البرمجة النصية", "keywords": "awk معالجة النصوص يونكس لينكس" },
-                "icon": "📝",
-                "link": "htmls/awk_cheat_sheet.html"
-            },
-            {
-                "id": "ffmpeg",
-                "en": { "title": "FFmpeg", "description": "Video and audio processing, conversion, and streaming commands.", "category": "Multimedia", "keywords": "ffmpeg video audio conversion encoding streaming" },
-                "ar": { "title": "FFmpeg", "description": "أوامر معالجة الفيديو والصوت والتحويل والبث.", "category": "الوسائط المتعددة", "keywords": "ffmpeg فيديو صوت تحويل ترميز بث" },
-                "icon": "🎬",
-                "link": "htmls/ffmpeg_reference_sheet.html"
-            },
-            {
-                "id": "claude-cli",
-                "en": { "title": "Claude CLI", "description": "Command-line interface for Anthropic's Claude AI assistant.", "category": "AI/ML", "keywords": "claude cli anthropic ai assistant terminal" },
-                "ar": { "title": "Claude CLI", "description": "واجهة سطر الأوامر لمساعد كلود الذكي من Anthropic.", "category": "الذكاء الاصطناعي", "keywords": "claude cli anthropic ai مساعد طرفية" },
-                "icon": "🧠",
-                "link": "htmls/claude_cli_cheat_sheet.html"
-            },
-            {
-                "id": "cron",
-                "en": { "title": "Cron Scheduler", "description": "Task scheduling and automation with cron jobs and crontab syntax.", "category": "System", "keywords": "cron scheduling automation jobs tasks unix linux" },
-                "ar": { "title": "مجدول Cron", "description": "جدولة المهام والأتمتة مع وظائف cron وبناء جمل crontab.", "category": "النظام", "keywords": "cron جدولة أتمتة مهام يونكس لينكس" },
-                "icon": "⏰",
-                "link": "htmls/cron_scheduler_demo.html"
-            },
-            {
-                "id": "yt-dlp",
-                "en": { "title": "yt-dlp", "description": "YouTube and media downloading with yt-dlp command-line tool.", "category": "Tools", "keywords": "yt-dlp youtube download video audio extraction" },
-                "ar": { "title": "yt-dlp", "description": "تنزيل YouTube والوسائط باستخدام أداة سطر الأوامر yt-dlp.", "category": "أدوات", "keywords": "yt-dlp يوتيوب تنزيل فيديو صوت استخراج" },
-                "icon": "📺",
-                "link": "htmls/ytdlp_cheat_sheet.html"
-            },
-            {
-                "id": "fabric",
-                "en": { "title": "Fabric", "description": "Python deployment and automation toolkit for streamlined operations.", "category": "Development", "keywords": "fabric deployment automation python devops" },
-                "ar": { "title": "Fabric", "description": "مجموعة أدوات النشر والأتمتة في Python للعمليات المبسطة.", "category": "التطوير", "keywords": "fabric نشر أتمتة بايثون devops" },
-                "icon": "🔧",
-                "link": "htmls/fabric.html"
-            },
-            {
-                "id": "youtube-tools",
-                "en": { "title": "YouTube Tools", "description": "Essential YouTube-related tools and utilities for content creators.", "category": "Tools", "keywords": "youtube tools utilities commands" },
-                "ar": { "title": "أدوات يوتيوب", "description": "أدوات وأدوات مساعدة أساسية متعلقة بـ YouTube لمنشئي المحتوى.", "category": "أدوات", "keywords": "يوتيوب أدوات مساعدة أوامر" },
-                "icon": "🎥",
-                "link": "htmls/yt.html"
-            },
-            {
-                "id": "git",
-                "en": { "title": "Git", "description": "A cheat sheet for the most common Git commands.", "category": "Version Control", "keywords": "git version control branching merging" },
-                "ar": { "title": "Git", "description": "ورقة غش لأوامر Git الأكثر شيوعًا.", "category": "التحكم في الإصدار", "keywords": "git التحكم في الإصدار التفريع الدمج" },
-                "icon": "🌿",
-                "link": "htmls/git_cheat_sheet.html"
-            },
-            {
-                "id": "docker",
-                "en": { "title": "Docker", "description": "A cheat sheet for Docker commands, from images to containers.", "category": "Virtualization", "keywords": "docker containers images volumes networks" },
-                "ar": { "title": "Docker", "description": "ورقة غش لأوامر Docker ، من الصور إلى الحاويات.", "category": "المحاكاة الافتراضية", "keywords": "docker حاويات صور وحدات تخزين شبكات" },
-                "icon": "🐳",
-                "link": "htmls/docker_cheat_sheet.html"
-            },
-            {
-                "id": "grep",
-                "en": { "title": "Grep", "description": "A cheat sheet for searching plain-text data sets for lines that match a regular expression.", "category": "CLI", "keywords": "grep search regex text" },
-                "ar": { "title": "Grep", "description": "ورقة غش للبحث في مجموعات بيانات النص العادي عن الأسطر التي تطابق تعبيرًا عاديًا.", "category": "CLI", "keywords": "grep بحث regex نص" },
-                "icon": "🔍",
-                "link": "htmls/grep_cheat_sheet.html"
-            },
-            {
-                "id": "curl",
-                "en": { "title": "cURL", "description": "A cheat sheet for transferring data with URLs.", "category": "CLI", "keywords": "curl http networking" },
-                "ar": { "title": "cURL", "description": "ورقة غش لنقل البيانات باستخدام عناوين URL.", "category": "CLI", "keywords": "curl http الشبكات" },
-                "icon": "🔗",
-                "link": "htmls/curl_cheat_sheet.html"
-            },
-            {
-                "id": "jq",
-                "en": { "title": "jq", "description": "A cheat sheet for the command-line JSON processor.", "category": "CLI", "keywords": "jq json data processing" },
-                "ar": { "title": "jq", "description": "ورقة غش لمعالج JSON في سطر الأوامر.", "category": "CLI", "keywords": "jq json معالجة البيانات" },
-                "icon": "🔧",
-                "link": "htmls/jq_cheat_sheet.html"
-            }
-        ];
+      const sheetsData = [
+        {
+          id: "kubernetes",
+          en: {
+            title: "Kubernetes",
+            description:
+              "Complete K8s reference with kubectl commands, deployments, services, and debugging techniques.",
+            category: "DevOps",
+            keywords: "kubernetes k8s container orchestration pods deployments",
+          },
+          ar: {
+            title: "كيبرنيتيس",
+            description:
+              "مرجع K8s الكامل مع أوامر kubectl والنشر والخدمات وتقنيات التصحيح.",
+            category: "DevOps",
+            keywords: "كيبرنيتيس حاويات تنسيق بودز نشر",
+          },
+          icon: "⚙️",
+          link: "htmls/kubernetes_cheat_sheet.html",
+        },
+        {
+          id: "fabric-ai",
+          en: {
+            title: "Fabric AI",
+            description:
+              "AI-powered text processing and automation patterns for modern workflows.",
+            category: "AI/ML",
+            keywords: "fabric ai automation text processing patterns",
+          },
+          ar: {
+            title: "Fabric AI",
+            description:
+              "أنماط معالجة النصوص والأتمتة المدعومة بالذكاء الاصطناعي لسير العمل الحديث.",
+            category: "الذكاء الاصطناعي",
+            keywords: "fabric ai أتمتة معالجة النصوص",
+          },
+          icon: "🤖",
+          link: "htmls/fabric_ai_cheat_sheet.html",
+        },
+        {
+          id: "awk",
+          en: {
+            title: "AWK",
+            description:
+              "Powerful text processing and data extraction with AWK programming language.",
+            category: "Scripting",
+            keywords: "awk text processing unix linux scripting",
+          },
+          ar: {
+            title: "AWK",
+            description:
+              "معالجة النصوص واستخراج البيانات القوية باستخدام لغة برمجة AWK.",
+            category: "البرمجة النصية",
+            keywords: "awk معالجة النصوص يونكس لينكس",
+          },
+          icon: "📝",
+          link: "htmls/awk_cheat_sheet.html",
+        },
+        {
+          id: "ffmpeg",
+          en: {
+            title: "FFmpeg",
+            description:
+              "Video and audio processing, conversion, and streaming commands.",
+            category: "Multimedia",
+            keywords: "ffmpeg video audio conversion encoding streaming",
+          },
+          ar: {
+            title: "FFmpeg",
+            description: "أوامر معالجة الفيديو والصوت والتحويل والبث.",
+            category: "الوسائط المتعددة",
+            keywords: "ffmpeg فيديو صوت تحويل ترميز بث",
+          },
+          icon: "🎬",
+          link: "htmls/ffmpeg_reference_sheet.html",
+        },
+        {
+          id: "claude-cli",
+          en: {
+            title: "Claude CLI",
+            description:
+              "Command-line interface for Anthropic's Claude AI assistant.",
+            category: "AI/ML",
+            keywords: "claude cli anthropic ai assistant terminal",
+          },
+          ar: {
+            title: "Claude CLI",
+            description: "واجهة سطر الأوامر لمساعد كلود الذكي من Anthropic.",
+            category: "الذكاء الاصطناعي",
+            keywords: "claude cli anthropic ai مساعد طرفية",
+          },
+          icon: "🧠",
+          link: "htmls/claude_cli_cheat_sheet.html",
+        },
+        {
+          id: "cron",
+          en: {
+            title: "Cron Scheduler",
+            description:
+              "Task scheduling and automation with cron jobs and crontab syntax.",
+            category: "System",
+            keywords: "cron scheduling automation jobs tasks unix linux",
+          },
+          ar: {
+            title: "مجدول Cron",
+            description:
+              "جدولة المهام والأتمتة مع وظائف cron وبناء جمل crontab.",
+            category: "النظام",
+            keywords: "cron جدولة أتمتة مهام يونكس لينكس",
+          },
+          icon: "⏰",
+          link: "htmls/cron_scheduler_demo.html",
+        },
+        {
+          id: "yt-dlp",
+          en: {
+            title: "yt-dlp",
+            description:
+              "YouTube and media downloading with yt-dlp command-line tool.",
+            category: "Tools",
+            keywords: "yt-dlp youtube download video audio extraction",
+          },
+          ar: {
+            title: "yt-dlp",
+            description:
+              "تنزيل YouTube والوسائط باستخدام أداة سطر الأوامر yt-dlp.",
+            category: "أدوات",
+            keywords: "yt-dlp يوتيوب تنزيل فيديو صوت استخراج",
+          },
+          icon: "📺",
+          link: "htmls/ytdlp_cheat_sheet.html",
+        },
+        {
+          id: "fabric",
+          en: {
+            title: "Fabric",
+            description:
+              "Python deployment and automation toolkit for streamlined operations.",
+            category: "Development",
+            keywords: "fabric deployment automation python devops",
+          },
+          ar: {
+            title: "Fabric",
+            description:
+              "مجموعة أدوات النشر والأتمتة في Python للعمليات المبسطة.",
+            category: "التطوير",
+            keywords: "fabric نشر أتمتة بايثون devops",
+          },
+          icon: "🔧",
+          link: "htmls/fabric.html",
+        },
+        {
+          id: "youtube-tools",
+          en: {
+            title: "YouTube Tools",
+            description:
+              "Essential YouTube-related tools and utilities for content creators.",
+            category: "Tools",
+            keywords: "youtube tools utilities commands",
+          },
+          ar: {
+            title: "أدوات يوتيوب",
+            description:
+              "أدوات وأدوات مساعدة أساسية متعلقة بـ YouTube لمنشئي المحتوى.",
+            category: "أدوات",
+            keywords: "يوتيوب أدوات مساعدة أوامر",
+          },
+          icon: "🎥",
+          link: "htmls/yt.html",
+        },
+        {
+          id: "git",
+          en: {
+            title: "Git",
+            description: "A cheat sheet for the most common Git commands.",
+            category: "Version Control",
+            keywords: "git version control branching merging",
+          },
+          ar: {
+            title: "Git",
+            description: "ورقة غش لأوامر Git الأكثر شيوعًا.",
+            category: "التحكم في الإصدار",
+            keywords: "git التحكم في الإصدار التفريع الدمج",
+          },
+          icon: "🌿",
+          link: "htmls/git_cheat_sheet.html",
+        },
+        {
+          id: "docker",
+          en: {
+            title: "Docker",
+            description:
+              "A cheat sheet for Docker commands, from images to containers.",
+            category: "Virtualization",
+            keywords: "docker containers images volumes networks",
+          },
+          ar: {
+            title: "Docker",
+            description: "ورقة غش لأوامر Docker ، من الصور إلى الحاويات.",
+            category: "المحاكاة الافتراضية",
+            keywords: "docker حاويات صور وحدات تخزين شبكات",
+          },
+          icon: "🐳",
+          link: "htmls/docker_cheat_sheet.html",
+        },
+        {
+          id: "grep",
+          en: {
+            title: "Grep",
+            description:
+              "A cheat sheet for searching plain-text data sets for lines that match a regular expression.",
+            category: "CLI",
+            keywords: "grep search regex text",
+          },
+          ar: {
+            title: "Grep",
+            description:
+              "ورقة غش للبحث في مجموعات بيانات النص العادي عن الأسطر التي تطابق تعبيرًا عاديًا.",
+            category: "CLI",
+            keywords: "grep بحث regex نص",
+          },
+          icon: "🔍",
+          link: "htmls/grep_cheat_sheet.html",
+        },
+        {
+          id: "curl",
+          en: {
+            title: "cURL",
+            description: "A cheat sheet for transferring data with URLs.",
+            category: "CLI",
+            keywords: "curl http networking",
+          },
+          ar: {
+            title: "cURL",
+            description: "ورقة غش لنقل البيانات باستخدام عناوين URL.",
+            category: "CLI",
+            keywords: "curl http الشبكات",
+          },
+          icon: "🔗",
+          link: "htmls/curl_cheat_sheet.html",
+        },
+        {
+          id: "jq",
+          en: {
+            title: "jq",
+            description: "A cheat sheet for the command-line JSON processor.",
+            category: "CLI",
+            keywords: "jq json data processing",
+          },
+          ar: {
+            title: "jq",
+            description: "ورقة غش لمعالج JSON في سطر الأوامر.",
+            category: "CLI",
+            keywords: "jq json معالجة البيانات",
+          },
+          icon: "🔧",
+          link: "htmls/jq_cheat_sheet.html",
+        },
+      ];
 
-        const sheetsGrid = document.getElementById('sheetsGrid');
-        const searchBox = document.getElementById('searchBox');
-        const langToggle = document.getElementById('langToggle');
-        const mainTitle = document.getElementById('main-title');
-        const mainSubtitle = document.getElementById('main-subtitle');
-        const footerText = document.getElementById('footer-text');
-        const htmlEl = document.documentElement;
+      const sheetsGrid = document.getElementById("sheetsGrid");
+      const searchBox = document.getElementById("searchBox");
+      const langToggle = document.getElementById("langToggle");
+      const mainTitle = document.getElementById("main-title");
+      const mainSubtitle = document.getElementById("main-subtitle");
+      const footerText = document.getElementById("footer-text");
+      const htmlEl = document.documentElement;
 
-        const modalOverlay = document.getElementById('modalOverlay');
-        const modalContainer = document.getElementById('modalContainer');
-        const modalHeader = document.getElementById('modalHeader');
-        const modalTitle = document.getElementById('modalTitle');
-        const closeModalBtn = document.getElementById('closeModalBtn');
-        const modalLoader = document.getElementById('modalLoader');
-        const modalIframe = document.getElementById('modalIframe');
+      const modalOverlay = document.getElementById("modalOverlay");
+      const modalContainer = document.getElementById("modalContainer");
+      const modalHeader = document.getElementById("modalHeader");
+      const modalTitle = document.getElementById("modalTitle");
+      const closeModalBtn = document.getElementById("closeModalBtn");
+      const modalLoader = document.getElementById("modalLoader");
+      const modalIframe = document.getElementById("modalIframe");
 
-        let currentLang = 'en';
+      let currentLang = "en";
 
-        function initializeApp() {
-            renderCards();
-            updateUI();
-            checkHash();
-        }
+      function initializeApp() {
+        renderCards();
+        updateUI();
+        checkHash();
+      }
 
-        function renderCards(filter = '') {
-            sheetsGrid.innerHTML = '';
-            const langData = currentLang === 'en' ? 'en' : 'ar';
-            
-            sheetsData
-                .filter(sheet => {
-                    const data = sheet[langData];
-                    const searchTerm = filter.toLowerCase();
-                    return data.title.toLowerCase().includes(searchTerm) || 
-                           (data.keywords && data.keywords.toLowerCase().includes(searchTerm));
-                })
-                .forEach(sheet => {
-                    const data = sheet[langData];
-                    const card = document.createElement('div');
-                    card.className = 'cheat-sheet-card';
-                    card.dataset.sheetId = sheet.id;
-                    card.innerHTML = `
+      function renderCards(filter = "") {
+        sheetsGrid.innerHTML = "";
+        const langData = currentLang === "en" ? "en" : "ar";
+
+        sheetsData
+          .filter((sheet) => {
+            const data = sheet[langData];
+            const searchTerm = filter.toLowerCase();
+            return (
+              data.title.toLowerCase().includes(searchTerm) ||
+              (data.keywords &&
+                data.keywords.toLowerCase().includes(searchTerm))
+            );
+          })
+          .forEach((sheet) => {
+            const data = sheet[langData];
+            const card = document.createElement("div");
+            card.className = "cheat-sheet-card";
+            card.dataset.sheetId = sheet.id;
+            card.innerHTML = `
                         <div class="card-icon">${sheet.icon}</div>
                         <div class="card-title">${data.title}</div>
                         <div class="card-description">${data.description}</div>
                         <div class="card-category">${data.category}</div>
                     `;
-                    card.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        openModal(sheet);
-                    });
-                    sheetsGrid.appendChild(card);
-                });
+            card.addEventListener("click", (e) => {
+              e.preventDefault();
+              openModal(sheet);
+            });
+            sheetsGrid.appendChild(card);
+          });
+      }
+
+      function openModal(sheet) {
+        const langData = sheet[currentLang];
+        modalTitle.textContent = langData.title;
+        modalLoader.style.display = "block";
+        modalIframe.style.opacity = "0";
+        modalIframe.src = "about:blank";
+
+        setTimeout(() => {
+          modalIframe.src = sheet.link;
+        }, 50);
+
+        modalOverlay.style.display = "flex";
+        history.pushState(null, "", `#${sheet.id}`);
+      }
+
+      function closeModal() {
+        modalOverlay.style.display = "none";
+        history.pushState(
+          "",
+          document.title,
+          window.location.pathname + window.location.search
+        );
+      }
+
+      modalIframe.onload = () => {
+        modalLoader.style.display = "none";
+        modalIframe.style.opacity = "1";
+      };
+
+      function makeDraggable(elmnt) {
+        let pos1 = 0,
+          pos2 = 0,
+          pos3 = 0,
+          pos4 = 0;
+        const header = document.getElementById("modalHeader");
+        header.onmousedown = dragMouseDown;
+
+        function dragMouseDown(e) {
+          e = e || window.event;
+          e.preventDefault();
+          pos3 = e.clientX;
+          pos4 = e.clientY;
+          document.onmouseup = closeDragElement;
+          document.onmousemove = elementDrag;
         }
 
-        function openModal(sheet) {
-            const langData = sheet[currentLang];
-            modalTitle.textContent = langData.title;
-            modalLoader.style.display = 'block';
-            modalIframe.style.opacity = '0';
-            modalIframe.src = 'about:blank';
-            
-            setTimeout(() => {
-                modalIframe.src = sheet.link;
-            }, 50);
-
-            modalOverlay.style.display = 'flex';
-            history.pushState(null, "", `#${sheet.id}`);
+        function elementDrag(e) {
+          e = e || window.event;
+          e.preventDefault();
+          pos1 = pos3 - e.clientX;
+          pos2 = pos4 - e.clientY;
+          pos3 = e.clientX;
+          pos4 = e.clientY;
+          elmnt.style.top = elmnt.offsetTop - pos2 + "px";
+          elmnt.style.left = elmnt.offsetLeft - pos1 + "px";
         }
 
-        function closeModal() {
-            modalOverlay.style.display = 'none';
-            history.pushState("", document.title, window.location.pathname + window.location.search);
+        function closeDragElement() {
+          document.onmouseup = null;
+          document.onmousemove = null;
         }
+      }
 
-        modalIframe.onload = () => {
-            modalLoader.style.display = 'none';
-            modalIframe.style.opacity = '1';
-        };
+      function toggleLanguage() {
+        currentLang = currentLang === "en" ? "ar" : "en";
+        updateUI();
+        renderCards(searchBox.value);
+        closeModal();
+      }
 
-        function makeDraggable(elmnt) {
-            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-            const header = document.getElementById("modalHeader");
-            header.onmousedown = dragMouseDown;
-
-            function dragMouseDown(e) {
-                e = e || window.event;
-                e.preventDefault();
-                pos3 = e.clientX;
-                pos4 = e.clientY;
-                document.onmouseup = closeDragElement;
-                document.onmousemove = elementDrag;
-            }
-
-            function elementDrag(e) {
-                e = e || window.event;
-                e.preventDefault();
-                pos1 = pos3 - e.clientX;
-                pos2 = pos4 - e.clientY;
-                pos3 = e.clientX;
-                pos4 = e.clientY;
-                elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-                elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
-            }
-
-            function closeDragElement() {
-                document.onmouseup = null;
-                document.onmousemove = null;
-            }
+      function updateUI() {
+        if (currentLang === "ar") {
+          htmlEl.dir = "rtl";
+          langToggle.textContent = "English";
+          mainTitle.textContent = "أوراق الغش التقنية";
+          mainSubtitle.textContent =
+            "أدلة مرجعية تفاعلية للمطورين ومهندسي DevOps";
+          searchBox.placeholder = "🔍 ابحث في أوراق الغش...";
+          footerText.textContent = "بنيด้วย ❤️ بواسطة @night_knightz";
+        } else {
+          htmlEl.dir = "ltr";
+          langToggle.textContent = "العربية";
+          mainTitle.textContent = "Tech Cheat Sheets";
+          mainSubtitle.textContent =
+            "Interactive Reference Guides for Developers & DevOps";
+          searchBox.placeholder = "🔍 Search cheat sheets...";
+          footerText.textContent = "Built with ❤️ by @night_knightz";
         }
+      }
 
-        function toggleLanguage() {
-            currentLang = currentLang === 'en' ? 'ar' : 'en';
-            updateUI();
-            renderCards(searchBox.value);
-            closeModal();
+      function checkHash() {
+        const id = window.location.hash.substring(1);
+        if (id) {
+          const sheetDataToOpen = sheetsData.find((s) => s.id === id);
+          if (sheetDataToOpen) {
+            openModal(sheetDataToOpen);
+          }
         }
-        
-        function updateUI() {
-            if (currentLang === 'ar') {
-                htmlEl.dir = 'rtl';
-                langToggle.textContent = 'English';
-                mainTitle.textContent = 'أوراق الغش التقنية';
-                mainSubtitle.textContent = 'أدلة مرجعية تفاعلية للمطورين ومهندسي DevOps';
-                searchBox.placeholder = '🔍 ابحث في أوراق الغش...';
-                footerText.textContent = 'بنيด้วย ❤️ بواسطة @night_knightz';
-            } else {
-                htmlEl.dir = 'ltr';
-                langToggle.textContent = 'العربية';
-                mainTitle.textContent = 'Tech Cheat Sheets';
-                mainSubtitle.textContent = 'Interactive Reference Guides for Developers & DevOps';
-                searchBox.placeholder = '🔍 Search cheat sheets...';
-                footerText.textContent = 'Built with ❤️ by @night_knightz';
-            }
-        }
+      }
 
-        function checkHash() {
-            const id = window.location.hash.substring(1);
-            if (id) {
-                const sheetDataToOpen = sheetsData.find(s => s.id === id);
-                if (sheetDataToOpen) {
-                    openModal(sheetDataToOpen);
-                }
-            }
-        }
+      searchBox.addEventListener("input", () => renderCards(searchBox.value));
+      langToggle.addEventListener("click", toggleLanguage);
+      closeModalBtn.addEventListener("click", closeModal);
+      modalOverlay.addEventListener("click", (e) => {
+        if (e.target === modalOverlay) closeModal();
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeModal();
+      });
 
-        searchBox.addEventListener('input', () => renderCards(searchBox.value));
-        langToggle.addEventListener('click', toggleLanguage);
-        closeModalBtn.addEventListener('click', closeModal);
-        modalOverlay.addEventListener('click', (e) => {
-            if (e.target === modalOverlay) closeModal();
-        });
-        document.addEventListener('keydown', (e) => {
-            if (e.key === "Escape") closeModal();
-        });
-
-        makeDraggable(modalContainer);
-        initializeApp();
+      makeDraggable(modalContainer);
+      initializeApp();
     </script>
-</body>
+  </body>
 </html>
