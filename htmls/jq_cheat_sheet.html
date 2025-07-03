@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate jq Cheat Sheet</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #8BC6EC 0%, #9599E2 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 15px;
+            line-height: 1.3;
+        }
+        .main-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: rgba(15, 23, 42, 0.95);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        .header { text-align: center; margin-bottom: 20px; position: relative; }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 3px;
+            background: linear-gradient(90deg, #8BC6EC, #9599E2);
+            border-radius: 2px;
+        }
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #8BC6EC, #9599E2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+        .subtitle { font-size: 1.1rem; color: #94a3b8; font-weight: 300; }
+        .search-container { margin: 20px 0; position: relative; }
+        .search-box {
+            width: 100%;
+            padding: 12px 20px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 2px solid rgba(139, 198, 236, 0.3);
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        .search-box:focus { border-color: #8BC6EC; box-shadow: 0 0 20px rgba(139, 198, 236, 0.3); }
+        .search-box::placeholder { color: #94a3b8; }
+        .main-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
+        .section {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid rgba(100, 116, 139, 0.2);
+            position: relative;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .section:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); }
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #8BC6EC, #9599E2);
+        }
+        .section-title { font-size: 1rem; font-weight: 700; margin-bottom: 10px; color: #f1f5f9; display: flex; align-items: center; gap: 6px; }
+        .command {
+            background: rgba(51, 65, 85, 0.4);
+            padding: 8px;
+            border-radius: 6px;
+            border-left: 3px solid #8BC6EC;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .command:hover { border-left-color: #9599E2; background: rgba(139, 198, 236, 0.1); }
+        .cmd-name { font-size: 0.8rem; color: #9599E2; font-weight: 600; margin-bottom: 4px; }
+        .cmd-syntax {
+            font-family: 'JetBrains Mono', 'Consolas', 'Monaco', monospace;
+            font-size: 0.7rem;
+            color: #8BC6EC;
+            background: rgba(139, 198, 236, 0.1);
+            padding: 6px 8px;
+            border-radius: 4px;
+            border: 1px solid rgba(139, 198, 236, 0.3);
+            margin-bottom: 4px;
+            word-break: break-all;
+            white-space: pre-wrap;
+        }
+        .cmd-desc { color: #cbd5e1; font-size: 0.7rem; line-height: 1.2; }
+        .footer { text-align: center; margin-top: 20px; padding: 15px; background: rgba(15, 23, 42, 0.8); border-radius: 10px; border: 1px solid rgba(148, 163, 184, 0.2); }
+        .footer-text { color: #94a3b8; font-size: 0.9rem; }
+        .highlight { color: #8BC6EC; font-weight: 600; }
+        @media (max-width: 1200px) { .main-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 768px) { .main-grid { grid-template-columns: 1fr; } h1 { font-size: 2rem; } }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header">
+            <h1>🔧 jq</h1>
+            <div class="subtitle">Ultimate Interactive Cheat Sheet for JSON Processing</div>
+        </div>
+
+        <div class="search-container">
+            <input type="text" class="search-box" placeholder="Search jq filters and options..." id="searchBox">
+        </div>
+
+        <div class="main-grid" id="commandGrid">
+            <!-- Basic Filters -->
+            <div class="section">
+                <div class="section-title">🚀 Basic Filters</div>
+                <div class="command">
+                    <div class="cmd-name">Identity</div>
+                    <div class="cmd-syntax">jq '.' file.json</div>
+                    <div class="cmd-desc">Print the entire input, pretty-printed.</div>
+                </div>
+                <div class="command">
+                    <div class="cmd-name">Object Identifier</div>
+                    <div class="cmd-syntax">jq '.key' file.json</div>
+                    <div class="cmd-desc">Extract the value of a specific key.</div>
+                </div>
+                <div class="command">
+                    <div class="cmd-name">Array Index</div>
+                    <div class="cmd-syntax">jq '.[0]' file.json</div>
+                    <div class="cmd-desc">Extract the first element of an array.</div>
+                </div>
+                <div class="command">
+                    <div class="cmd-name">Array/String Slice</div>
+                    <div class="cmd-syntax">jq '.[2:5]' file.json</div>
+                    <div class="cmd-desc">Extract a slice of an array or string.</div>
+                </div>
+            </div>
+
+            <!-- Data Manipulation -->
+            <div class="section">
+                <div class="section-title">🔄 Data Manipulation</div>
+                <div class="command">
+                    <div class="cmd-name">Create Object</div>
+                    <div class="cmd-syntax">jq '{new_key: .key}' file.json</div>
+                    <div class="cmd-desc">Create a new object with a new key.</div>
+                </div>
+                <div class="command">
+                    <div class="cmd-name">Map over Array</div>
+                    <div class="cmd-syntax">jq '.[] | .name' file.json</div>
+                    <div class="cmd-desc">Iterate over an array and extract a key from each object.</div>
+                </div>
+                <div class="command">
+                    <div class="cmd-name">Select from Array</div>
+                    <div class="cmd-syntax">jq '.[] | select(.age > 30)' file.json</div>
+                    <div class="cmd-desc">Filter elements of an array based on a condition.</div>
+                </div>
+                <div class="command">
+                    <div class="cmd-name">Length of Array/String</div>
+                    <div class="cmd-syntax">jq '. | length' file.json</div>
+                    <div class="cmd-desc">Get the length of an array or string.</div>
+                </div>
+            </div>
+
+            <!-- Advanced -->
+            <div class="section">
+                <div class="section-title">✨ Advanced</div>
+                <div class="command">
+                    <div class="cmd-name">Piping</div>
+                    <div class="cmd-syntax">jq '.key1 | .key2' file.json</div>
+                    <div class="cmd-desc">Chain filters together.</div>
+                </div>
+                <div class="command">
+                    <div class="cmd-name">Keys of an Object</div>
+                    <div class="cmd-syntax">jq 'keys' file.json</div>
+                    <div class="cmd-desc">Get an array of an object's keys.</div>
+                </div>
+                <div class="command">
+                    <div class="cmd-name">Check for Key</div>
+                    <div class="cmd-syntax">jq 'has("key")' file.json</div>
+                    <div class="cmd-desc">Check if an object has a specific key.</div>
+                </div>
+                <div class="command">
+                    <div class="cmd-name">Delete Key</div>
+                    <div class="cmd-syntax">jq 'del(.key)' file.json</div>
+                    <div class="cmd-desc">Remove a key-value pair from an object.</div>
+                </div>
+            </div>
+
+            <!-- Options -->
+            <div class="section">
+                <div class="section-title">⚙️ Options</div>
+                <div class="command">
+                    <div class="cmd-name">Raw Output</div>
+                    <div class="cmd-syntax">jq -r '.key' file.json</div>
+                    <div class="cmd-desc">Output raw strings, not JSON-escaped strings.</div>
+                </div>
+                <div class="command">
+                    <div class="cmd-name">Compact Output</div>
+                    <div class="cmd-syntax">jq -c '.' file.json</div>
+                    <div class="cmd-desc">Output compact JSON on a single line.</div>
+                </div>
+                <div class="command">
+                    <div class="cmd-name">Slurp Mode</div>
+                    <div class="cmd-syntax">jq -s '.' file.json</div>
+                    <div class="cmd-desc">Read all JSON objects into a single array.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-text">
+                🔧 <span class="highlight">Master jq</span> for powerful JSON processing.
+                <br>
+                <div style="margin-top: 10px; font-size: 0.85rem; color: #8BC6EC;">
+                    📱 Follow for more tech guides: <span class="highlight">@night_knightz</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('searchBox').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const commands = document.querySelectorAll('.command');
+            const sections = document.querySelectorAll('.section');
+
+            commands.forEach(command => {
+                const name = command.querySelector('.cmd-name').textContent.toLowerCase();
+                const syntax = command.querySelector('.cmd-syntax').textContent.toLowerCase();
+                const desc = command.querySelector('.cmd-desc').textContent.toLowerCase();
+                
+                if (name.includes(searchTerm) || syntax.includes(searchTerm) || desc.includes(searchTerm)) {
+                    command.style.display = 'block';
+                } else {
+                    command.style.display = 'none';
+                }
+            });
+
+            sections.forEach(section => {
+                const visibleCommands = section.querySelectorAll('.command:not([style*="display: none"])');
+                if (visibleCommands.length > 0) {
+                    section.style.display = 'flex';
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

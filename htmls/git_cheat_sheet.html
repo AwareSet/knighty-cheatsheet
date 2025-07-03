@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Git Cheat Sheet</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 15px;
+            line-height: 1.3;
+        }
+        .main-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: rgba(15, 23, 42, 0.95);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        .header { text-align: center; margin-bottom: 20px; position: relative; }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+            border-radius: 2px;
+        }
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+        .subtitle { font-size: 1.1rem; color: #94a3b8; font-weight: 300; }
+        .search-container { margin: 20px 0; position: relative; }
+        .search-box {
+            width: 100%;
+            padding: 12px 20px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        .search-box:focus { border-color: #667eea; box-shadow: 0 0 20px rgba(102, 126, 234, 0.3); }
+        .search-box::placeholder { color: #94a3b8; }
+        .main-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
+        .section {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid rgba(100, 116, 139, 0.2);
+            position: relative;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .section:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); }
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+        .section-title { font-size: 1rem; font-weight: 700; margin-bottom: 10px; color: #f1f5f9; display: flex; align-items: center; gap: 6px; }
+        .command {
+            background: rgba(51, 65, 85, 0.4);
+            padding: 8px;
+            border-radius: 6px;
+            border-left: 3px solid #667eea;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .command:hover { border-left-color: #f093fb; background: rgba(102, 126, 234, 0.1); }
+        .cmd-name { font-size: 0.8rem; color: #f093fb; font-weight: 600; margin-bottom: 4px; }
+        .cmd-syntax {
+            font-family: 'JetBrains Mono', 'Consolas', 'Monaco', monospace;
+            font-size: 0.7rem;
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            padding: 6px 8px;
+            border-radius: 4px;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            margin-bottom: 4px;
+            word-break: break-all;
+            white-space: pre-wrap;
+        }
+        .cmd-desc { color: #cbd5e1; font-size: 0.7rem; line-height: 1.2; }
+        .footer { text-align: center; margin-top: 20px; padding: 15px; background: rgba(15, 23, 42, 0.8); border-radius: 10px; border: 1px solid rgba(148, 163, 184, 0.2); }
+        .footer-text { color: #94a3b8; font-size: 0.9rem; }
+        .highlight { color: #667eea; font-weight: 600; }
+        @media (max-width: 1200px) { .main-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 768px) { .main-grid { grid-template-columns: 1fr; } h1 { font-size: 2rem; } }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header">
+            <h1>🌿 Git</h1>
+            <div class="subtitle">Ultimate Interactive Cheat Sheet for Version Control</div>
+        </div>
+
+        <div class="search-container">
+            <input type="text" class="search-box" placeholder="Search Git commands..." id="searchBox">
+        </div>
+
+        <div class="main-grid" id="commandGrid">
+            <!-- Setup -->
+            <div class="section">
+                <div class="section-title">🚀 Setup & Config</div>
+                <div class="command">
+                    <div class="cmd-name">Configure User Name</div>
+                    <div class="cmd-syntax">git config --global user.name "Your Name"</div>
+                    <div class="cmd-desc">Set the name for your commits.</div>
+                </div>
+                <div class="command">
+                    <div class="cmd-name">Configure User Email</div>
+                    <div class="cmd-syntax">git config --global user.email "your.email@example.com"</div>
+                    <div class="cmd-desc">Set the email for your commits.</div>
+                </div>
+                <div class="command">
+                    <div class="cmd-name">Initialize Repository</div>
+                    <div class="cmd-syntax">git init</div>
+                    <div class="cmd-desc">Create a new local repository.</div>
+                </div>
+                <div class="command">
+                    <div class="cmd-name">Clone Repository</div>
+                    <div class="cmd-syntax">git clone /path/to/repository</div>
+                    <div class="cmd-desc">Create a working copy of a local repository.</div>
+                </div>
+                 <div class="command">
+                    <div class="cmd-name">Clone Remote Repository</div>
+                    <div class="cmd-syntax">git clone username@host:/path/to/repository</div>
+                    <div class="cmd-desc">Create a working copy of a remote repository.</div>
+                </div>
+            </div>
+
+            <!-- Staging -->
+            <div class="section">
+                <div class="section-title">📦 Staging & Committing</div>
+                <div class="command">
+                    <div class="cmd-name">Check Status</div>
+                    <div class="cmd-syntax">git status</div>
+                    <div class="cmd-desc">List the status of your files.</div>
+                </div>
+                <div class="command">
+                    <div class="cmd-name">Add File to Staging</div>
+                    <div class="cmd-syntax">git add &lt;file&gt;</div>
+                    <div class="cmd-desc">Add one file to the staging area.</div>
+                </div>
+                <div class="command">
+                    <div class="cmd-name">Add All Changes</div>
+                    <div class="cmd-syntax">git add .</div>
+                    <div class="cmd-desc">Add all new and changed files to staging.</div>
+                </div>
+                <div class="command">
+                    <div class="cmd-name">Commit Changes</div>
+                    <div class="cmd-syntax">git commit -m "Commit message"</div>
+                    <div class="cmd-desc">Commit your staged changes with a message.</div>
+                </div>
+                <div class="command">
+                    <div class="cmd-name">Commit and Add</div>
+                    <div class="cmd-syntax">git commit -a -m "Commit message"</div>
+                    <div class="cmd-desc">Add all tracked files and commit.</div>
+                </div>
+            </div>
+
+            <!-- Branching -->
+            <div class="section">
+                <div class="section-title">🌿 Branching & Merging</div>
+                <div class="command">
+                    <div class="cmd-name">List Branches</div>
+                    <div class="cmd-syntax">git branch</div>
+                    <div class="cmd-desc">List all local branches.</div>
+                </div>
+                <div class="command">
+                    <div class="cmd-name">Create New Branch</div>
+                    <div class="cmd-syntax">git branch &lt;branch-name&gt;</div>
+                    <div class="cmd-desc">Create a new branch.</div>
+                </div>
+                <div class="command">
+                    <div class="cmd-name">Switch to Branch</div>
+                    <div class="cmd-syntax">git checkout &lt;branch-name&gt;</div>
+                    <div class="cmd-desc">Switch to another branch.</div>
+                </div>
+                <div class="command">
+                    <div class="cmd-name">Create and Switch</div>
+                    <div class="cmd-syntax">git checkout -b &lt;branch-name&gt;</div>
+                    <div class="cmd-desc">Create a new branch and switch to it.</div>
+                </div>
+                <div class="command">
+                    <div class="cmd-name">Merge Branch</div>
+                    <div class="cmd-syntax">git merge &lt;branch-name&gt;</div>
+                    <div class="cmd-desc">Merge a branch into the active branch.</div>
+                </div>
+                <div class="command">
+                    <div class="cmd-name">Delete Branch</div>
+                    <div class="cmd-syntax">git branch -d &lt;branch-name&gt;</div>
+                    <div class="cmd-desc">Delete a local branch.</div>
+                </div>
+            </div>
+
+            <!-- Remote -->
+            <div class="section">
+                <div class="section-title">☁️ Remote Repositories</div>
+                <div class="command">
+                    <div class="cmd-name">List Remotes</div>
+                    <div class="cmd-syntax">git remote -v</div>
+                    <div class="cmd-desc">List all configured remote repositories.</div>
+                </div>
+                <div class="command">
+                    <div class="cmd-name">Add Remote</div>
+                    <div class="cmd-syntax">git remote add &lt;name&gt; &lt;url&gt;</div>
+                    <div class="cmd-desc">Add a new remote repository.</div>
+                </div>
+                <div class="command">
+                    <div class="cmd-name">Fetch from Remote</div>
+                    <div class="cmd-syntax">git fetch &lt;remote-name&gt;</div>
+                    <div class="cmd-desc">Fetch changes from the remote, but don't merge.</div>
+                </div>
+                <div class="command">
+                    <div class="cmd-name">Pull from Remote</div>
+                    <div class="cmd-syntax">git pull &lt;remote-name&gt; &lt;branch-name&gt;</div>
+                    <div class="cmd-desc">Fetch and merge changes from the remote.</div>
+                </div>
+                <div class="command">
+                    <div class="cmd-name">Push to Remote</div>
+                    <div class="cmd-syntax">git push &lt;remote-name&gt; &lt;branch-name&gt;</div>
+                    <div class="cmd-desc">Push your changes to the remote.</div>
+                </div>
+            </div>
+
+            <!-- History -->
+            <div class="section">
+                <div class="section-title">📜 History & Undoing</div>
+                <div class="command">
+                    <div class="cmd-name">View Log</div>
+                    <div class="cmd-syntax">git log</div>
+                    <div class="cmd-desc">View the commit history.</div>
+                </div>
+                <div class="command">
+                    <div class="cmd-name">View Log (Pretty)</div>
+                    <div class="cmd-syntax">git log --oneline --graph --decorate</div>
+                    <div class="cmd-desc">A more compact and graphical log view.</div>
+                </div>
+                <div class="command">
+                    <div class="cmd-name">Unstage File</div>
+                    <div class="cmd-syntax">git reset &lt;file&gt;</div>
+                    <div class="cmd-desc">Remove a file from the staging area.</div>
+                </div>
+                <div class="command">
+                    <div class="cmd-name">Revert File</div>
+                    <div class="cmd-syntax">git checkout -- &lt;file&gt;</div>
+                    <div class="cmd-desc">Discard changes in your working directory.</div>
+                </div>
+                <div class="command">
+                    <div class="cmd-name">Revert Commit</div>
+                    <div class="cmd-syntax">git revert &lt;commit-hash&gt;</div>
+                    <div class="cmd-desc">Create a new commit that undoes a previous commit.</div>
+                </div>
+                <div class="command">
+                    <div class="cmd-name">Reset to Commit</div>
+                    <div class="cmd-syntax">git reset --hard &lt;commit-hash&gt;</div>
+                    <div class="cmd-desc">Reset your HEAD pointer to a previous commit (destructive).</div>
+                </div>
+            </div>
+            
+            <!-- Advanced -->
+            <div class="section">
+                <div class="section-title">✨ Advanced</div>
+                <div class="command">
+                    <div class="cmd-name">Rebase</div>
+                    <div class="cmd-syntax">git rebase &lt;branch-name&gt;</div>
+                    <div class="cmd-desc">Apply commits from current branch on top of another.</div>
+                </div>
+                <div class="command">
+                    <div class="cmd-name">Interactive Rebase</div>
+                    <div class="cmd-syntax">git rebase -i HEAD~3</div>
+                    <div class="cmd-desc">Interactively edit the last 3 commits.</div>
+                </div>
+                <div class="command">
+                    <div class="cmd-name">Stash Changes</div>
+                    <div class="cmd-syntax">git stash</div>
+                    <div class="cmd-desc">Temporarily save modified, tracked files.</div>
+                </div>
+                <div class="command">
+                    <div class="cmd-name">Apply Stash</div>
+                    <div class="cmd-syntax">git stash pop</div>
+                    <div class="cmd-desc">Apply the last stashed changes and remove it from the stash list.</div>
+                </div>
+                <div class="command">
+                    <div class="cmd-name">Cherry Pick</div>
+                    <div class="cmd-syntax">git cherry-pick &lt;commit-hash&gt;</div>
+                    <div class="cmd-desc">Apply a specific commit from another branch.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-text">
+                🌿 <span class="highlight">Master Git</span> for powerful version control.
+                <br>
+                <div style="margin-top: 10px; font-size: 0.85rem; color: #667eea;">
+                    📱 Follow for more tech guides: <span class="highlight">@night_knightz</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('searchBox').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const commands = document.querySelectorAll('.command');
+            const sections = document.querySelectorAll('.section');
+
+            commands.forEach(command => {
+                const name = command.querySelector('.cmd-name').textContent.toLowerCase();
+                const syntax = command.querySelector('.cmd-syntax').textContent.toLowerCase();
+                const desc = command.querySelector('.cmd-desc').textContent.toLowerCase();
+                
+                if (name.includes(searchTerm) || syntax.includes(searchTerm) || desc.includes(searchTerm)) {
+                    command.style.display = 'block';
+                } else {
+                    command.style.display = 'none';
+                }
+            });
+
+            sections.forEach(section => {
+                const visibleCommands = section.querySelectorAll('.command:not([style*="display: none"])');
+                if (visibleCommands.length > 0) {
+                    section.style.display = 'flex';
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

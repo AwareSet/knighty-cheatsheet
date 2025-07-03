@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate AWK Cheat Sheet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 15px;
+            line-height: 1.3;
+        }
+
+        .main-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: rgba(15, 23, 42, 0.95);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+            border-radius: 2px;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #94a3b8;
+            font-weight: 300;
+        }
+
+        .search-container {
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 12px 20px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .search-box::placeholder {
+            color: #94a3b8;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .section {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid rgba(100, 116, 139, 0.2);
+            position: relative;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .section-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .wide-section {
+            grid-column: span 2;
+        }
+
+        .full-section {
+            grid-column: span 4;
+            background: rgba(15, 23, 42, 0.9);
+            border: 2px solid #667eea;
+        }
+
+        .command {
+            background: rgba(51, 65, 85, 0.4);
+            padding: 8px;
+            border-radius: 6px;
+            border-left: 3px solid #667eea;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .command:hover {
+            border-left-color: #f093fb;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .cmd-name {
+            font-size: 0.8rem;
+            color: #f093fb;
+            font-weight: 600;
+            margin-bottom: 2px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cmd-syntax {
+            font-family: 'JetBrains Mono', 'Consolas', 'Monaco', monospace;
+            font-size: 0.7rem;
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            padding: 6px 8px;
+            border-radius: 4px;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            margin-bottom: 4px;
+            word-break: break-all;
+            position: relative;
+            line-height: 1.3;
+            white-space: pre-wrap;
+        }
+
+        .cmd-desc {
+            color: #cbd5e1;
+            font-size: 0.7rem;
+            line-height: 1.2;
+        }
+
+        .copy-btn {
+            background: rgba(240, 147, 251, 0.2);
+            border: 1px solid rgba(240, 147, 251, 0.3);
+            color: #f093fb;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.6rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: rgba(240, 147, 251, 0.3);
+        }
+
+        .syntax-table {
+            background: rgba(51, 65, 85, 0.6);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+
+        .syntax-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .syntax-table th,
+        .syntax-table td {
+            padding: 6px 8px;
+            text-align: left;
+            border-bottom: 1px solid rgba(100, 116, 139, 0.3);
+        }
+
+        .syntax-table th {
+            background: rgba(102, 126, 234, 0.2);
+            color: #f093fb;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .syntax-table td {
+            font-size: 0.7rem;
+        }
+
+        .syntax-table td:first-child {
+            font-family: 'JetBrains Mono', monospace;
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .syntax-table td:last-child {
+            color: #cbd5e1;
+        }
+
+        .pattern-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .pattern-item {
+            background: rgba(51, 65, 85, 0.6);
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .pattern-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #667eea;
+            transform: scale(1.02);
+        }
+
+        .pattern-name {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #f093fb;
+            margin-bottom: 2px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .pattern-desc {
+            font-size: 0.65rem;
+            color: #94a3b8;
+            line-height: 1.2;
+        }
+
+        .example-section {
+            background: rgba(51, 65, 85, 0.6);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            margin-bottom: 12px;
+        }
+
+        .example-title {
+            font-size: 0.8rem;
+            color: #f093fb;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .example-code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            color: #667eea;
+            background: rgba(15, 23, 42, 0.7);
+            padding: 8px 10px;
+            border-radius: 4px;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            margin-bottom: 6px;
+            white-space: pre-wrap;
+            word-break: break-all;
+            line-height: 1.4;
+        }
+
+        .example-desc {
+            font-size: 0.65rem;
+            color: #cbd5e1;
+            line-height: 1.2;
+        }
+
+        .install-section {
+            background: rgba(51, 65, 85, 0.6);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            margin-bottom: 15px;
+        }
+
+        .install-title {
+            font-size: 1rem;
+            color: #f093fb;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .install-content {
+            font-size: 0.75rem;
+            color: #cbd5e1;
+            line-height: 1.4;
+        }
+
+        .install-content code {
+            background: rgba(102, 126, 234, 0.2);
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'JetBrains Mono', monospace;
+            color: #667eea;
+        }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .tip {
+            background: rgba(15, 23, 42, 0.7);
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 3px solid #f093fb;
+        }
+
+        .tip-title {
+            font-weight: 600;
+            color: #f093fb;
+            margin-bottom: 4px;
+            font-size: 0.75rem;
+        }
+
+        .tip-content {
+            color: #cbd5e1;
+            line-height: 1.2;
+            font-size: 0.7rem;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 10px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .footer-text {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .highlight {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        code {
+            background: rgba(102, 126, 234, 0.2);
+            padding: 1px 3px;
+            border-radius: 3px;
+            font-family: 'JetBrains Mono', monospace;
+            color: #667eea;
+            font-size: 0.75em;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .operator-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+
+        .operator-item {
+            background: rgba(51, 65, 85, 0.6);
+            padding: 6px;
+            border-radius: 4px;
+            text-align: center;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .operator-symbol {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: #f093fb;
+            font-weight: 600;
+        }
+
+        .operator-desc {
+            font-size: 0.6rem;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .full-section {
+                grid-column: span 3;
+            }
+            
+            .wide-section {
+                grid-column: span 2;
+            }
+            
+            .tips-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .full-section, .wide-section {
+                grid-column: span 1;
+            }
+            
+            .tips-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .pattern-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .operator-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header">
+            <h1>🦅 AWK</h1>
+            <div class="subtitle">Ultimate Interactive Cheat Sheet for Text Processing & Pattern Scanning</div>
+        </div>
+
+        <div class="search-container">
+            <input type="text" class="search-box" placeholder="Search AWK commands, patterns, functions, or examples..." id="searchBox">
+        </div>
+
+        <div class="main-grid">
+            <!-- Basic Syntax -->
+            <div class="section full-section">
+                <div class="section-title">
+                    🚀 AWK Syntax & Structure
+                </div>
+                
+                <div class="install-section">
+                    <div class="install-title">Basic AWK Command Structure</div>
+                    <div class="install-content">
+                        <code>awk 'pattern { action }' file</code><br>
+                        <code>awk -f script.awk file</code><br>
+                        <code>command | awk 'pattern { action }'</code><br><br>
+                        
+                        <strong>Components:</strong><br>
+                        • <code>pattern</code> - Condition to match (optional)<br>
+                        • <code>{ action }</code> - Commands to execute (optional)<br>
+                        • If no pattern: action applies to all lines<br>
+                        • If no action: matching lines are printed
+                    </div>
+                </div>
+
+                <div class="syntax-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Pattern Type</th>
+                                <th>Syntax</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>BEGIN</td>
+                                <td>BEGIN { action }</td>
+                                <td>Execute before processing any input</td>
+                            </tr>
+                            <tr>
+                                <td>END</td>
+                                <td>END { action }</td>
+                                <td>Execute after processing all input</td>
+                            </tr>
+                            <tr>
+                                <td>Expression</td>
+                                <td>/regex/ { action }</td>
+                                <td>Match lines containing regex pattern</td>
+                            </tr>
+                            <tr>
+                                <td>Range</td>
+                                <td>/start/,/end/ { action }</td>
+                                <td>Match lines from start to end pattern</td>
+                            </tr>
+                            <tr>
+                                <td>Condition</td>
+                                <td>$1 == "value" { action }</td>
+                                <td>Match lines where condition is true</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Built-in Variables -->
+            <div class="section">
+                <div class="section-title">📊 Built-in Variables</div>
+                <div class="section-content">
+                    <div class="command" data-category="variables">
+                        <div class="cmd-name">Record Number <span class="copy-btn" onclick="copyToClipboard('NR')">Copy</span></div>
+                        <div class="cmd-syntax">NR</div>
+                        <div class="cmd-desc">Current record (line) number</div>
+                    </div>
+                    
+                    <div class="command" data-category="variables">
+                        <div class="cmd-name">Number of Fields <span class="copy-btn" onclick="copyToClipboard('NF')">Copy</span></div>
+                        <div class="cmd-syntax">NF</div>
+                        <div class="cmd-desc">Number of fields in current record</div>
+                    </div>
+                    
+                    <div class="command" data-category="variables">
+                        <div class="cmd-name">Field Separator <span class="copy-btn" onclick="copyToClipboard('FS')">Copy</span></div>
+                        <div class="cmd-syntax">FS</div>
+                        <div class="cmd-desc">Input field separator (default: space)</div>
+                    </div>
+                    
+                    <div class="command" data-category="variables">
+                        <div class="cmd-name">Output Field Separator <span class="copy-btn" onclick="copyToClipboard('OFS')">Copy</span></div>
+                        <div class="cmd-syntax">OFS</div>
+                        <div class="cmd-desc">Output field separator (default: space)</div>
+                    </div>
+                    
+                    <div class="command" data-category="variables">
+                        <div class="cmd-name">Record Separator <span class="copy-btn" onclick="copyToClipboard('RS')">Copy</span></div>
+                        <div class="cmd-syntax">RS</div>
+                        <div class="cmd-desc">Input record separator (default: newline)</div>
+                    </div>
+                    
+                    <div class="command" data-category="variables">
+                        <div class="cmd-name">Output Record Separator <span class="copy-btn" onclick="copyToClipboard('ORS')">Copy</span></div>
+                        <div class="cmd-syntax">ORS</div>
+                        <div class="cmd-desc">Output record separator (default: newline)</div>
+                    </div>
+                    
+                    <div class="command" data-category="variables">
+                        <div class="cmd-name">Filename <span class="copy-btn" onclick="copyToClipboard('FILENAME')">Copy</span></div>
+                        <div class="cmd-syntax">FILENAME</div>
+                        <div class="cmd-desc">Current input filename</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fields & Records -->
+            <div class="section">
+                <div class="section-title">🏷️ Fields & Records</div>
+                <div class="section-content">
+                    <div class="command" data-category="fields">
+                        <div class="cmd-name">Entire Record <span class="copy-btn" onclick="copyToClipboard('$0')">Copy</span></div>
+                        <div class="cmd-syntax">$0</div>
+                        <div class="cmd-desc">The entire input record/line</div>
+                    </div>
+                    
+                    <div class="command" data-category="fields">
+                        <div class="cmd-name">First Field <span class="copy-btn" onclick="copyToClipboard('$1')">Copy</span></div>
+                        <div class="cmd-syntax">$1</div>
+                        <div class="cmd-desc">First field of the record</div>
+                    </div>
+                    
+                    <div class="command" data-category="fields">
+                        <div class="cmd-name">Last Field <span class="copy-btn" onclick="copyToClipboard('$NF')">Copy</span></div>
+                        <div class="cmd-syntax">$NF</div>
+                        <div class="cmd-desc">Last field of the record</div>
+                    </div>
+                    
+                    <div class="command" data-category="fields">
+                        <div class="cmd-name">Second to Last <span class="copy-btn" onclick="copyToClipboard('$(NF-1)')">Copy</span></div>
+                        <div class="cmd-syntax">$(NF-1)</div>
+                        <div class="cmd-desc">Second to last field</div>
+                    </div>
+                    
+                    <div class="command" data-category="fields">
+                        <div class="cmd-name">Print Specific Fields <span class="copy-btn" onclick="copyToClipboard('print $1, $3')">Copy</span></div>
+                        <div class="cmd-syntax">print $1, $3</div>
+                        <div class="cmd-desc">Print first and third fields</div>
+                    </div>
+                    
+                    <div class="command" data-category="fields">
+                        <div class="cmd-name">Field Assignment <span class="copy-btn" onclick="copyToClipboard('$1 = \"new_value\"')">Copy</span></div>
+                        <div class="cmd-syntax">$1 = "new_value"</div>
+                        <div class="cmd-desc">Assign new value to first field</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Operators -->
+            <div class="section">
+                <div class="section-title">⚡ Operators</div>
+                <div class="section-content">
+                    <div class="operator-grid">
+                        <div class="operator-item">
+                            <div class="operator-symbol">==</div>
+                            <div class="operator-desc">Equal to</div>
+                        </div>
+                        <div class="operator-item">
+                            <div class="operator-symbol">!=</div>
+                            <div class="operator-desc">Not equal</div>
+                        </div>
+                        <div class="operator-item">
+                            <div class="operator-symbol">&lt;</div>
+                            <div class="operator-desc">Less than</div>
+                        </div>
+                        <div class="operator-item">
+                            <div class="operator-symbol">&gt;</div>
+                            <div class="operator-desc">Greater than</div>
+                        </div>
+                        <div class="operator-item">
+                            <div class="operator-symbol">&lt;=</div>
+                            <div class="operator-desc">Less or equal</div>
+                        </div>
+                        <div class="operator-item">
+                            <div class="operator-symbol">&gt;=</div>
+                            <div class="operator-desc">Greater or equal</div>
+                        </div>
+                        <div class="operator-item">
+                            <div class="operator-symbol">~</div>
+                            <div class="operator-desc">Match regex</div>
+                        </div>
+                        <div class="operator-item">
+                            <div class="operator-symbol">!~</div>
+                            <div class="operator-desc">Not match regex</div>
+                        </div>
+                        <div class="operator-item">
+                            <div class="operator-symbol">&&</div>
+                            <div class="operator-desc">Logical AND</div>
+                        </div>
+                        <div class="operator-item">
+                            <div class="operator-symbol">||</div>
+                            <div class="operator-desc">Logical OR</div>
+                        </div>
+                        <div class="operator-item">
+                            <div class="operator-symbol">!</div>
+                            <div class="operator-desc">Logical NOT</div>
+                        </div>
+                        <div class="operator-item">
+                            <div class="operator-symbol">++</div>
+                            <div class="operator-desc">Increment</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Built-in Functions -->
+            <div class="section">
+                <div class="section-title">🔧 String Functions</div>
+                <div class="section-content">
+                    <div class="command" data-category="functions">
+                        <div class="cmd-name">Length <span class="copy-btn" onclick="copyToClipboard('length(string)')">Copy</span></div>
+                        <div class="cmd-syntax">length(string)</div>
+                        <div class="cmd-desc">Return string length</div>
+                    </div>
+                    
+                    <div class="command" data-category="functions">
+                        <div class="cmd-name">Substring <span class="copy-btn" onclick="copyToClipboard('substr(string, start, length)')">Copy</span></div>
+                        <div class="cmd-syntax">substr(string, start, length)</div>
+                        <div class="cmd-desc">Extract substring</div>
+                    </div>
+                    
+                    <div class="command" data-category="functions">
+                        <div class="cmd-name">Index <span class="copy-btn" onclick="copyToClipboard('index(string, substring)')">Copy</span></div>
+                        <div class="cmd-syntax">index(string, substring)</div>
+                        <div class="cmd-desc">Find substring position</div>
+                    </div>
+                    
+                    <div class="command" data-category="functions">
+                        <div class="cmd-name">Split <span class="copy-btn" onclick="copyToClipboard('split(string, array, separator)')">Copy</span></div>
+                        <div class="cmd-syntax">split(string, array, separator)</div>
+                        <div class="cmd-desc">Split string into array</div>
+                    </div>
+                    
+                    <div class="command" data-category="functions">
+                        <div class="cmd-name">Substitute <span class="copy-btn" onclick="copyToClipboard('sub(regex, replacement, target)')">Copy</span></div>
+                        <div class="cmd-syntax">sub(regex, replacement, target)</div>
+                        <div class="cmd-desc">Replace first match</div>
+                    </div>
+                    
+                    <div class="command" data-category="functions">
+                        <div class="cmd-name">Global Substitute <span class="copy-btn" onclick="copyToClipboard('gsub(regex, replacement, target)')">Copy</span></div>
+                        <div class="cmd-syntax">gsub(regex, replacement, target)</div>
+                        <div class="cmd-desc">Replace all matches</div>
+                    </div>
+                    
+                    <div class="command" data-category="functions">
+                        <div class="cmd-name">To Upper <span class="copy-btn" onclick="copyToClipboard('toupper(string)')">Copy</span></div>
+                        <div class="cmd-syntax">toupper(string)</div>
+                        <div class="cmd-desc">Convert to uppercase</div>
+                    </div>
+                    
+                    <div class="command" data-category="functions">
+                        <div class="cmd-name">To Lower <span class="copy-btn" onclick="copyToClipboard('tolower(string)')">Copy</span></div>
+                        <div class="cmd-syntax">tolower(string)</div>
+                        <div class="cmd-desc">Convert to lowercase</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Math Functions -->
+            <div class="section">
+                <div class="section-title">🔢 Math Functions</div>
+                <div class="section-content">
+                    <div class="command" data-category="math">
+                        <div class="cmd-name">Square Root <span class="copy-btn" onclick="copyToClipboard('sqrt(x)')">Copy</span></div>
+                        <div class="cmd-syntax">sqrt(x)</div>
+                        <div class="cmd-desc">Square root of x</div>
+                    </div>
+                    
+                    <div class="command" data-category="math">
+                        <div class="cmd-name">Exponent <span class="copy-btn" onclick="copyToClipboard('exp(x)')">Copy</span></div>
+                        <div class="cmd-syntax">exp(x)</div>
+                        <div class="cmd-desc">e raised to x</div>
+                    </div>
+                    
+                    <div class="command" data-category="math">
+                        <div class="cmd-name">Natural Log <span class="copy-btn" onclick="copyToClipboard('log(x)')">Copy</span></div>
+                        <div class="cmd-syntax">log(x)</div>
+                        <div class="cmd-desc">Natural logarithm of x</div>
+                    </div>
+                    
+                    <div class="command" data-category="math">
+                        <div class="cmd-name">Sine <span class="copy-btn" onclick="copyToClipboard('sin(x)')">Copy</span></div>
+                        <div class="cmd-syntax">sin(x)</div>
+                        <div class="cmd-desc">Sine of x (radians)</div>
+                    </div>
+                    
+                    <div class="command" data-category="math">
+                        <div class="cmd-name">Cosine <span class="copy-btn" onclick="copyToClipboard('cos(x)')">Copy</span></div>
+                        <div class="cmd-syntax">cos(x)</div>
+                        <div class="cmd-desc">Cosine of x (radians)</div>
+                    </div>
+                    
+                    <div class="command" data-category="math">
+                        <div class="cmd-name">Random <span class="copy-btn" onclick="copyToClipboard('rand()')">Copy</span></div>
+                        <div class="cmd-syntax">rand()</div>
+                        <div class="cmd-desc">Random number 0-1</div>
+                    </div>
+                    
+                    <div class="command" data-category="math">
+                        <div class="cmd-name">Integer <span class="copy-btn" onclick="copyToClipboard('int(x)')">Copy</span></div>
+                        <div class="cmd-syntax">int(x)</div>
+                        <div class="cmd-desc">Integer part of x</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Common Patterns -->
+            <div class="section wide-section">
+                <div class="section-title">🎯 Common Patterns</div>
+                <div class="section-content">
+                    <div class="pattern-grid">
+                        <div class="pattern-item" onclick="copyToClipboard('/pattern/')">
+                            <div class="pattern-name">/pattern/</div>
+                            <div class="pattern-desc">Lines containing pattern</div>
+                        </div>
+                        <div class="pattern-item" onclick="copyToClipboard('!/pattern/')">
+                            <div class="pattern-name">!/pattern/</div>
+                            <div class="pattern-desc">Lines NOT containing pattern</div>
+                        </div>
+                        <div class="pattern-item" onclick="copyToClipboard('$1 == \"value\"')">
+                            <div class="pattern-name">$1 == "value"</div>
+                            <div class="pattern-desc">First field equals value</div>
+                        </div>
+                        <div class="pattern-item" onclick="copyToClipboard('NF > 3')">
+                            <div class="pattern-name">NF > 3</div>
+                            <div class="pattern-desc">Lines with more than 3 fields</div>
+                        </div>
+                        <div class="pattern-item" onclick="copyToClipboard('NR > 1')">
+                            <div class="pattern-name">NR > 1</div>
+                            <div class="pattern-desc">Skip header line</div>
+                        </div>
+                        <div class="pattern-item" onclick="copyToClipboard('$0 ~ /regex/')">
+                            <div class="pattern-name">$0 ~ /regex/</div>
+                            <div class="pattern-desc">Line matches regex</div>
+                        </div>
+                        <div class="pattern-item" onclick="copyToClipboard('$2 > 100')">
+                            <div class="pattern-name">$2 > 100</div>
+                            <div class="pattern-desc">Second field greater than 100</div>
+                        </div>
+                        <div class="pattern-item" onclick="copyToClipboard('/start/,/end/')">
+                            <div class="pattern-name">/start/,/end/</div>
+                            <div class="pattern-desc">Range from start to end</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Practical Examples -->
+            <div class="section full-section">
+                <div class="section-title">🛠️ Practical Examples</div>
+                <div class="section-content">
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+                        <div class="example-section">
+                            <div class="example-title">Print Specific Columns</div>
+                            <div class="example-code">awk '{print $1, $3}' file.txt</div>
+                            <div class="example-desc">Print first and third columns only</div>
+                        </div>
+                        
+                        <div class="example-section">
+                            <div class="example-title">Sum Column Values</div>
+                            <div class="example-code">awk '{sum += $2} END {print sum}' file.txt</div>
+                            <div class="example-desc">Calculate sum of second column</div>
+                        </div>
+                        
+                        <div class="example-section">
+                            <div class="example-title">Count Lines</div>
+                            <div class="example-code">awk 'END {print NR}' file.txt</div>
+                            <div class="example-desc">Count total number of lines</div>
+                        </div>
+                        
+                        <div class="example-section">
+                            <div class="example-title">Filter by Value</div>
+                            <div class="example-code">awk '$3 > 50 {print}' file.txt</div>
+                            <div class="example-desc">Print lines where 3rd field > 50</div>
+                        </div>
+                        
+                        <div class="example-section">
+                            <div class="example-title">Change Field Separator</div>
+                            <div class="example-code">awk -F',' '{print $1}' file.csv</div>
+                            <div class="example-desc">Use comma as field separator</div>
+                        </div>
+                        
+                        <div class="example-section">
+                            <div class="example-title">String Replacement</div>
+                            <div class="example-code">awk '{gsub(/old/, "new"); print}' file.txt</div>
+                            <div class="example-desc">Replace all "old" with "new"</div>
+                        </div>
+                        
+                        <div class="example-section">
+                            <div class="example-title">Add Line Numbers</div>
+                            <div class="example-code">awk '{print NR, $0}' file.txt</div>
+                            <div class="example-desc">Add line numbers to output</div>
+                        </div>
+                        
+                        <div class="example-section">
+                            <div class="example-title">Remove Empty Lines</div>
+                            <div class="example-code">awk 'NF > 0' file.txt</div>
+                            <div class="example-desc">Remove blank/empty lines</div>
+                        </div>
+                        
+                        <div class="example-section">
+                            <div class="example-title">Find Duplicates</div>
+                            <div class="example-code">awk '++count[$0] == 2' file.txt</div>
+                            <div class="example-desc">Print duplicate lines only once</div>
+                        </div>
+                        
+                        <div class="example-section">
+                            <div class="example-title">Calculate Average</div>
+                            <div class="example-code">awk '{sum+=$1; count++} END {print sum/count}' file.txt</div>
+                            <div class="example-desc">Calculate average of first column</div>
+                        </div>
+                        
+                        <div class="example-section">
+                            <div class="example-title">Print Specific Lines</div>
+                            <div class="example-code">awk 'NR>=10 && NR<=20' file.txt</div>
+                            <div class="example-desc">Print lines 10 through 20</div>
+                        </div>
+                        
+                        <div class="example-section">
+                            <div class="example-title">Transpose Data</div>
+                            <div class="example-code">awk '{for(i=1;i<=NF;i++) a[i,NR]=$i} END {for(i=1;i<=NF;i++) {for(j=1;j<=NR;j++) printf "%s ", a[i,j]; print ""}}'</div>
+                            <div class="example-desc">Convert rows to columns</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advanced Patterns -->
+            <div class="section">
+                <div class="section-title">🎓 Advanced Features</div>
+                <div class="section-content">
+                    <div class="command" data-category="advanced">
+                        <div class="cmd-name">Arrays <span class="copy-btn" onclick="copyToClipboard('array[key] = value')">Copy</span></div>
+                        <div class="cmd-syntax">array[key] = value</div>
+                        <div class="cmd-desc">Associative arrays</div>
+                    </div>
+                    
+                    <div class="command" data-category="advanced">
+                        <div class="cmd-name">For Loop <span class="copy-btn" onclick="copyToClipboard('for (i in array) print i, array[i]')">Copy</span></div>
+                        <div class="cmd-syntax">for (i in array) print i, array[i]</div>
+                        <div class="cmd-desc">Iterate through array</div>
+                    </div>
+                    
+                    <div class="command" data-category="advanced">
+                        <div class="cmd-name">While Loop <span class="copy-btn" onclick="copyToClipboard('while (condition) { statements }')">Copy</span></div>
+                        <div class="cmd-syntax">while (condition) { statements }</div>
+                        <div class="cmd-desc">While loop structure</div>
+                    </div>
+                    
+                    <div class="command" data-category="advanced">
+                        <div class="cmd-name">If Statement <span class="copy-btn" onclick="copyToClipboard('if (condition) { statements } else { statements }')">Copy</span></div>
+                        <div class="cmd-syntax">if (condition) { statements } else { statements }</div>
+                        <div class="cmd-desc">Conditional statements</div>
+                    </div>
+                    
+                    <div class="command" data-category="advanced">
+                        <div class="cmd-name">Function Definition <span class="copy-btn" onclick="copyToClipboard('function name(params) { return value }')">Copy</span></div>
+                        <div class="cmd-syntax">function name(params) { return value }</div>
+                        <div class="cmd-desc">Define custom functions</div>
+                    </div>
+                    
+                    <div class="command" data-category="advanced">
+                        <div class="cmd-name">Multiple Files <span class="copy-btn" onclick="copyToClipboard('FNR == 1 { print FILENAME }')">Copy</span></div>
+                        <div class="cmd-syntax">FNR == 1 { print FILENAME }</div>
+                        <div class="cmd-desc">Process multiple files</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Command Line Options -->
+            <div class="section">
+                <div class="section-title">⚙️ Command Options</div>
+                <div class="section-content">
+                    <div class="command" data-category="options">
+                        <div class="cmd-name">Field Separator <span class="copy-btn" onclick="copyToClipboard('awk -F\":\" \'{print $1}\' /etc/passwd')">Copy</span></div>
+                        <div class="cmd-syntax">awk -F":" '{print $1}' /etc/passwd</div>
+                        <div class="cmd-desc">Set field separator to colon</div>
+                    </div>
+                    
+                    <div class="command" data-category="options">
+                        <div class="cmd-name">Script File <span class="copy-btn" onclick="copyToClipboard('awk -f script.awk file.txt')">Copy</span></div>
+                        <div class="cmd-syntax">awk -f script.awk file.txt</div>
+                        <div class="cmd-desc">Execute AWK script from file</div>
+                    </div>
+                    
+                    <div class="command" data-category="options">
+                        <div class="cmd-name">Variable Assignment <span class="copy-btn" onclick="copyToClipboard('awk -v var=value \'{print var}\' file.txt')">Copy</span></div>
+                        <div class="cmd-syntax">awk -v var=value '{print var}' file.txt</div>
+                        <div class="cmd-desc">Pass variables to AWK</div>
+                    </div>
+                    
+                    <div class="command" data-category="options">
+                        <div class="cmd-name">Multiple Separators <span class="copy-btn" onclick="copyToClipboard('awk -F\"[,:]\" \'{print $1}\' file.txt')">Copy</span></div>
+                        <div class="cmd-syntax">awk -F"[,:]" '{print $1}' file.txt</div>
+                        <div class="cmd-desc">Use multiple field separators</div>
+                    </div>
+                    
+                    <div class="command" data-category="options">
+                        <div class="cmd-name">POSIX Mode <span class="copy-btn" onclick="copyToClipboard('awk --posix \'{print}\' file.txt')">Copy</span></div>
+                        <div class="cmd-syntax">awk --posix '{print}' file.txt</div>
+                        <div class="cmd-desc">Enable POSIX compatibility</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tips & Best Practices -->
+            <div class="section full-section">
+                <div class="section-title">💡 Tips & Best Practices</div>
+                <div class="tips-grid">
+                    <div class="tip">
+                        <div class="tip-title">🎯 Use Patterns</div>
+                        <div class="tip-content">Combine patterns with actions for powerful filtering: <code>/ERROR/ {count++}</code></div>
+                    </div>
+                    <div class="tip">
+                        <div class="tip-title">📊 Track State</div>
+                        <div class="tip-content">Use variables to maintain state across records for calculations and counting</div>
+                    </div>
+                    <div class="tip">
+                        <div class="tip-title">🔧 Custom Separators</div>
+                        <div class="tip-content">Use <code>-F</code> option or set <code>FS</code> variable for custom field separators</div>
+                    </div>
+                    <div class="tip">
+                        <div class="tip-title">💾 BEGIN/END</div>
+                        <div class="tip-content">Use <code>BEGIN</code> for initialization and <code>END</code> for final calculations</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-text">
+                🦅 <span class="highlight">Master AWK</span> for powerful text processing and data extraction!
+                <br>
+                <div style="margin-top: 10px; font-size: 0.85rem; color: #667eea;">
+                    📱 Follow for more tech guides: <span class="highlight">@night_knightz</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Copy to clipboard functionality
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                // Visual feedback
+                const notification = document.createElement('div');
+                notification.textContent = 'Copied to clipboard!';
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: rgba(102, 126, 234, 0.9);
+                    color: white;
+                    padding: 10px 20px;
+                    border-radius: 5px;
+                    z-index: 1000;
+                    font-size: 0.9rem;
+                    font-weight: 600;
+                `;
+                document.body.appendChild(notification);
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 2000);
+            }).catch(function(err) {
+                console.error('Could not copy text: ', err);
+            });
+        }
+
+        // Search functionality
+        document.getElementById('searchBox').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const commands = document.querySelectorAll('.command');
+            const sections = document.querySelectorAll('.section');
+            const patternItems = document.querySelectorAll('.pattern-item');
+            const exampleSections = document.querySelectorAll('.example-section');
+            const operatorItems = document.querySelectorAll('.operator-item');
+
+            // Search commands
+            commands.forEach(command => {
+                const name = command.querySelector('.cmd-name').textContent.toLowerCase();
+                const syntax = command.querySelector('.cmd-syntax').textContent.toLowerCase();
+                const desc = command.querySelector('.cmd-desc').textContent.toLowerCase();
+                
+                if (name.includes(searchTerm) || syntax.includes(searchTerm) || desc.includes(searchTerm)) {
+                    command.style.display = 'block';
+                } else {
+                    command.style.display = 'none';
+                }
+            });
+
+            // Search pattern items
+            patternItems.forEach(item => {
+                const name = item.querySelector('.pattern-name').textContent.toLowerCase();
+                const desc = item.querySelector('.pattern-desc').textContent.toLowerCase();
+                
+                if (name.includes(searchTerm) || desc.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            // Search example sections
+            exampleSections.forEach(item => {
+                const title = item.querySelector('.example-title').textContent.toLowerCase();
+                const code = item.querySelector('.example-code').textContent.toLowerCase();
+                const desc = item.querySelector('.example-desc').textContent.toLowerCase();
+                
+                if (title.includes(searchTerm) || code.includes(searchTerm) || desc.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            // Search operator items
+            operatorItems.forEach(item => {
+                const symbol = item.querySelector('.operator-symbol').textContent.toLowerCase();
+                const desc = item.querySelector('.operator-desc').textContent.toLowerCase();
+                
+                if (symbol.includes(searchTerm) || desc.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            // Hide sections with no visible content
+            sections.forEach(section => {
+                const visibleCommands = section.querySelectorAll('.command:not([style*="display: none"])');
+                const visiblePatterns = section.querySelectorAll('.pattern-item:not([style*="display: none"])');
+                const visibleExamples = section.querySelectorAll('.example-section:not([style*="display: none"])');
+                const visibleOperators = section.querySelectorAll('.operator-item:not([style*="display: none"])');
+                const hasSyntaxTable = section.querySelector('.syntax-table');
+                const hasInstall = section.querySelector('.install-section');
+                const hasTips = section.querySelector('.tips-grid');
+                
+                if (hasInstall || hasTips || hasSyntaxTable || 
+                    visibleCommands.length > 0 || visiblePatterns.length > 0 || 
+                    visibleExamples.length > 0 || visibleOperators.length > 0) {
+                    section.style.display = 'block';
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+        });
+
+        // Click to copy for command syntax boxes
+        document.querySelectorAll('.cmd-syntax').forEach(syntax => {
+            syntax.addEventListener('click', function() {
+                const text = this.textContent.trim();
+                copyToClipboard(text);
+            });
+        });
+
+        // Click to copy for example code
+        document.querySelectorAll('.example-code').forEach(code => {
+            code.addEventListener('click', function() {
+                const text = this.textContent.trim();
+                copyToClipboard(text);
+            });
+        });
+    </script>
+</body>
+</html>

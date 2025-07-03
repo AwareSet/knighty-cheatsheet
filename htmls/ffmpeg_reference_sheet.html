@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compact FFmpeg Reference Sheet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.4;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(15, 23, 42, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+            border-radius: 2px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            font-weight: 300;
+        }
+
+        .subtitle-arabic {
+            font-size: 1.1rem;
+            color: #94a3b8;
+            font-weight: 300;
+            margin-top: 5px;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(100, 116, 139, 0.2);
+            position: relative;
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title-arabic {
+            font-size: 1.1rem;
+            color: #cbd5e1;
+            font-weight: 500;
+            margin-bottom: 15px;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+        }
+
+        .syntax-section {
+            grid-column: span 3;
+            background: rgba(15, 23, 42, 0.9);
+            border: 2px solid #667eea;
+        }
+
+        .syntax-demo {
+            background: rgba(51, 65, 85, 0.6);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            margin-bottom: 15px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            color: #667eea;
+            text-align: center;
+        }
+
+        .syntax-parts {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .syntax-part {
+            background: rgba(51, 65, 85, 0.4);
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 3px solid #667eea;
+            text-align: center;
+        }
+
+        .part-name {
+            font-size: 0.8rem;
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 3px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .part-desc {
+            color: #cbd5e1;
+            font-size: 0.7rem;
+            margin-bottom: 2px;
+        }
+
+        .part-desc-arabic {
+            color: #94a3b8;
+            font-size: 0.65rem;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+        }
+
+        .example {
+            background: rgba(51, 65, 85, 0.4);
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 3px solid #667eea;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .example:hover {
+            border-left-color: #f093fb;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .example-title {
+            font-size: 0.9rem;
+            color: #f093fb;
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .example-title-arabic {
+            font-size: 0.8rem;
+            color: #f093fb;
+            font-weight: 500;
+            margin-bottom: 5px;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+        }
+
+        .example-command {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            padding: 6px 8px;
+            border-radius: 4px;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            margin-bottom: 5px;
+            word-break: break-all;
+        }
+
+        .example-desc {
+            color: #cbd5e1;
+            font-size: 0.75rem;
+            line-height: 1.3;
+        }
+
+        .example-desc-arabic {
+            color: #94a3b8;
+            font-size: 0.7rem;
+            line-height: 1.3;
+            margin-top: 3px;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+        }
+
+        .formats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .format-item {
+            background: rgba(51, 65, 85, 0.6);
+            padding: 8px;
+            border-radius: 6px;
+            text-align: center;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .format-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #667eea;
+        }
+
+        .format-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #f093fb;
+            margin-bottom: 2px;
+        }
+
+        .format-desc {
+            font-size: 0.7rem;
+            color: #94a3b8;
+        }
+
+        .category-title {
+            font-size: 1rem;
+            color: #f093fb;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .category-title-arabic {
+            font-size: 0.9rem;
+            color: #f093fb;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+        }
+
+        .tips-section {
+            grid-column: span 3;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(240, 147, 251, 0.1));
+            border: 2px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .tip {
+            background: rgba(15, 23, 42, 0.7);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #f093fb;
+        }
+
+        .tip-title {
+            font-weight: 600;
+            color: #f093fb;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+
+        .tip-content {
+            color: #cbd5e1;
+            line-height: 1.3;
+            font-size: 0.8rem;
+        }
+
+        .tip-content-arabic {
+            color: #cbd5e1;
+            line-height: 1.3;
+            margin-top: 4px;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+            font-size: 0.75rem;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 12px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .footer-text {
+            color: #94a3b8;
+            font-size: 1rem;
+        }
+
+        .highlight {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        code {
+            background: rgba(102, 126, 234, 0.2);
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'JetBrains Mono', monospace;
+            color: #667eea;
+            font-size: 0.8em;
+        }
+
+        .format-section {
+            grid-column: span 3;
+        }
+
+        .format-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 1200px) {
+            .layout {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .syntax-section, .tips-section, .format-section {
+                grid-column: span 2;
+            }
+            
+            .syntax-parts {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .tips-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .syntax-section, .tips-section, .format-section {
+                grid-column: span 1;
+            }
+            
+            .syntax-parts {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .tips-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .format-container {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header">
+            <h1>🎬 FFMPEG</h1>
+            <div class="subtitle">Complete Reference Guide for Video & Audio Processing</div>
+            <div class="subtitle-arabic">دليل مرجعي شامل لمعالجة الفيديو والصوت</div>
+        </div>
+
+        <div class="layout">
+            <!-- FFmpeg Syntax Anatomy -->
+            <div class="section syntax-section">
+                <div class="section-title">
+                    🔍 FFmpeg Command Anatomy
+                </div>
+                <div class="section-title-arabic">تشريح أمر FFmpeg</div>
+                
+                <div class="syntax-demo">
+                    ffmpeg -i input.mp4 -c:v libx264 -c:a aac -b:v 1M output.mp4
+                </div>
+                
+                <div class="syntax-parts">
+                    <div class="syntax-part">
+                        <div class="part-name">ffmpeg</div>
+                        <div class="part-desc">Command</div>
+                        <div class="part-desc-arabic">الأمر</div>
+                    </div>
+                    <div class="syntax-part">
+                        <div class="part-name">-i input.mp4</div>
+                        <div class="part-desc">Input file</div>
+                        <div class="part-desc-arabic">ملف الإدخال</div>
+                    </div>
+                    <div class="syntax-part">
+                        <div class="part-name">-c:v libx264</div>
+                        <div class="part-desc">Video codec</div>
+                        <div class="part-desc-arabic">ترميز الفيديو</div>
+                    </div>
+                    <div class="syntax-part">
+                        <div class="part-name">-c:a aac</div>
+                        <div class="part-desc">Audio codec</div>
+                        <div class="part-desc-arabic">ترميز الصوت</div>
+                    </div>
+                    <div class="syntax-part">
+                        <div class="part-name">-b:v 1M</div>
+                        <div class="part-desc">Video bitrate</div>
+                        <div class="part-desc-arabic">معدل البت</div>
+                    </div>
+                    <div class="syntax-part">
+                        <div class="part-name">output.mp4</div>
+                        <div class="part-desc">Output file</div>
+                        <div class="part-desc-arabic">ملف الإخراج</div>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; color: #94a3b8; font-size: 0.9rem;">
+                    <strong>Structure:</strong> <span class="highlight">ffmpeg [options] -i input [options] output</span>
+                    <br>
+                    <div style="margin-top: 5px; font-family: 'Arial', sans-serif; direction: rtl; font-size: 0.8rem;">
+                        <strong>البنية:</strong> <span class="highlight">ffmpeg [خيارات] -i إدخال [خيارات] إخراج</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Basic Operations -->
+            <div class="section">
+                <div class="section-title">🛠️ Basic Operations</div>
+                <div class="section-title-arabic">العمليات الأساسية</div>
+                
+                <div class="example">
+                    <div class="example-title">Format Convert</div>
+                    <div class="example-title-arabic">تحويل التنسيق</div>
+                    <div class="example-command">ffmpeg -i input.avi output.mp4</div>
+                    <div class="example-desc">Convert AVI to MP4</div>
+                    <div class="example-desc-arabic">تحويل AVI إلى MP4</div>
+                </div>
+                
+                <div class="example">
+                    <div class="example-title">Resize Video</div>
+                    <div class="example-title-arabic">تغيير الحجم</div>
+                    <div class="example-command">ffmpeg -i input.mp4 -vf scale=1280:720 output.mp4</div>
+                    <div class="example-desc">Resize to 720p</div>
+                    <div class="example-desc-arabic">تغيير الحجم إلى 720p</div>
+                </div>
+                
+                <div class="example">
+                    <div class="example-title">Extract Audio</div>
+                    <div class="example-title-arabic">استخراج الصوت</div>
+                    <div class="example-command">ffmpeg -i input.mp4 -vn -c:a copy audio.aac</div>
+                    <div class="example-desc">Extract audio only</div>
+                    <div class="example-desc-arabic">استخراج الصوت فقط</div>
+                </div>
+                
+                <div class="example">
+                    <div class="example-title">Trim Video</div>
+                    <div class="example-title-arabic">قص الفيديو</div>
+                    <div class="example-command">ffmpeg -i input.mp4 -ss 00:01:30 -t 00:00:30 output.mp4</div>
+                    <div class="example-desc">Cut 30s from 1:30</div>
+                    <div class="example-desc-arabic">قص 30 ثانية من 1:30</div>
+                </div>
+            </div>
+
+            <!-- Video Processing -->
+            <div class="section">
+                <div class="section-title">🎥 Video Processing</div>
+                <div class="section-title-arabic">معالجة الفيديو</div>
+                
+                <div class="example">
+                    <div class="example-title">Quality Control</div>
+                    <div class="example-title-arabic">التحكم في الجودة</div>
+                    <div class="example-command">ffmpeg -i input.mp4 -crf 23 output.mp4</div>
+                    <div class="example-desc">Compress with CRF 23</div>
+                    <div class="example-desc-arabic">ضغط بـ CRF 23</div>
+                </div>
+                
+                <div class="example">
+                    <div class="example-title">Add Watermark</div>
+                    <div class="example-title-arabic">إضافة علامة مائية</div>
+                    <div class="example-command">ffmpeg -i video.mp4 -i logo.png -filter_complex "overlay=10:10" output.mp4</div>
+                    <div class="example-desc">Add logo at 10,10</div>
+                    <div class="example-desc-arabic">إضافة شعار في 10,10</div>
+                </div>
+                
+                <div class="example">
+                    <div class="example-title">Rotate Video</div>
+                    <div class="example-title-arabic">تدوير الفيديو</div>
+                    <div class="example-command">ffmpeg -i input.mp4 -vf "transpose=1" output.mp4</div>
+                    <div class="example-desc">Rotate 90° clockwise</div>
+                    <div class="example-desc-arabic">تدوير 90° مع عقارب الساعة</div>
+                </div>
+                
+                <div class="example">
+                    <div class="example-title">Create GIF</div>
+                    <div class="example-title-arabic">إنشاء GIF</div>
+                    <div class="example-command">ffmpeg -i input.mp4 -vf "fps=10,scale=320:-1" output.gif</div>
+                    <div class="example-desc">Convert to GIF 10fps</div>
+                    <div class="example-desc-arabic">تحويل إلى GIF بـ 10 إطار/ث</div>
+                </div>
+            </div>
+
+            <!-- Audio Processing -->
+            <div class="section">
+                <div class="section-title">🎵 Audio Processing</div>
+                <div class="section-title-arabic">معالجة الصوت</div>
+                
+                <div class="example">
+                    <div class="example-title">Audio Quality</div>
+                    <div class="example-title-arabic">جودة الصوت</div>
+                    <div class="example-command">ffmpeg -i input.mp3 -b:a 128k output.mp3</div>
+                    <div class="example-desc">Set bitrate 128kbps</div>
+                    <div class="example-desc-arabic">تعيين معدل البت 128 كيلو بت/ث</div>
+                </div>
+                
+                <div class="example">
+                    <div class="example-title">Volume Control</div>
+                    <div class="example-title-arabic">التحكم في الصوت</div>
+                    <div class="example-command">ffmpeg -i input.mp4 -af "volume=0.5" output.mp4</div>
+                    <div class="example-desc">Reduce volume 50%</div>
+                    <div class="example-desc-arabic">تقليل الصوت 50%</div>
+                </div>
+                
+                <div class="example">
+                    <div class="example-title">Mix Audio</div>
+                    <div class="example-title-arabic">خلط الصوت</div>
+                    <div class="example-command">ffmpeg -i video.mp4 -i audio.mp3 -c:v copy -map 0:v:0 -map 1:a:0 output.mp4</div>
+                    <div class="example-desc">Replace audio track</div>
+                    <div class="example-desc-arabic">استبدال المسار الصوتي</div>
+                </div>
+                
+                <div class="example">
+                    <div class="example-title">Remove Audio</div>
+                    <div class="example-title-arabic">إزالة الصوت</div>
+                    <div class="example-command">ffmpeg -i input.mp4 -an output.mp4</div>
+                    <div class="example-desc">Strip all audio</div>
+                    <div class="example-desc-arabic">إزالة جميع الصوت</div>
+                </div>
+            </div>
+
+            <!-- Advanced Operations -->
+            <div class="section">
+                <div class="section-title">⚡ Advanced</div>
+                <div class="section-title-arabic">عمليات متقدمة</div>
+                
+                <div class="example">
+                    <div class="example-title">Concatenate</div>
+                    <div class="example-title-arabic">دمج الفيديوهات</div>
+                    <div class="example-command">ffmpeg -f concat -safe 0 -i list.txt -c copy output.mp4</div>
+                    <div class="example-desc">Merge videos from list</div>
+                    <div class="example-desc-arabic">دمج الفيديوهات من قائمة</div>
+                </div>
+                
+                <div class="example">
+                    <div class="example-title">Stream RTMP</div>
+                    <div class="example-title-arabic">البث المباشر</div>
+                    <div class="example-command">ffmpeg -re -i input.mp4 -c copy -f flv rtmp://server/live/key</div>
+                    <div class="example-desc">Stream to RTMP server</div>
+                    <div class="example-desc-arabic">البث إلى خادم RTMP</div>
+                </div>
+                
+                <div class="example">
+                    <div class="example-title">Extract Frames</div>
+                    <div class="example-title-arabic">استخراج الإطارات</div>
+                    <div class="example-command">ffmpeg -i input.mp4 -vf fps=1 frame_%04d.png</div>
+                    <div class="example-desc">1 frame per second</div>
+                    <div class="example-desc-arabic">إطار واحد كل ثانية</div>
+                </div>
+                
+                <div class="example">
+                    <div class="example-title">Speed Change</div>
+                    <div class="example-title-arabic">تغيير السرعة</div>
+                    <div class="example-command">ffmpeg -i input.mp4 -filter:v "setpts=0.5*PTS" -filter:a "atempo=2" output.mp4</div>
+                    <div class="example-desc">Double speed</div>
+                    <div class="example-desc-arabic">مضاعفة السرعة</div>
+                </div>
+            </div>
+
+            <!-- Supported Formats -->
+            <div class="section format-section">
+                <div class="section-title">📁 Supported Formats</div>
+                <div class="section-title-arabic">التنسيقات المدعومة</div>
+                
+                <div class="format-container">
+                    <div>
+                        <div class="category-title">🎬 Video</div>
+                        <div class="category-title-arabic">فيديو</div>
+                        <div class="formats-grid">
+                            <div class="format-item">
+                                <div class="format-name">MP4</div>
+                                <div class="format-desc">Most common</div>
+                            </div>
+                            <div class="format-item">
+                                <div class="format-name">AVI</div>
+                                <div class="format-desc">Legacy</div>
+                            </div>
+                            <div class="format-item">
+                                <div class="format-name">MOV</div>
+                                <div class="format-desc">Apple</div>
+                            </div>
+                            <div class="format-item">
+                                <div class="format-name">MKV</div>
+                                <div class="format-desc">Open</div>
+                            </div>
+                            <div class="format-item">
+                                <div class="format-name">WebM</div>
+                                <div class="format-desc">Web</div>
+                            </div>
+                            <div class="format-item">
+                                <div class="format-name">FLV</div>
+                                <div class="format-desc">Flash</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="category-title">🎵 Audio</div>
+                        <div class="category-title-arabic">صوت</div>
+                        <div class="formats-grid">
+                            <div class="format-item">
+                                <div class="format-name">MP3</div>
+                                <div class="format-desc">Popular</div>
+                            </div>
+                            <div class="format-item">
+                                <div class="format-name">AAC</div>
+                                <div class="format-desc">High quality</div>
+                            </div>
+                            <div class="format-item">
+                                <div class="format-name">WAV</div>
+                                <div class="format-desc">Uncompressed</div>
+                            </div>
+                            <div class="format-item">
+                                <div class="format-name">FLAC</div>
+                                <div class="format-desc">Lossless</div>
+                            </div>
+                            <div class="format-item">
+                                <div class="format-name">OGG</div>
+                                <div class="format-desc">Open source</div>
+                            </div>
+                            <div class="format-item">
+                                <div class="format-name">M4A</div>
+                                <div class="format-desc">Apple audio</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tips & Best Practices -->
+            <div class="section tips-section">
+                <div class="section-title">💡 Tips & Best Practices</div>
+                <div class="section-title-arabic">نصائح وأفضل الممارسات</div>
+                <div class="tips-grid">
+                    <div class="tip">
+                        <div class="tip-title">🚀 Performance</div>
+                        <div class="tip-content">Use <code>-c copy</code> to avoid re-encoding when possible.</div>
+                        <div class="tip-content-arabic">استخدم <code>-c copy</code> لتجنب إعادة الترميز عند الإمكان.</div>
+                    </div>
+                    <div class="tip">
+                        <div class="tip-title">📊 Quality</div>
+                        <div class="tip-content">CRF 18-23 for high quality, 23-28 for standard.</div>
+                        <div class="tip-content-arabic">CRF 18-23 للجودة العالية، 23-28 للجودة القياسية.</div>
+                    </div>
+                    <div class="tip">
+                        <div class="tip-title">🔍 Info</div>
+                        <div class="tip-content">Use <code>ffprobe</code> to get file information.</div>
+                        <div class="tip-content-arabic">استخدم <code>ffprobe</code> للحصول على معلومات الملف.</div>
+                    </div>
+                    <div class="tip">
+                        <div class="tip-title">⚡ GPU</div>
+                        <div class="tip-content">Use <code>-hwaccel</code> for hardware acceleration.</div>
+                        <div class="tip-content-arabic">استخدم <code>-hwaccel</code> لتسريع الأجهزة.</div>
+                    </div>
+                    <div class="tip">
+                        <div class="tip-title">📏 Aspect</div>
+                        <div class="tip-content">Use <code>scale=1280:-1</code> to maintain ratio.</div>
+                        <div class="tip-content-arabic">استخدم <code>scale=1280:-1</code> للحفاظ على النسبة.</div>
+                    </div>
+                    <div class="tip">
+                        <div class="tip-title">🔄 Batch</div>
+                        <div class="tip-content">Use shell loops for multiple files.</div>
+                        <div class="tip-content-arabic">استخدم حلقات shell للملفات المتعددة.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-text">
+                🎬 <span class="highlight">Master FFmpeg</span> for professional media processing!
+                <br>
+                <div style="margin-top: 5px; font-family: 'Arial', sans-serif; direction: rtl;">
+                    🎬 <span class="highlight">اتقن FFmpeg</span> لمعالجة الوسائط الاحترافية!
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

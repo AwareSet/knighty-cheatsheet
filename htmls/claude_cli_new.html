@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Claude CLI Cheat Sheet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 15px;
+            line-height: 1.3;
+        }
+
+        .main-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: rgba(15, 23, 42, 0.95);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+            border-radius: 2px;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #94a3b8;
+            font-weight: 300;
+        }
+
+        .search-container {
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 12px 20px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .search-box::placeholder {
+            color: #94a3b8;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .section {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-icon {
+            font-size: 1.3rem;
+        }
+
+        .command {
+            margin-bottom: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .command:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .command-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #60a5fa;
+            margin-bottom: 3px;
+        }
+
+        .command-syntax {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.8rem;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 4px 6px;
+            border-radius: 4px;
+            color: #a3e635;
+            margin-bottom: 3px;
+            word-break: break-all;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .command-syntax:hover {
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .command-syntax::after {
+            content: 'Click to copy';
+            position: absolute;
+            top: -25px;
+            right: 5px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .command-syntax:hover::after {
+            opacity: 1;
+        }
+
+        .command-desc {
+            font-size: 0.75rem;
+            color: #cbd5e1;
+            line-height: 1.3;
+        }
+
+        .section.span-2 {
+            grid-column: span 2;
+        }
+
+        .section.span-3 {
+            grid-column: span 3;
+        }
+
+        .section.span-4 {
+            grid-column: span 4;
+        }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .tip-box {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .tip-title {
+            font-weight: 600;
+            color: #10b981;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .tip-content {
+            font-size: 0.8rem;
+            color: #d1d5db;
+            line-height: 1.4;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .section.span-4 {
+                grid-column: span 3;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .main-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .section.span-2,
+            .section.span-3,
+            .section.span-4 {
+                grid-column: span 1;
+            }
+            
+            .search-box {
+                font-size: 0.9rem;
+                padding: 10px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header">
+            <h1>🧠 Claude CLI Cheat Sheet</h1>
+            <div class="subtitle">Complete reference for Anthropic's Claude command-line interface</div>
+        </div>
+
+        <div class="search-container">
+            <input type="text" class="search-box" placeholder="Search commands..." id="searchBox">
+        </div>
+
+        <div class="main-grid">
+            <!-- Installation & Setup -->
+            <div class="section span-2">
+                <div class="section-title">
+                    <span class="section-icon">📦</span>
+                    Installation & Setup
+                </div>
+                <div class="command">
+                    <div class="command-name">Install Claude CLI</div>
+                    <div class="command-syntax">npm install -g @anthropic-ai/claude-cli</div>
+                    <div class="command-desc">Install Claude CLI globally via npm</div>
+                </div>
+                <div class="command">
+                    <div class="command-name">Alternative Install</div>
+                    <div class="command-syntax">pip install claude-cli</div>
+                    <div class="command-desc">Install via Python pip package manager</div>
+                </div>
+                <div class="command">
+                    <div class="command-name">Setup API Key</div>
+                    <div class="command-syntax">claude auth login</div>
+                    <div class="command-desc">Authenticate with your Anthropic API key</div>
+                </div>
+                <div class="command">
+                    <div class="command-name">Set API Key Environment</div>
+                    <div class="command-syntax">export ANTHROPIC_API_KEY="your-key-here"</div>
+                    <div class="command-desc">Set API key as environment variable</div>
+                </div>
+                <div class="command">
+                    <div class="command-name">Verify Installation</div>
+                    <div class="command-syntax">claude --version</div>
+                    <div class="command-desc">Check installed Claude CLI version</div>
+                </div>
+            </div>
+
+            <!-- Basic Commands -->
+            <div class="section span-2">
+                <div class="section-title">
+                    <span class="section-icon">💬</span>
+                    Basic Commands
+                </div>
+                <div class="command">
+                    <div class="command-name">Start Chat</div>
+                    <div class="command-syntax">claude chat</div>
+                    <div class="command-desc">Start an interactive chat session</div>
+                </div>
+                <div class="command">
+                    <div class="command-name">One-shot Query</div>
+                    <div class="command-syntax">claude "What is machine learning?"</div>
+                    <div class="command-desc">Send a single query and get response</div>
+                </div>
+                <div class="command">
+                    <div class="command-name">Chat with File Input</div>
+                    <div class="command-syntax">claude chat --file input.txt</div>
+                    <div class="command-desc">Start chat with file content as context</div>
+                </div>
+                <div class="command">
+                    <div class="command-name">Set Model</div>
+                    <div class="command-syntax">claude --model claude-3-sonnet</div>
+                    <div class="command-desc">Specify which Claude model to use</div>
+                </div>
+                <div class="command">
+                    <div class="command-name">Help</div>
+                    <div class="command-syntax">claude --help</div>
+                    <div class="command-desc">Show all available commands and options</div>
+                </div>
+            </div>
+
+            <!-- File Operations -->
+            <div class="section">
+                <div class="section-title">
+                    <span class="section-icon">📁</span>
+                    File Operations
+                </div>
+                <div class="command">
+                    <div class="command-name">Analyze File</div>
+                    <div class="command-syntax">claude analyze code.py</div>
+                    <div class="command-desc">Analyze and explain code file</div>
+                </div>
+                <div class="command">
+                    <div class="command-name">Process Multiple Files</div>
+                    <div class="command-syntax">claude *.js "Review this code"</div>
+                    <div class="command-desc">Process multiple files with query</div>
+                </div>
+                <div class="command">
+                    <div class="command-name">Output to File</div>
+                    <div class="command-syntax">claude "Generate docs" > output.md</div>
+                    <div class="command-desc">Save Claude's response to file</div>
+                </div>
+                <div class="command">
+                    <div class="command-name">Watch File</div>
+                    <div class="command-syntax">claude watch file.py</div>
+                    <div class="command-desc">Monitor file changes and auto-analyze</div>
+                </div>
+            </div>
+
+            <!-- Configuration -->
+            <div class="section">
+                <div class="section-title">
+                    <span class="section-icon">⚙️</span>
+                    Configuration
+                </div>
+                <div class="command">
+                    <div class="command-name">View Config</div>
+                    <div class="command-syntax">claude config show</div>
+                    <div class="command-desc">Display current configuration</div>
+                </div>
+                <div class="command">
+                    <div class="command-name">Set Default Model</div>
+                    <div class="command-syntax">claude config set model claude-3-opus</div>
+                    <div class="command-desc">Set default Claude model</div>
+                </div>
+                <div class="command">
+                    <div class="command-name">Set Temperature</div>
+                    <div class="command-syntax">claude config set temperature 0.7</div>
+                    <div class="command-desc">Set response creativity (0.0-1.0)</div>
+                </div>
+                <div class="command">
+                    <div class="command-name">Reset Config</div>
+                    <div class="command-syntax">claude config reset</div>
+                    <div class="command-desc">Reset to default configuration</div>
+                </div>
+            </div>
+
+            <!-- Chat Features -->
+            <div class="section span-2">
+                <div class="section-title">
+                    <span class="section-icon">💭</span>
+                    Chat Features
+                </div>
+                <div class="command">
+                    <div class="command-name">Save Conversation</div>
+                    <div class="command-syntax">claude chat --save session.json</div>
+                    <div class="command-desc">Save chat session to file</div>
+                </div>
+                <div class="command">
+                    <div class="command-name">Load Conversation</div>
+                    <div class="command-syntax">claude chat --load session.json</div>
+                    <div class="command-desc">Resume saved chat session</div>
+                </div>
+                <div class="command">
+                    <div class="command-name">Set System Prompt</div>
+                    <div class="command-syntax">claude chat --system "You are a helpful coding assistant"</div>
+                    <div class="command-desc">Set system prompt for chat session</div>
+                </div>
+                <div class="command">
+                    <div class="command-name">Conversation History</div>
+                    <div class="command-syntax">claude history</div>
+                    <div class="command-desc">View recent conversation history</div>
+                </div>
+                <div class="command">
+                    <div class="command-name">Clear History</div>
+                    <div class="command-syntax">claude history clear</div>
+                    <div class="command-desc">Clear conversation history</div>
+                </div>
+            </div>
+
+            <!-- Advanced Options -->
+            <div class="section span-2">
+                <div class="section-title">
+                    <span class="section-icon">🚀</span>
+                    Advanced Options
+                </div>
+                <div class="command">
+                    <div class="command-name">Max Tokens</div>
+                    <div class="command-syntax">claude --max-tokens 1000 "Long query here"</div>
+                    <div class="command-desc">Limit response length (tokens)</div>
+                </div>
+                <div class="command">
+                    <div class="command-name">Stream Response</div>
+                    <div class="command-syntax">claude --stream "Tell me a story"</div>
+                    <div class="command-desc">Stream response in real-time</div>
+                </div>
+                <div class="command">
+                    <div class="command-name">JSON Output</div>
+                    <div class="command-syntax">claude --json "Generate data structure"</div>
+                    <div class="command-desc">Format response as JSON</div>
+                </div>
+                <div class="command">
+                    <div class="command-name">Verbose Mode</div>
+                    <div class="command-syntax">claude --verbose "Query here"</div>
+                    <div class="command-desc">Show detailed debugging information</div>
+                </div>
+                <div class="command">
+                    <div class="command-name">Timeout Setting</div>
+                    <div class="command-syntax">claude --timeout 60 "Complex query"</div>
+                    <div class="command-desc">Set request timeout in seconds</div>
+                </div>
+            </div>
+
+            <!-- Model Selection -->
+            <div class="section">
+                <div class="section-title">
+                    <span class="section-icon">🤖</span>
+                    Model Selection
+                </div>
+                <div class="command">
+                    <div class="command-name">Claude 3 Opus</div>
+                    <div class="command-syntax">claude --model claude-3-opus</div>
+                    <div class="command-desc">Most capable model, best for complex tasks</div>
+                </div>
+                <div class="command">
+                    <div class="command-name">Claude 3 Sonnet</div>
+                    <div class="command-syntax">claude --model claude-3-sonnet</div>
+                    <div class="command-desc">Balanced performance and speed</div>
+                </div>
+                <div class="command">
+                    <div class="command-name">Claude 3 Haiku</div>
+                    <div class="command-syntax">claude --model claude-3-haiku</div>
+                    <div class="command-desc">Fastest model for simple queries</div>
+                </div>
+                <div class="command">
+                    <div class="command-name">List Models</div>
+                    <div class="command-syntax">claude models list</div>
+                    <div class="command-desc">Show all available models</div>
+                </div>
+            </div>
+
+            <!-- Scripting & Automation -->
+            <div class="section">
+                <div class="section-title">
+                    <span class="section-icon">🔧</span>
+                    Scripting & Automation
+                </div>
+                <div class="command">
+                    <div class="command-name">Batch Processing</div>
+                    <div class="command-syntax">claude batch --input queries.txt</div>
+                    <div class="command-desc">Process multiple queries from file</div>
+                </div>
+                <div class="command">
+                    <div class="command-name">Template Processing</div>
+                    <div class="command-syntax">claude template process.tmpl</div>
+                    <div class="command-desc">Process template with variables</div>
+                </div>
+                <div class="command">
+                    <div class="command-name">Pipeline Input</div>
+                    <div class="command-syntax">cat data.txt | claude "Summarize this"</div>
+                    <div class="command-desc">Use stdin as input to Claude</div>
+                </div>
+                <div class="command">
+                    <div class="command-name">Exit Codes</div>
+                    <div class="command-syntax">claude "query" && echo "Success"</div>
+                    <div class="command-desc">Use exit codes for script control</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tips Section -->
+        <div class="tips-grid">
+            <div class="tip-box">
+                <div class="tip-title">💡 Pro Tip: API Key Security</div>
+                <div class="tip-content">Store your API key in environment variables or config files, never in your scripts. Use <code>claude auth login</code> for secure setup.</div>
+            </div>
+            <div class="tip-box">
+                <div class="tip-title">⚡ Performance Tip</div>
+                <div class="tip-content">Use Claude 3 Haiku for simple queries and batch processing. Reserve Opus for complex reasoning tasks that require the highest capability.</div>
+            </div>
+            <div class="tip-box">
+                <div class="tip-title">🔄 Workflow Integration</div>
+                <div class="tip-content">Integrate Claude CLI into your CI/CD pipelines for code review, documentation generation, and automated testing explanations.</div>
+            </div>
+            <div class="tip-box">
+                <div class="tip-title">📊 Monitoring Usage</div>
+                <div class="tip-content">Use <code>--verbose</code> flag to monitor token usage and API calls. Set appropriate timeouts for production scripts.</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            Created with ❤️ by @night_knightz | Claude CLI Reference Guide
+        </div>
+    </div>
+
+    <script>
+        // Search functionality
+        const searchBox = document.getElementById('searchBox');
+        const sections = document.querySelectorAll('.section');
+        const commands = document.querySelectorAll('.command');
+
+        searchBox.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            
+            sections.forEach(section => {
+                const sectionCommands = section.querySelectorAll('.command');
+                let hasVisibleCommand = false;
+                
+                sectionCommands.forEach(command => {
+                    const commandName = command.querySelector('.command-name').textContent.toLowerCase();
+                    const commandSyntax = command.querySelector('.command-syntax').textContent.toLowerCase();
+                    const commandDesc = command.querySelector('.command-desc').textContent.toLowerCase();
+                    
+                    if (commandName.includes(searchTerm) || 
+                        commandSyntax.includes(searchTerm) || 
+                        commandDesc.includes(searchTerm) || 
+                        searchTerm === '') {
+                        command.classList.remove('hidden');
+                        hasVisibleCommand = true;
+                    } else {
+                        command.classList.add('hidden');
+                    }
+                });
+                
+                if (hasVisibleCommand || searchTerm === '') {
+                    section.classList.remove('hidden');
+                } else {
+                    section.classList.add('hidden');
+                }
+            });
+        });
+
+        // Copy to clipboard functionality
+        document.querySelectorAll('.command-syntax').forEach(syntax => {
+            syntax.addEventListener('click', function() {
+                const text = this.textContent;
+                navigator.clipboard.writeText(text).then(() => {
+                    // Visual feedback
+                    const original = this.style.background;
+                    this.style.background = 'rgba(16, 185, 129, 0.3)';
+                    this.style.transform = 'scale(1.02)';
+                    
+                    setTimeout(() => {
+                        this.style.background = original;
+                        this.style.transform = 'scale(1)';
+                    }, 200);
+                }).catch(err => {
+                    console.error('Failed to copy text: ', err);
+                });
+            });
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === '/' && e.target !== searchBox) {
+                e.preventDefault();
+                searchBox.focus();
+            }
+            
+            if (e.key === 'Escape') {
+                searchBox.blur();
+                searchBox.value = '';
+                searchBox.dispatchEvent(new Event('input'));
+            }
+        });
+    </script>
+</body>
+</html>

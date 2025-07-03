@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Claude CLI Cheat Sheet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 15px;
+            line-height: 1.3;
+        }
+
+        .main-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: rgba(15, 23, 42, 0.95);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+            border-radius: 2px;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #94a3b8;
+            font-weight: 300;
+        }
+
+        .subtitle-arabic {
+            font-size: 1rem;
+            color: #94a3b8;
+            font-weight: 300;
+            margin-top: 4px;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .section {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid rgba(100, 116, 139, 0.2);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .section-title-arabic {
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            font-weight: 500;
+            margin-bottom: 10px;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+            flex-shrink: 0;
+        }
+
+        .section-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .wide-section {
+            grid-column: span 2;
+        }
+
+        .full-section {
+            grid-column: span 5;
+            background: rgba(15, 23, 42, 0.9);
+            border: 2px solid #667eea;
+        }
+
+        .command {
+            background: rgba(51, 65, 85, 0.4);
+            padding: 8px;
+            border-radius: 6px;
+            border-left: 3px solid #667eea;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .command:hover {
+            border-left-color: #f093fb;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .cmd-name {
+            font-size: 0.8rem;
+            color: #f093fb;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .cmd-name-arabic {
+            font-size: 0.7rem;
+            color: #f093fb;
+            font-weight: 500;
+            margin-bottom: 4px;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+        }
+
+        .cmd-syntax {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            padding: 4px 6px;
+            border-radius: 3px;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            margin-bottom: 3px;
+            word-break: break-all;
+            line-height: 1.2;
+        }
+
+        .cmd-desc {
+            color: #cbd5e1;
+            font-size: 0.65rem;
+            line-height: 1.2;
+        }
+
+        .cmd-desc-arabic {
+            color: #94a3b8;
+            font-size: 0.6rem;
+            line-height: 1.2;
+            margin-top: 2px;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+        }
+
+        .install-section {
+            background: rgba(51, 65, 85, 0.6);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            margin-bottom: 15px;
+        }
+
+        .install-title {
+            font-size: 1rem;
+            color: #f093fb;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .install-title-arabic {
+            font-size: 0.9rem;
+            color: #f093fb;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+        }
+
+        .install-steps {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .step {
+            background: rgba(15, 23, 42, 0.7);
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 3px solid #667eea;
+        }
+
+        .step-num {
+            font-size: 0.75rem;
+            color: #667eea;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+
+        .step-cmd {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            color: #f093fb;
+            background: rgba(240, 147, 251, 0.1);
+            padding: 3px 5px;
+            border-radius: 3px;
+            margin-bottom: 3px;
+            word-break: break-all;
+        }
+
+        .step-desc {
+            font-size: 0.6rem;
+            color: #cbd5e1;
+            line-height: 1.2;
+        }
+
+        .step-desc-arabic {
+            font-size: 0.55rem;
+            color: #94a3b8;
+            line-height: 1.2;
+            margin-top: 2px;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+        }
+
+        .models-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .model-item {
+            background: rgba(51, 65, 85, 0.6);
+            padding: 6px;
+            border-radius: 5px;
+            text-align: center;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .model-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #667eea;
+        }
+
+        .model-name {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #f093fb;
+            margin-bottom: 1px;
+        }
+
+        .model-desc {
+            font-size: 0.6rem;
+            color: #94a3b8;
+        }
+
+        .model-desc-arabic {
+            font-size: 0.55rem;
+            color: #94a3b8;
+            margin-top: 1px;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+        }
+
+        .feature-item {
+            background: rgba(51, 65, 85, 0.6);
+            padding: 6px;
+            border-radius: 5px;
+            text-align: center;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #667eea;
+        }
+
+        .feature-name {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #f093fb;
+            margin-bottom: 1px;
+        }
+
+        .feature-desc {
+            font-size: 0.6rem;
+            color: #94a3b8;
+        }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+
+        .tip {
+            background: rgba(15, 23, 42, 0.7);
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 3px solid #f093fb;
+        }
+
+        .tip-title {
+            font-weight: 600;
+            color: #f093fb;
+            margin-bottom: 4px;
+            font-size: 0.75rem;
+        }
+
+        .tip-content {
+            color: #cbd5e1;
+            line-height: 1.2;
+            font-size: 0.65rem;
+        }
+
+        .tip-content-arabic {
+            color: #cbd5e1;
+            line-height: 1.2;
+            margin-top: 3px;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+            font-size: 0.6rem;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 10px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .footer-text {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .highlight {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        code {
+            background: rgba(102, 126, 234, 0.2);
+            padding: 1px 3px;
+            border-radius: 3px;
+            font-family: 'JetBrains Mono', monospace;
+            color: #667eea;
+            font-size: 0.75em;
+        }
+
+        .example-section {
+            background: rgba(51, 65, 85, 0.6);
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            margin-bottom: 10px;
+        }
+
+        .example-title {
+            font-size: 0.8rem;
+            color: #f093fb;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .example-title-arabic {
+            font-size: 0.7rem;
+            color: #f093fb;
+            font-weight: 500;
+            margin-bottom: 5px;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+        }
+
+        .example-code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            color: #667eea;
+            background: rgba(15, 23, 42, 0.7);
+            padding: 6px 8px;
+            border-radius: 4px;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            margin-bottom: 4px;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .example-desc {
+            font-size: 0.65rem;
+            color: #cbd5e1;
+            line-height: 1.2;
+        }
+
+        .example-desc-arabic {
+            font-size: 0.6rem;
+            color: #94a3b8;
+            line-height: 1.2;
+            margin-top: 2px;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+        }
+
+        @media (max-width: 1400px) {
+            .main-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .full-section {
+                grid-column: span 4;
+            }
+            
+            .tips-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .full-section {
+                grid-column: span 3;
+            }
+            
+            .wide-section {
+                grid-column: span 2;
+            }
+            
+            .tips-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .install-steps {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .main-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .full-section, .wide-section {
+                grid-column: span 2;
+            }
+            
+            .tips-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .full-section, .wide-section {
+                grid-column: span 1;
+            }
+            
+            .tips-grid, .install-steps {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header">
+            <h1>🤖 CLAUDE CLI</h1>
+            <div class="subtitle">Ultimate Cheat Sheet for AI-Powered Command Line Interface</div>
+            <div class="subtitle-arabic">الدليل النهائي لواجهة سطر الأوامر المدعومة بالذكاء الاصطناعي</div>
+        </div>
+
+        <div class="main-grid">
+            <!-- Installation & Setup -->
+            <div class="section full-section">
+                <div class="section-title">
+                    🚀 Installation & Authentication
+                </div>
+                <div class="section-title-arabic">التثبيت والمصادقة</div>
+                
+                <div class="install-section">
+                    <div class="install-title">Installation & Setup</div>
+                    <div class="install-title-arabic">التثبيت والإعداد</div>
+                    <div class="install-steps">
+                        <div class="step">
+                            <div class="step-num">1. Install</div>
+                            <div class="step-cmd">npm install -g @anthropic-ai/claude-cli</div>
+                            <div class="step-desc">Install Claude CLI globally</div>
+                            <div class="step-desc-arabic">تثبيت Claude CLI عالمياً</div>
+                        </div>
+                        <div class="step">
+                            <div class="step-num">2. Authenticate</div>
+                            <div class="step-cmd">claude auth</div>
+                            <div class="step-desc">Set up API credentials</div>
+                            <div class="step-desc-arabic">إعداد بيانات اعتماد API</div>
+                        </div>
+                        <div class="step">
+                            <div class="step-num">3. Test</div>
+                            <div class="step-cmd">claude "Hello, Claude!"</div>
+                            <div class="step-desc">Test installation</div>
+                            <div class="step-desc-arabic">اختبار التثبيت</div>
+                        </div>
+                        <div class="step">
+                            <div class="step-num">4. Configure</div>
+                            <div class="step-cmd">claude config</div>
+                            <div class="step-desc">Configure settings</div>
+                            <div class="step-desc-arabic">تكوين الإعدادات</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; color: #94a3b8; font-size: 0.8rem;">
+                    <strong>Basic Usage:</strong> <span class="highlight">claude [options] "prompt"</span>
+                    <br>
+                    <div style="margin-top: 3px; font-family: 'Arial', sans-serif; direction: rtl; font-size: 0.75rem;">
+                        <strong>الاستخدام الأساسي:</strong> <span class="highlight">claude [خيارات] "الطلب"</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Basic Commands -->
+            <div class="section">
+                <div class="section-title">⚡ Basic Commands</div>
+                <div class="section-title-arabic">الأوامر الأساسية</div>
+                <div class="section-content">
+                    <div class="command">
+                        <div class="cmd-name">Simple Chat</div>
+                        <div class="cmd-name-arabic">محادثة بسيطة</div>
+                        <div class="cmd-syntax">claude "Explain quantum computing"</div>
+                        <div class="cmd-desc">Ask a direct question</div>
+                        <div class="cmd-desc-arabic">طرح سؤال مباشر</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">Interactive Mode</div>
+                        <div class="cmd-name-arabic">الوضع التفاعلي</div>
+                        <div class="cmd-syntax">claude --interactive</div>
+                        <div class="cmd-desc">Start chat session</div>
+                        <div class="cmd-desc-arabic">بدء جلسة محادثة</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">Help</div>
+                        <div class="cmd-name-arabic">المساعدة</div>
+                        <div class="cmd-syntax">claude --help</div>
+                        <div class="cmd-desc">Show all options</div>
+                        <div class="cmd-desc-arabic">عرض جميع الخيارات</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">Version</div>
+                        <div class="cmd-name-arabic">الإصدار</div>
+                        <div class="cmd-syntax">claude --version</div>
+                        <div class="cmd-desc">Check CLI version</div>
+                        <div class="cmd-desc-arabic">فحص إصدار CLI</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Model Selection -->
+            <div class="section">
+                <div class="section-title">🧠 Model Selection</div>
+                <div class="section-title-arabic">اختيار النموذج</div>
+                <div class="section-content">
+                    <div class="models-grid">
+                        <div class="model-item">
+                            <div class="model-name">Sonnet</div>
+                            <div class="model-desc">Balanced</div>
+                            <div class="model-desc-arabic">متوازن</div>
+                        </div>
+                        <div class="model-item">
+                            <div class="model-name">Opus</div>
+                            <div class="model-desc">Most capable</div>
+                            <div class="model-desc-arabic">الأكثر قدرة</div>
+                        </div>
+                        <div class="model-item">
+                            <div class="model-name">Haiku</div>
+                            <div class="model-desc">Fastest</div>
+                            <div class="model-desc-arabic">الأسرع</div>
+                        </div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">Select Model</div>
+                        <div class="cmd-name-arabic">اختيار النموذج</div>
+                        <div class="cmd-syntax">claude --model claude-3-opus "Complex task"</div>
+                        <div class="cmd-desc">Use specific model</div>
+                        <div class="cmd-desc-arabic">استخدام نموذج محدد</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">List Models</div>
+                        <div class="cmd-name-arabic">عرض النماذج</div>
+                        <div class="cmd-syntax">claude --list-models</div>
+                        <div class="cmd-desc">Show available models</div>
+                        <div class="cmd-desc-arabic">عرض النماذج المتاحة</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">Default Model</div>
+                        <div class="cmd-name-arabic">النموذج الافتراضي</div>
+                        <div class="cmd-syntax">claude config set-model claude-3-sonnet</div>
+                        <div class="cmd-desc">Set default model</div>
+                        <div class="cmd-desc-arabic">تعيين النموذج الافتراضي</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- File Operations -->
+            <div class="section">
+                <div class="section-title">📁 File Operations</div>
+                <div class="section-title-arabic">عمليات الملفات</div>
+                <div class="section-content">
+                    <div class="command">
+                        <div class="cmd-name">Read File</div>
+                        <div class="cmd-name-arabic">قراءة ملف</div>
+                        <div class="cmd-syntax">claude --file code.py "Explain this code"</div>
+                        <div class="cmd-desc">Analyze file content</div>
+                        <div class="cmd-desc-arabic">تحليل محتوى الملف</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">Multiple Files</div>
+                        <div class="cmd-name-arabic">ملفات متعددة</div>
+                        <div class="cmd-syntax">claude --file *.js "Review all JS files"</div>
+                        <div class="cmd-desc">Process multiple files</div>
+                        <div class="cmd-desc-arabic">معالجة ملفات متعددة</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">Output to File</div>
+                        <div class="cmd-name-arabic">الإخراج إلى ملف</div>
+                        <div class="cmd-syntax">claude "Generate README" --output README.md</div>
+                        <div class="cmd-desc">Save response to file</div>
+                        <div class="cmd-desc-arabic">حفظ الاستجابة في ملف</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">Watch Directory</div>
+                        <div class="cmd-name-arabic">مراقبة المجلد</div>
+                        <div class="cmd-syntax">claude --watch src/ "Review changes"</div>
+                        <div class="cmd-desc">Monitor file changes</div>
+                        <div class="cmd-desc-arabic">مراقبة تغييرات الملفات</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conversation Management -->
+            <div class="section">
+                <div class="section-title">💬 Conversation Management</div>
+                <div class="section-title-arabic">إدارة المحادثات</div>
+                <div class="section-content">
+                    <div class="command">
+                        <div class="cmd-name">Save Context</div>
+                        <div class="cmd-name-arabic">حفظ السياق</div>
+                        <div class="cmd-syntax">claude --save-context project1 "Initial setup"</div>
+                        <div class="cmd-desc">Save conversation context</div>
+                        <div class="cmd-desc-arabic">حفظ سياق المحادثة</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">Load Context</div>
+                        <div class="cmd-name-arabic">تحميل السياق</div>
+                        <div class="cmd-syntax">claude --load-context project1 "Continue work"</div>
+                        <div class="cmd-desc">Resume saved conversation</div>
+                        <div class="cmd-desc-arabic">استئناف المحادثة المحفوظة</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">List Contexts</div>
+                        <div class="cmd-name-arabic">عرض السياقات</div>
+                        <div class="cmd-syntax">claude --list-contexts</div>
+                        <div class="cmd-desc">Show saved contexts</div>
+                        <div class="cmd-desc-arabic">عرض السياقات المحفوظة</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">Clear Context</div>
+                        <div class="cmd-name-arabic">مسح السياق</div>
+                        <div class="cmd-syntax">claude --clear-context</div>
+                        <div class="cmd-desc">Reset conversation</div>
+                        <div class="cmd-desc-arabic">إعادة تعيين المحادثة</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advanced Features -->
+            <div class="section wide-section">
+                <div class="section-title">⚡ Advanced Features</div>
+                <div class="section-title-arabic">الميزات المتقدمة</div>
+                <div class="section-content">
+                    <div class="features-grid">
+                        <div class="feature-item">
+                            <div class="feature-name">Streaming</div>
+                            <div class="feature-desc">Real-time output</div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-name">Templates</div>
+                            <div class="feature-desc">Reusable prompts</div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-name">Piping</div>
+                            <div class="feature-desc">Unix pipe support</div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-name">Config</div>
+                            <div class="feature-desc">Custom settings</div>
+                        </div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">Streaming Output</div>
+                        <div class="cmd-name-arabic">الإخراج المتدفق</div>
+                        <div class="cmd-syntax">claude --stream "Write a long article"</div>
+                        <div class="cmd-desc">Real-time response streaming</div>
+                        <div class="cmd-desc-arabic">بث الاستجابة في الوقت الفعلي</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">Custom Temperature</div>
+                        <div class="cmd-name-arabic">درجة الحرارة المخصصة</div>
+                        <div class="cmd-syntax">claude --temperature 0.7 "Creative writing"</div>
+                        <div class="cmd-desc">Control creativity level</div>
+                        <div class="cmd-desc-arabic">التحكم في مستوى الإبداع</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">Max Tokens</div>
+                        <div class="cmd-name-arabic">أقصى عدد رموز</div>
+                        <div class="cmd-syntax">claude --max-tokens 1000 "Brief summary"</div>
+                        <div class="cmd-desc">Limit response length</div>
+                        <div class="cmd-desc-arabic">تحديد طول الاستجابة</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">System Prompt</div>
+                        <div class="cmd-name-arabic">موجه النظام</div>
+                        <div class="cmd-syntax">claude --system "You are a code reviewer" --file code.py</div>
+                        <div class="cmd-desc">Set system behavior</div>
+                        <div class="cmd-desc-arabic">تعيين سلوك النظام</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Practical Examples -->
+            <div class="section full-section">
+                <div class="section-title">🛠️ Practical Examples & Workflows</div>
+                <div class="section-title-arabic">أمثلة عملية وسير العمل</div>
+                <div class="section-content">
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                        <div class="example-section">
+                            <div class="example-title">Code Review</div>
+                            <div class="example-title-arabic">مراجعة الكود</div>
+                            <div class="example-code">claude --file src/*.js --system "You are a senior developer. Review this code for bugs, security issues, and best practices."</div>
+                            <div class="example-desc">Comprehensive code analysis</div>
+                            <div class="example-desc-arabic">تحليل شامل للكود</div>
+                        </div>
+                        
+                        <div class="example-section">
+                            <div class="example-title">Documentation</div>
+                            <div class="example-title-arabic">التوثيق</div>
+                            <div class="example-code">claude --file api.py "Generate comprehensive API documentation with examples" --output docs/api.md</div>
+                            <div class="example-desc">Auto-generate documentation</div>
+                            <div class="example-desc-arabic">إنشاء التوثيق تلقائياً</div>
+                        </div>
+                        
+                        <div class="example-section">
+                            <div class="example-title">Git Integration</div>
+                            <div class="example-title-arabic">تكامل Git</div>
+                            <div class="example-code">git diff | claude "Generate commit message for these changes"</div>
+                            <div class="example-desc">Smart commit messages</div>
+                            <div class="example-desc-arabic">رسائل التزام ذكية</div>
+                        </div>
+                        
+                        <div class="example-section">
+                            <div class="example-title">Log Analysis</div>
+                            <div class="example-title-arabic">تحليل السجلات</div>
+                            <div class="example-code">tail -f app.log | claude --stream "Analyze these logs for errors and patterns"</div>
+                            <div class="example-desc">Real-time log monitoring</div>
+                            <div class="example-desc-arabic">مراقبة السجلات في الوقت الفعلي</div>
+                        </div>
+                        
+                        <div class="example-section">
+                            <div class="example-title">Data Processing</div>
+                            <div class="example-title-arabic">معالجة البيانات</div>
+                            <div class="example-code">cat data.csv | claude "Analyze this data and provide insights with Python code"</div>
+                            <div class="example-desc">CSV data analysis</div>
+                            <div class="example-desc-arabic">تحليل بيانات CSV</div>
+                        </div>
+                        
+                        <div class="example-section">
+                            <div class="example-title">Test Generation</div>
+                            <div class="example-title-arabic">إنشاء الاختبارات</div>
+                            <div class="example-code">claude --file utils.js "Generate comprehensive unit tests using Jest" --output tests/utils.test.js</div>
+                            <div class="example-desc">Automated test creation</div>
+                            <div class="example-desc-arabic">إنشاء الاختبارات تلقائياً</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configuration -->
+            <div class="section">
+                <div class="section-title">⚙️ Configuration</div>
+                <div class="section-title-arabic">التكوين</div>
+                <div class="section-content">
+                    <div class="command">
+                        <div class="cmd-name">Set API Key</div>
+                        <div class="cmd-name-arabic">تعيين مفتاح API</div>
+                        <div class="cmd-syntax">claude config set api-key YOUR_KEY</div>
+                        <div class="cmd-desc">Configure API authentication</div>
+                        <div class="cmd-desc-arabic">تكوين مصادقة API</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">Default Settings</div>
+                        <div class="cmd-name-arabic">الإعدادات الافتراضية</div>
+                        <div class="cmd-syntax">claude config set default-model claude-3-sonnet</div>
+                        <div class="cmd-desc">Set default preferences</div>
+                        <div class="cmd-desc-arabic">تعيين التفضيلات الافتراضية</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">View Config</div>
+                        <div class="cmd-name-arabic">عرض التكوين</div>
+                        <div class="cmd-syntax">claude config list</div>
+                        <div class="cmd-desc">Show current settings</div>
+                        <div class="cmd-desc-arabic">عرض الإعدادات الحالية</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">Reset Config</div>
+                        <div class="cmd-name-arabic">إعادة تعيين التكوين</div>
+                        <div class="cmd-syntax">claude config reset</div>
+                        <div class="cmd-desc">Reset to defaults</div>
+                        <div class="cmd-desc-arabic">إعادة تعيين للافتراضيات</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pipeline Integration -->
+            <div class="section">
+                <div class="section-title">🔄 Pipeline Integration</div>
+                <div class="section-title-arabic">تكامل خط الأنابيب</div>
+                <div class="section-content">
+                    <div class="command">
+                        <div class="cmd-name">Stdin Input</div>
+                        <div class="cmd-name-arabic">إدخال stdin</div>
+                        <div class="cmd-syntax">echo "Hello" | claude "Translate to French"</div>
+                        <div class="cmd-desc">Pipe input to Claude</div>
+                        <div class="cmd-desc-arabic">توصيل الإدخال إلى Claude</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">Chain Commands</div>
+                        <div class="cmd-name-arabic">ربط الأوامر</div>
+                        <div class="cmd-syntax">ls -la | claude "Explain file permissions" | tee output.txt</div>
+                        <div class="cmd-desc">Complex command chains</div>
+                        <div class="cmd-desc-arabic">سلاسل أوامر معقدة</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">JSON Output</div>
+                        <div class="cmd-name-arabic">إخراج JSON</div>
+                        <div class="cmd-syntax">claude --format json "List 5 colors" | jq '.colors[]'</div>
+                        <div class="cmd-desc">Structured data output</div>
+                        <div class="cmd-desc-arabic">إخراج بيانات منظمة</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">Script Integration</div>
+                        <div class="cmd-name-arabic">تكامل السكريبت</div>
+                        <div class="cmd-syntax">#!/bin/bash
+result=$(claude "Generate password")
+echo $result</div>
+                        <div class="cmd-desc">Use in shell scripts</div>
+                        <div class="cmd-desc-arabic">الاستخدام في سكريبتات الشل</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tips & Best Practices -->
+            <div class="section full-section">
+                <div class="section-title">💡 Tips & Best Practices</div>
+                <div class="section-title-arabic">نصائح وأفضل الممارسات</div>
+                <div class="tips-grid">
+                    <div class="tip">
+                        <div class="tip-title">🎯 Specific Prompts</div>
+                        <div class="tip-content">Be specific and clear in your prompts for better results</div>
+                        <div class="tip-content-arabic">كن محدداً وواضحاً في طلباتك للحصول على نتائج أفضل</div>
+                    </div>
+                    <div class="tip">
+                        <div class="tip-title">💾 Save Context</div>
+                        <div class="tip-content">Use context saving for complex, multi-step projects</div>
+                        <div class="tip-content-arabic">استخدم حفظ السياق للمشاريع المعقدة متعددة الخطوات</div>
+                    </div>
+                    <div class="tip">
+                        <div class="tip-title">🔧 Right Model</div>
+                        <div class="tip-content">Choose the right model: Opus for complex, Haiku for simple tasks</div>
+                        <div class="tip-content-arabic">اختر النموذج المناسب: Opus للمعقد، Haiku للبسيط</div>
+                    </div>
+                    <div class="tip">
+                        <div class="tip-title">📁 File Processing</div>
+                        <div class="tip-content">Use file operations for code review and documentation</div>
+                        <div class="tip-content-arabic">استخدم عمليات الملفات لمراجعة الكود والتوثيق</div>
+                    </div>
+                    <div class="tip">
+                        <div class="tip-title">🔄 Pipeline Power</div>
+                        <div class="tip-content">Combine with Unix tools for powerful data processing</div>
+                        <div class="tip-content-arabic">ادمج مع أدوات Unix لمعالجة بيانات قوية</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-text">
+                🤖 <span class="highlight">Master Claude CLI</span> for AI-powered command line productivity!
+                <br>
+                <div style="margin-top: 3px; font-family: 'Arial', sans-serif; direction: rtl;">
+                    🤖 <span class="highlight">اتقن Claude CLI</span> لإنتاجية سطر الأوامر المدعومة بالذكاء الاصطناعي!
+                </div>
+                <br>
+                <div style="margin-top: 10px; font-size: 0.85rem; color: #667eea;">
+                    📱 Follow for more tech guides: <span class="highlight">@night_knightz</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

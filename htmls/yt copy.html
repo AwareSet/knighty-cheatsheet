@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate yt-dlp Cheat Sheet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 15px;
+            line-height: 1.3;
+        }
+
+        .main-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: rgba(15, 23, 42, 0.95);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+            border-radius: 2px;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #94a3b8;
+            font-weight: 300;
+        }
+
+        .subtitle-arabic {
+            font-size: 1rem;
+            color: #94a3b8;
+            font-weight: 300;
+            margin-top: 4px;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .section {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  padding: 10px;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid rgba(100, 116, 139, 0.2);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .section-title {
+  font-size: 1.3rem;
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .section-title-arabic {
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            font-weight: 500;
+            margin-bottom: 10px;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+            flex-shrink: 0;
+        }
+
+        .section-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .wide-section {
+            grid-column: span 2;
+        }
+
+        .full-section {
+            grid-column: span 5;
+            background: rgba(15, 23, 42, 0.9);
+            border: 2px solid #667eea;
+        }
+
+        .command {
+            background: rgba(51, 65, 85, 0.4);
+            padding: 8px;
+            border-radius: 6px;
+            border-left: 3px solid #667eea;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .command:hover {
+            border-left-color: #f093fb;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .cmd-name {
+            font-size: 0.8rem;
+            color: #f093fb;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .cmd-name-arabic {
+            font-size: 0.7rem;
+            color: #f093fb;
+            font-weight: 500;
+            margin-bottom: 4px;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+        }
+
+        .cmd-syntax {
+  font-size: 0.85rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            padding: 4px 6px;
+            border-radius: 3px;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            margin-bottom: 3px;
+            word-break: break-all;
+            line-height: 1.2;
+        }
+
+        .cmd-desc {
+            color: #cbd5e1;
+            font-size: 0.65rem;
+            line-height: 1.2;
+        }
+
+        .cmd-desc-arabic {
+            color: #94a3b8;
+            font-size: 0.6rem;
+            line-height: 1.2;
+            margin-top: 2px;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+        }
+
+        .install-section {
+            background: rgba(51, 65, 85, 0.6);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            margin-bottom: 15px;
+        }
+
+        .install-title {
+            font-size: 1rem;
+            color: #f093fb;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .install-title-arabic {
+            font-size: 0.9rem;
+            color: #f093fb;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+        }
+
+        .install-steps {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .step {
+            background: rgba(15, 23, 42, 0.7);
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 3px solid #667eea;
+        }
+
+        .step-num {
+            font-size: 0.75rem;
+            color: #667eea;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+
+        .step-cmd {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            color: #f093fb;
+            background: rgba(240, 147, 251, 0.1);
+            padding: 3px 5px;
+            border-radius: 3px;
+            margin-bottom: 3px;
+            word-break: break-all;
+        }
+
+        .step-desc {
+            font-size: 0.6rem;
+            color: #cbd5e1;
+            line-height: 1.2;
+        }
+
+        .step-desc-arabic {
+            font-size: 0.55rem;
+            color: #94a3b8;
+            line-height: 1.2;
+            margin-top: 2px;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+        }
+
+        .quality-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .quality-item {
+            background: rgba(51, 65, 85, 0.6);
+            padding: 6px;
+            border-radius: 5px;
+            text-align: center;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .quality-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #667eea;
+        }
+
+        .quality-name {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #f093fb;
+            margin-bottom: 1px;
+        }
+
+        .quality-desc {
+            font-size: 0.6rem;
+            color: #94a3b8;
+        }
+
+        .quality-desc-arabic {
+            font-size: 0.55rem;
+            color: #94a3b8;
+            margin-top: 1px;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+        }
+
+        .format-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+        }
+
+        .format-item {
+            background: rgba(51, 65, 85, 0.6);
+            padding: 6px;
+            border-radius: 5px;
+            text-align: center;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .format-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #667eea;
+        }
+
+        .format-name {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #f093fb;
+            margin-bottom: 1px;
+        }
+
+        .format-desc {
+            font-size: 0.6rem;
+            color: #94a3b8;
+        }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .tip {
+            background: rgba(15, 23, 42, 0.7);
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 3px solid #f093fb;
+        }
+
+        .tip-title {
+            font-weight: 600;
+            color: #f093fb;
+            margin-bottom: 4px;
+            font-size: 0.75rem;
+        }
+
+        .tip-content {
+            color: #cbd5e1;
+            line-height: 1.2;
+            font-size: 0.65rem;
+        }
+
+        .tip-content-arabic {
+            color: #cbd5e1;
+            line-height: 1.2;
+            margin-top: 3px;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+            font-size: 0.6rem;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 10px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .footer-text {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .highlight {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        code {
+            background: rgba(102, 126, 234, 0.2);
+            padding: 1px 3px;
+            border-radius: 3px;
+            font-family: 'JetBrains Mono', monospace;
+            color: #667eea;
+            font-size: 0.75em;
+        }
+
+        @media (max-width: 1400px) {
+            .main-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .full-section {
+                grid-column: span 4;
+            }
+            
+            .tips-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .full-section {
+                grid-column: span 3;
+            }
+            
+            .wide-section {
+                grid-column: span 2;
+            }
+            
+            .tips-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .install-steps {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .main-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .full-section, .wide-section {
+                grid-column: span 2;
+            }
+            
+            .tips-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .full-section, .wide-section {
+                grid-column: span 1;
+            }
+            
+            .tips-grid, .install-steps {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header">
+            <h1>📺 YT-DLP</h1>
+            
+<div style="position: absolute; top: 10px; right: 15px; font-size: 0.85rem; color: #94a3b8;">
+  @night_knightz
+</div>
+<div style="font-size: 0.9rem; margin-top: 8px; color: #f093fb;">
+  🎯 yt-dlp Cheat Sheet | Save It | Share It | Dominate Video Downloads
+</div>
+<div class="subtitle">Ultimate Cheat Sheet for YouTube & Video Downloading</div>
+            <div class="subtitle-arabic">الدليل النهائي لتحميل مقاطع الفيديو من يوتيوب</div>
+        </div>
+
+        <div class="main-grid">
+            <!-- Installation & Setup -->
+            <div class="section full-section">
+                <div class="section-title">
+                    🚀 Installation & Quick Setup
+                </div>
+                <div class="section-title-arabic">التثبيت والإعداد السريع</div>
+                
+                <div class="install-section">
+                    <div class="install-title">Installation Methods</div>
+                    <div class="install-title-arabic">طرق التثبيت</div>
+                    <div class="install-steps">
+                        <div class="step">
+                            <div class="step-num">Python pip</div>
+                            <div class="step-cmd">pip install yt-dlp</div>
+                            <div class="step-desc">Install via Python pip</div>
+                            <div class="step-desc-arabic">التثبيت عبر Python pip</div>
+                        </div>
+                        <div class="step">
+                            <div class="step-num">macOS Homebrew</div>
+                            <div class="step-cmd">brew install yt-dlp</div>
+                            <div class="step-desc">Install on macOS</div>
+                            <div class="step-desc-arabic">التثبيت على macOS</div>
+                        </div>
+                        <div class="step">
+                            <div class="step-num">Windows Scoop</div>
+                            <div class="step-cmd">scoop install yt-dlp</div>
+                            <div class="step-desc">Install on Windows</div>
+                            <div class="step-desc-arabic">التثبيت على Windows</div>
+                        </div>
+                        <div class="step">
+                            <div class="step-num">Direct Download</div>
+                            <div class="step-cmd">wget github.com/yt-dlp/yt-dlp/releases/latest</div>
+                            <div class="step-desc">Download binary</div>
+                            <div class="step-desc-arabic">تحميل الملف التنفيذي</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; color: #94a3b8; font-size: 0.8rem;">
+                    <strong>Basic Usage:</strong> <span class="highlight">yt-dlp [OPTIONS] URL</span>
+                    <br>
+                    <div style="margin-top: 3px; font-family: 'Arial', sans-serif; direction: rtl; font-size: 0.75rem;">
+                        <strong>الاستخدام الأساسي:</strong> <span class="highlight">yt-dlp [خيارات] رابط</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Basic Downloads -->
+            <div class="section">
+                <div class="section-title">📥 Basic Downloads</div>
+                <div class="section-title-arabic">التحميلات الأساسية</div>
+                <div class="section-content">
+                    <div class="command">
+                        <div class="cmd-name">Simple Download</div>
+                        <div class="cmd-name-arabic">تحميل بسيط</div>
+                        <div class="cmd-syntax">yt-dlp URL</div>
+                        <div class="cmd-desc">Download best quality video</div>
+                        <div class="cmd-desc-arabic">تحميل بأفضل جودة</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">Audio Only</div>
+                        <div class="cmd-name-arabic">الصوت فقط</div>
+                        <div class="cmd-syntax">yt-dlp -x URL</div>
+                        <div class="cmd-desc">Extract audio only</div>
+                        <div class="cmd-desc-arabic">استخراج الصوت فقط</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">Best MP4</div>
+                        <div class="cmd-name-arabic">أفضل MP4</div>
+                        <div class="cmd-syntax">yt-dlp -f "best[ext=mp4]" URL</div>
+                        <div class="cmd-desc">Download best MP4 format</div>
+                        <div class="cmd-desc-arabic">تحميل بتنسيق MP4</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">Playlist</div>
+                        <div class="cmd-name-arabic">قائمة تشغيل</div>
+                        <div class="cmd-syntax">yt-dlp -i PLAYLIST_URL</div>
+                        <div class="cmd-desc">Download entire playlist</div>
+                        <div class="cmd-desc-arabic">تحميل قائمة التشغيل</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quality Control -->
+            <div class="section">
+                <div class="section-title">🎯 Quality Control</div>
+                <div class="section-title-arabic">التحكم في الجودة</div>
+                <div class="section-content">
+                    <div class="quality-grid">
+                        <div class="quality-item">
+                            <div class="quality-name">Best</div>
+                            <div class="quality-desc">Highest quality</div>
+                            <div class="quality-desc-arabic">أعلى جودة</div>
+                        </div>
+                        <div class="quality-item">
+                            <div class="quality-name">Worst</div>
+                            <div class="quality-desc">Lowest quality</div>
+                            <div class="quality-desc-arabic">أقل جودة</div>
+                        </div>
+                        <div class="quality-item">
+                            <div class="quality-name">720p</div>
+                            <div class="quality-desc">HD quality</div>
+                            <div class="quality-desc-arabic">جودة HD</div>
+                        </div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">Specific Quality</div>
+                        <div class="cmd-name-arabic">جودة محددة</div>
+                        <div class="cmd-syntax">yt-dlp -f "best[height<=720]" URL</div>
+                        <div class="cmd-desc">Max 720p resolution</div>
+                        <div class="cmd-desc-arabic">دقة قصوى 720p</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">List Formats</div>
+                        <div class="cmd-name-arabic">عرض التنسيقات</div>
+                        <div class="cmd-syntax">yt-dlp -F URL</div>
+                        <div class="cmd-desc">Show available formats</div>
+                        <div class="cmd-desc-arabic">عرض التنسيقات المتاحة</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">Select Format</div>
+                        <div class="cmd-name-arabic">اختيار التنسيق</div>
+                        <div class="cmd-syntax">yt-dlp -f 22 URL</div>
+                        <div class="cmd-desc">Download format ID 22</div>
+                        <div class="cmd-desc-arabic">تحميل تنسيق معين</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Audio Extraction -->
+            <div class="section">
+                <div class="section-title">🎵 Audio Extraction</div>
+                <div class="section-title-arabic">استخراج الصوت</div>
+                <div class="section-content">
+                    <div class="command">
+                        <div class="cmd-name">Extract MP3</div>
+                        <div class="cmd-name-arabic">استخراج MP3</div>
+                        <div class="cmd-syntax">yt-dlp -x --audio-format mp3 URL</div>
+                        <div class="cmd-desc">Extract as MP3</div>
+                        <div class="cmd-desc-arabic">استخراج بتنسيق MP3</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">Audio Quality</div>
+                        <div class="cmd-name-arabic">جودة الصوت</div>
+                        <div class="cmd-syntax">yt-dlp -x --audio-quality 0 URL</div>
+                        <div class="cmd-desc">Best audio quality (0-9)</div>
+                        <div class="cmd-desc-arabic">أفضل جودة صوت (0-9)</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">Keep Video</div>
+                        <div class="cmd-name-arabic">الاحتفاظ بالفيديو</div>
+                        <div class="cmd-syntax">yt-dlp -x --keep-video URL</div>
+                        <div class="cmd-desc">Keep original video file</div>
+                        <div class="cmd-desc-arabic">الاحتفاظ بملف الفيديو</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">Embed Metadata</div>
+                        <div class="cmd-name-arabic">تضمين البيانات</div>
+                        <div class="cmd-syntax">yt-dlp --add-metadata URL</div>
+                        <div class="cmd-desc">Add title, artist info</div>
+                        <div class="cmd-desc-arabic">إضافة العنوان والفنان</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Playlist Management -->
+            <div class="section">
+                <div class="section-title">📋 Playlist Management</div>
+                <div class="section-title-arabic">إدارة قوائم التشغيل</div>
+                <div class="section-content">
+                    <div class="command">
+                        <div class="cmd-name">Download Range</div>
+                        <div class="cmd-name-arabic">تحميل نطاق</div>
+                        <div class="cmd-syntax">yt-dlp --playlist-start 5 --playlist-end 10 URL</div>
+                        <div class="cmd-desc">Download videos 5-10</div>
+                        <div class="cmd-desc-arabic">تحميل الفيديوهات 5-10</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">Skip Downloads</div>
+                        <div class="cmd-name-arabic">تخطي التحميلات</div>
+                        <div class="cmd-syntax">yt-dlp --download-archive archive.txt URL</div>
+                        <div class="cmd-desc">Skip already downloaded</div>
+                        <div class="cmd-desc-arabic">تخطي المحمل مسبقاً</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">Reverse Order</div>
+                        <div class="cmd-name-arabic">ترتيب عكسي</div>
+                        <div class="cmd-syntax">yt-dlp --playlist-reverse URL</div>
+                        <div class="cmd-desc">Download in reverse order</div>
+                        <div class="cmd-desc-arabic">تحميل بترتيب عكسي</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">Random Order</div>
+                        <div class="cmd-name-arabic">ترتيب عشوائي</div>
+                        <div class="cmd-syntax">yt-dlp --playlist-random URL</div>
+                        <div class="cmd-desc">Download randomly</div>
+                        <div class="cmd-desc-arabic">تحميل عشوائي</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Output Control -->
+            <div class="section">
+                <div class="section-title">📁 Output Control</div>
+                <div class="section-title-arabic">التحكم في المخرجات</div>
+                <div class="section-content">
+                    <div class="command">
+                        <div class="cmd-name">Custom Filename</div>
+                        <div class="cmd-name-arabic">اسم ملف مخصص</div>
+                        <div class="cmd-syntax">yt-dlp -o "%(title)s.%(ext)s" URL</div>
+                        <div class="cmd-desc">Custom naming pattern</div>
+                        <div class="cmd-desc-arabic">نمط تسمية مخصص</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">Output Directory</div>
+                        <div class="cmd-name-arabic">مجلد الإخراج</div>
+                        <div class="cmd-syntax">yt-dlp -o "Downloads/%(title)s.%(ext)s" URL</div>
+                        <div class="cmd-desc">Save to specific folder</div>
+                        <div class="cmd-desc-arabic">حفظ في مجلد محدد</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">Organize by Date</div>
+                        <div class="cmd-name-arabic">تنظيم حسب التاريخ</div>
+                        <div class="cmd-syntax">yt-dlp -o "%(upload_date)s/%(title)s.%(ext)s" URL</div>
+                        <div class="cmd-desc">Organize by upload date</div>
+                        <div class="cmd-desc-arabic">تنظيم حسب تاريخ الرفع</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">Clean Filenames</div>
+                        <div class="cmd-name-arabic">تنظيف أسماء الملفات</div>
+                        <div class="cmd-syntax">yt-dlp --restrict-filenames URL</div>
+                        <div class="cmd-desc">ASCII-only filenames</div>
+                        <div class="cmd-desc-arabic">أسماء ملفات ASCII فقط</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Supported Formats -->
+            <div class="section wide-section">
+                <div class="section-title">📁 Supported Formats & Sites</div>
+                <div class="section-title-arabic">التنسيقات والمواقع المدعومة</div>
+                <div class="section-content">
+                    <div style="margin-bottom: 10px;">
+                        <div style="font-size: 0.8rem; color: #f093fb; font-weight: 600; margin-bottom: 5px;">Video Formats / تنسيقات الفيديو</div>
+                        <div class="format-grid">
+                            <div class="format-item">
+                                <div class="format-name">MP4</div>
+                                <div class="format-desc">Universal</div>
+                            </div>
+                            <div class="format-item">
+                                <div class="format-name">WebM</div>
+                                <div class="format-desc">Web optimized</div>
+                            </div>
+                            <div class="format-item">
+                                <div class="format-name">MKV</div>
+                                <div class="format-desc">High quality</div>
+                            </div>
+                            <div class="format-item">
+                                <div class="format-name">FLV</div>
+                                <div class="format-desc">Flash video</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 10px;">
+                        <div style="font-size: 0.8rem; color: #f093fb; font-weight: 600; margin-bottom: 5px;">Audio Formats / تنسيقات الصوت</div>
+                        <div class="format-grid">
+                            <div class="format-item">
+                                <div class="format-name">MP3</div>
+                                <div class="format-desc">Universal</div>
+                            </div>
+                            <div class="format-item">
+                                <div class="format-name">AAC</div>
+                                <div class="format-desc">High quality</div>
+                            </div>
+                            <div class="format-item">
+                                <div class="format-name">FLAC</div>
+                                <div class="format-desc">Lossless</div>
+                            </div>
+                            <div class="format-item">
+                                <div class="format-name">OGG</div>
+                                <div class="format-desc">Open source</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div style="font-size: 0.8rem; color: #f093fb; font-weight: 600; margin-bottom: 5px;">Supported Sites / المواقع المدعومة</div>
+                        <div style="font-size: 0.65rem; color: #cbd5e1; line-height: 1.3;">
+                            YouTube, Vimeo, Facebook, Instagram, TikTok, Twitter, Twitch, Dailymotion, BBC iPlayer, Netflix, Hulu, and 1000+ more sites
+                        </div>
+                        <div style="font-size: 0.6rem; color: #94a3b8; margin-top: 2px; font-family: 'Arial', sans-serif; direction: rtl;">
+                            يوتيوب، فيميو، فيسبوك، إنستغرام، تيك توك، تويتر، تويتش، ديلي موشن، وأكثر من 1000 موقع
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advanced Features -->
+            <div class="section wide-section">
+                <div class="section-title">⚡ Advanced Features</div>
+                <div class="section-title-arabic">الميزات المتقدمة</div>
+                <div class="section-content">
+                    <div class="command">
+                        <div class="cmd-name">Subtitles Download</div>
+                        <div class="cmd-name-arabic">تحميل الترجمات</div>
+                        <div class="cmd-syntax">yt-dlp --write-subs --sub-langs en,ar URL</div>
+                        <div class="cmd-desc">Download English & Arabic subtitles</div>
+                        <div class="cmd-desc-arabic">تحميل الترجمة الإنجليزية والعربية</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">Thumbnails</div>
+                        <div class="cmd-name-arabic">الصور المصغرة</div>
+                        <div class="cmd-syntax">yt-dlp --write-thumbnail URL</div>
+                        <div class="cmd-desc">Download video thumbnails</div>
+                        <div class="cmd-desc-arabic">تحميل الصور المصغرة</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">Info JSON</div>
+                        <div class="cmd-name-arabic">معلومات JSON</div>
+                        <div class="cmd-syntax">yt-dlp --write-info-json URL</div>
+                        <div class="cmd-desc">Save video metadata</div>
+                        <div class="cmd-desc-arabic">حفظ البيانات الوصفية</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">Rate Limit</div>
+                        <div class="cmd-name-arabic">حد السرعة</div>
+                        <div class="cmd-syntax">yt-dlp --limit-rate 1M URL</div>
+                        <div class="cmd-desc">Limit download speed to 1MB/s</div>
+                        <div class="cmd-desc-arabic">تحديد سرعة التحميل بـ 1 ميجا/ث</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">Cookies</div>
+                        <div class="cmd-name-arabic">ملفات تعريف الارتباط</div>
+                        <div class="cmd-syntax">yt-dlp --cookies cookies.txt URL</div>
+                        <div class="cmd-desc">Use cookies for private videos</div>
+                        <div class="cmd-desc-arabic">استخدام الكوكيز للفيديوهات الخاصة</div>
+                    </div>
+                    
+                    <div class="command">
+                        <div class="cmd-name">Live Streams</div>
+                        <div class="cmd-name-arabic">البث المباشر</div>
+                        <div class="cmd-syntax">yt-dlp --live-from-start URL</div>
+                        <div class="cmd-desc">Download live streams from start</div>
+                        <div class="cmd-desc-arabic">تحميل البث المباشر من البداية</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tips & Best Practices -->
+            <div class="section full-section">
+                <div class="section-title">💡 Tips & Best Practices</div>
+                <div class="section-title-arabic">نصائح وأفضل الممارسات</div>
+                <div class="tips-grid">
+                    <div class="tip">
+                        <div class="tip-title">🔍 Check Formats</div>
+                        <div class="tip-content">Always use <code>-F</code> to list available formats before downloading</div>
+                        <div class="tip-content-arabic">استخدم <code>-F</code> لعرض التنسيقات المتاحة قبل التحميل</div>
+                    </div>
+                    <div class="tip">
+                        <div class="tip-title">📁 Organize Files</div>
+                        <div class="tip-content">Use custom output templates to organize downloads by channel, date, or quality</div>
+                        <div class="tip-content-arabic">استخدم قوالب إخراج مخصصة لتنظيم التحميلات</div>
+                    </div>
+                    <div class="tip">
+                        <div class="tip-title">🚀 Batch Download</div>
+                        <div class="tip-content">Use text files with URLs for batch downloading multiple videos</div>
+                        <div class="tip-content-arabic">استخدم ملفات نصية تحتوي على روابط للتحميل المجمع</div>
+                    </div>
+                    <div class="tip">
+                        <div class="tip-title">💾 Archive Feature</div>
+                        <div class="tip-content">Use <code>--download-archive</code> to avoid re-downloading videos</div>
+                        <div class="tip-content-arabic">استخدم <code>--download-archive</code> لتجنب إعادة التحميل</div>
+                    </div>
+                    <div class="tip">
+                        <div class="tip-title">🔄 Update Regularly</div>
+                        <div class="tip-content">Keep yt-dlp updated: <code>yt-dlp -U</code> for latest site support</div>
+                        <div class="tip-content-arabic">حدث yt-dlp بانتظام لدعم المواقع الجديدة</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-text">
+                📺 <span class="highlight">Master yt-dlp</span> for ultimate video downloading power!
+                <br>
+                <div style="margin-top: 3px; font-family: 'Arial', sans-serif; direction: rtl;">
+                    📺 <span class="highlight">اتقن yt-dlp</span> لقوة تحميل فيديوهات فائقة!
+                </div>
+                <br>
+                <div style="margin-top: 10px; font-size: 0.85rem; color: #667eea;">
+                    📱 Follow for more tech guides: <span class="highlight">@night_knightz</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

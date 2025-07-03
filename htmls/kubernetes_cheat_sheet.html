@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Kubernetes Cheat Sheet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 15px;
+            line-height: 1.3;
+        }
+
+        .main-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: rgba(15, 23, 42, 0.95);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+            border-radius: 2px;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #94a3b8;
+            font-weight: 300;
+        }
+
+        .search-container {
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 12px 20px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .search-box::placeholder {
+            color: #94a3b8;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .section {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid rgba(100, 116, 139, 0.2);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .wide-section {
+            grid-column: span 2;
+        }
+
+        .full-section {
+            grid-column: span 4;
+            background: rgba(15, 23, 42, 0.9);
+            border: 2px solid #667eea;
+        }
+
+        .command {
+            background: rgba(51, 65, 85, 0.4);
+            padding: 8px;
+            border-radius: 6px;
+            border-left: 3px solid #667eea;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .command:hover {
+            border-left-color: #f093fb;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .cmd-name {
+            font-size: 0.85rem;
+            color: #f093fb;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .cmd-syntax {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            padding: 4px 6px;
+            border-radius: 3px;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            margin-bottom: 3px;
+            word-break: break-all;
+            position: relative;
+        }
+
+        .cmd-desc {
+            color: #cbd5e1;
+            font-size: 0.7rem;
+            line-height: 1.2;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: rgba(240, 147, 251, 0.2);
+            border: 1px solid rgba(240, 147, 251, 0.3);
+            color: #f093fb;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.6rem;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .cmd-syntax:hover .copy-btn {
+            opacity: 1;
+        }
+
+        .copy-btn:hover {
+            background: rgba(240, 147, 251, 0.3);
+        }
+
+        .quick-ref-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .quick-item {
+            background: rgba(51, 65, 85, 0.6);
+            padding: 6px;
+            border-radius: 5px;
+            text-align: center;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .quick-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #667eea;
+            transform: scale(1.02);
+        }
+
+        .quick-name {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #f093fb;
+            margin-bottom: 1px;
+        }
+
+        .quick-desc {
+            font-size: 0.6rem;
+            color: #94a3b8;
+        }
+
+        .install-section {
+            background: rgba(51, 65, 85, 0.6);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            margin-bottom: 15px;
+        }
+
+        .install-title {
+            font-size: 1rem;
+            color: #f093fb;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .install-steps {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .step {
+            background: rgba(15, 23, 42, 0.7);
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 3px solid #667eea;
+        }
+
+        .step-num {
+            font-size: 0.8rem;
+            color: #667eea;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+
+        .step-cmd {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: #f093fb;
+            background: rgba(240, 147, 251, 0.1);
+            padding: 3px 5px;
+            border-radius: 3px;
+            margin-bottom: 3px;
+        }
+
+        .step-desc {
+            font-size: 0.65rem;
+            color: #cbd5e1;
+            line-height: 1.2;
+        }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .tip {
+            background: rgba(15, 23, 42, 0.7);
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 3px solid #f093fb;
+        }
+
+        .tip-title {
+            font-weight: 600;
+            color: #f093fb;
+            margin-bottom: 4px;
+            font-size: 0.8rem;
+        }
+
+        .tip-content {
+            color: #cbd5e1;
+            line-height: 1.2;
+            font-size: 0.7rem;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 10px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .footer-text {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .highlight {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        code {
+            background: rgba(102, 126, 234, 0.2);
+            padding: 1px 3px;
+            border-radius: 3px;
+            font-family: 'JetBrains Mono', monospace;
+            color: #667eea;
+            font-size: 0.75em;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .category {
+            font-size: 0.9rem;
+            color: #f093fb;
+            font-weight: 600;
+            margin-bottom: 8px;
+            border-bottom: 1px solid rgba(240, 147, 251, 0.3);
+            padding-bottom: 3px;
+        }
+
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .full-section {
+                grid-column: span 3;
+            }
+            
+            .wide-section {
+                grid-column: span 2;
+            }
+            
+            .quick-ref-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .tips-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .install-steps {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .full-section, .wide-section {
+                grid-column: span 1;
+            }
+            
+            .quick-ref-grid, .tips-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .install-steps {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header">
+            <h1>⚙️ KUBERNETES</h1>
+            <div class="subtitle">Ultimate Interactive Cheat Sheet for Container Orchestration</div>
+        </div>
+
+        <div class="search-container">
+            <input type="text" class="search-box" placeholder="Search commands, resources, or descriptions..." id="searchBox">
+        </div>
+
+        <div class="main-grid">
+            <!-- Quick Start -->
+            <div class="section full-section">
+                <div class="section-title">
+                    🚀 Quick Start & Installation
+                </div>
+                
+                <div class="install-section">
+                    <div class="install-title">Installation & Setup</div>
+                    <div class="install-steps">
+                        <div class="step">
+                            <div class="step-num">1. Install kubectl</div>
+                            <div class="step-cmd">curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"</div>
+                            <div class="step-desc">Download kubectl binary</div>
+                        </div>
+                        <div class="step">
+                            <div class="step-num">2. Make executable</div>
+                            <div class="step-cmd">chmod +x kubectl && sudo mv kubectl /usr/local/bin/</div>
+                            <div class="step-desc">Install and set permissions</div>
+                        </div>
+                        <div class="step">
+                            <div class="step-num">3. Verify</div>
+                            <div class="step-cmd">kubectl version --client</div>
+                            <div class="step-desc">Check installation</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; color: #94a3b8; font-size: 0.8rem;">
+                    <strong>Basic Usage:</strong> <span class="highlight">kubectl [command] [resource] [name] [flags]</span>
+                </div>
+            </div>
+
+            <!-- Cluster Info -->
+            <div class="section">
+                <div class="section-title">🌐 Cluster Info</div>
+                
+                <div class="command" data-category="cluster">
+                    <div class="cmd-name">Cluster Info</div>
+                    <div class="cmd-syntax">kubectl cluster-info<span class="copy-btn" onclick="copyToClipboard('kubectl cluster-info')">Copy</span></div>
+                    <div class="cmd-desc">Display cluster information</div>
+                </div>
+                
+                <div class="command" data-category="cluster">
+                    <div class="cmd-name">Version</div>
+                    <div class="cmd-syntax">kubectl version<span class="copy-btn" onclick="copyToClipboard('kubectl version')">Copy</span></div>
+                    <div class="cmd-desc">Show client and server versions</div>
+                </div>
+                
+                <div class="command" data-category="cluster">
+                    <div class="cmd-name">Current Context</div>
+                    <div class="cmd-syntax">kubectl config current-context<span class="copy-btn" onclick="copyToClipboard('kubectl config current-context')">Copy</span></div>
+                    <div class="cmd-desc">Display current context</div>
+                </div>
+                
+                <div class="command" data-category="cluster">
+                    <div class="cmd-name">Switch Context</div>
+                    <div class="cmd-syntax">kubectl config use-context &lt;context&gt;<span class="copy-btn" onclick="copyToClipboard('kubectl config use-context ')">Copy</span></div>
+                    <div class="cmd-desc">Switch to different context</div>
+                </div>
+            </div>
+
+            <!-- Pods -->
+            <div class="section">
+                <div class="section-title">🏠 Pods</div>
+                
+                <div class="command" data-category="pods">
+                    <div class="cmd-name">List Pods</div>
+                    <div class="cmd-syntax">kubectl get pods<span class="copy-btn" onclick="copyToClipboard('kubectl get pods')">Copy</span></div>
+                    <div class="cmd-desc">List all pods</div>
+                </div>
+                
+                <div class="command" data-category="pods">
+                    <div class="cmd-name">Pod Details</div>
+                    <div class="cmd-syntax">kubectl describe pod &lt;pod-name&gt;<span class="copy-btn" onclick="copyToClipboard('kubectl describe pod ')">Copy</span></div>
+                    <div class="cmd-desc">Show detailed pod info</div>
+                </div>
+                
+                <div class="command" data-category="pods">
+                    <div class="cmd-name">Pod Logs</div>
+                    <div class="cmd-syntax">kubectl logs &lt;pod-name&gt;<span class="copy-btn" onclick="copyToClipboard('kubectl logs ')">Copy</span></div>
+                    <div class="cmd-desc">View pod logs</div>
+                </div>
+                
+                <div class="command" data-category="pods">
+                    <div class="cmd-name">Execute in Pod</div>
+                    <div class="cmd-syntax">kubectl exec -it &lt;pod&gt; -- /bin/bash<span class="copy-btn" onclick="copyToClipboard('kubectl exec -it  -- /bin/bash')">Copy</span></div>
+                    <div class="cmd-desc">Shell into pod</div>
+                </div>
+            </div>
+
+            <!-- Deployments -->
+            <div class="section">
+                <div class="section-title">🚀 Deployments</div>
+                
+                <div class="command" data-category="deployments">
+                    <div class="cmd-name">Create Deployment</div>
+                    <div class="cmd-syntax">kubectl create deployment &lt;name&gt; --image=&lt;image&gt;<span class="copy-btn" onclick="copyToClipboard('kubectl create deployment  --image=')">Copy</span></div>
+                    <div class="cmd-desc">Create new deployment</div>
+                </div>
+                
+                <div class="command" data-category="deployments">
+                    <div class="cmd-name">Scale Deployment</div>
+                    <div class="cmd-syntax">kubectl scale deployment &lt;name&gt; --replicas=3<span class="copy-btn" onclick="copyToClipboard('kubectl scale deployment  --replicas=3')">Copy</span></div>
+                    <div class="cmd-desc">Scale deployment replicas</div>
+                </div>
+                
+                <div class="command" data-category="deployments">
+                    <div class="cmd-name">Rolling Update</div>
+                    <div class="cmd-syntax">kubectl rollout status deployment/&lt;name&gt;<span class="copy-btn" onclick="copyToClipboard('kubectl rollout status deployment/')">Copy</span></div>
+                    <div class="cmd-desc">Check rollout status</div>
+                </div>
+                
+                <div class="command" data-category="deployments">
+                    <div class="cmd-name">Rollback</div>
+                    <div class="cmd-syntax">kubectl rollout undo deployment/&lt;name&gt;<span class="copy-btn" onclick="copyToClipboard('kubectl rollout undo deployment/')">Copy</span></div>
+                    <div class="cmd-desc">Rollback deployment</div>
+                </div>
+            </div>
+
+            <!-- Services -->
+            <div class="section">
+                <div class="section-title">🌐 Services</div>
+                
+                <div class="command" data-category="services">
+                    <div class="cmd-name">List Services</div>
+                    <div class="cmd-syntax">kubectl get services<span class="copy-btn" onclick="copyToClipboard('kubectl get services')">Copy</span></div>
+                    <div class="cmd-desc">List all services</div>
+                </div>
+                
+                <div class="command" data-category="services">
+                    <div class="cmd-name">Expose Deployment</div>
+                    <div class="cmd-syntax">kubectl expose deployment &lt;name&gt; --port=80<span class="copy-btn" onclick="copyToClipboard('kubectl expose deployment  --port=80')">Copy</span></div>
+                    <div class="cmd-desc">Create service from deployment</div>
+                </div>
+                
+                <div class="command" data-category="services">
+                    <div class="cmd-name">Port Forward</div>
+                    <div class="cmd-syntax">kubectl port-forward &lt;pod&gt; 8080:80<span class="copy-btn" onclick="copyToClipboard('kubectl port-forward  8080:80')">Copy</span></div>
+                    <div class="cmd-desc">Forward local port to pod</div>
+                </div>
+                
+                <div class="command" data-category="services">
+                    <div class="cmd-name">Service Endpoints</div>
+                    <div class="cmd-syntax">kubectl get endpoints<span class="copy-btn" onclick="copyToClipboard('kubectl get endpoints')">Copy</span></div>
+                    <div class="cmd-desc">Show service endpoints</div>
+                </div>
+            </div>
+
+            <!-- ConfigMaps & Secrets -->
+            <div class="section">
+                <div class="section-title">🔐 ConfigMaps & Secrets</div>
+                
+                <div class="command" data-category="config">
+                    <div class="cmd-name">Create ConfigMap</div>
+                    <div class="cmd-syntax">kubectl create configmap &lt;name&gt; --from-literal=key=value<span class="copy-btn" onclick="copyToClipboard('kubectl create configmap  --from-literal=key=value')">Copy</span></div>
+                    <div class="cmd-desc">Create configmap from literal</div>
+                </div>
+                
+                <div class="command" data-category="config">
+                    <div class="cmd-name">Create Secret</div>
+                    <div class="cmd-syntax">kubectl create secret generic &lt;name&gt; --from-literal=key=value<span class="copy-btn" onclick="copyToClipboard('kubectl create secret generic  --from-literal=key=value')">Copy</span></div>
+                    <div class="cmd-desc">Create secret from literal</div>
+                </div>
+                
+                <div class="command" data-category="config">
+                    <div class="cmd-name">List ConfigMaps</div>
+                    <div class="cmd-syntax">kubectl get configmaps<span class="copy-btn" onclick="copyToClipboard('kubectl get configmaps')">Copy</span></div>
+                    <div class="cmd-desc">List all configmaps</div>
+                </div>
+                
+                <div class="command" data-category="config">
+                    <div class="cmd-name">List Secrets</div>
+                    <div class="cmd-syntax">kubectl get secrets<span class="copy-btn" onclick="copyToClipboard('kubectl get secrets')">Copy</span></div>
+                    <div class="cmd-desc">List all secrets</div>
+                </div>
+            </div>
+
+            <!-- Namespaces -->
+            <div class="section">
+                <div class="section-title">📁 Namespaces</div>
+                
+                <div class="command" data-category="namespaces">
+                    <div class="cmd-name">List Namespaces</div>
+                    <div class="cmd-syntax">kubectl get namespaces<span class="copy-btn" onclick="copyToClipboard('kubectl get namespaces')">Copy</span></div>
+                    <div class="cmd-desc">List all namespaces</div>
+                </div>
+                
+                <div class="command" data-category="namespaces">
+                    <div class="cmd-name">Create Namespace</div>
+                    <div class="cmd-syntax">kubectl create namespace &lt;name&gt;<span class="copy-btn" onclick="copyToClipboard('kubectl create namespace ')">Copy</span></div>
+                    <div class="cmd-desc">Create new namespace</div>
+                </div>
+                
+                <div class="command" data-category="namespaces">
+                    <div class="cmd-name">Set Default Namespace</div>
+                    <div class="cmd-syntax">kubectl config set-context --current --namespace=&lt;name&gt;<span class="copy-btn" onclick="copyToClipboard('kubectl config set-context --current --namespace=')">Copy</span></div>
+                    <div class="cmd-desc">Set default namespace</div>
+                </div>
+                
+                <div class="command" data-category="namespaces">
+                    <div class="cmd-name">Resources in Namespace</div>
+                    <div class="cmd-syntax">kubectl get all -n &lt;namespace&gt;<span class="copy-btn" onclick="copyToClipboard('kubectl get all -n ')">Copy</span></div>
+                    <div class="cmd-desc">List resources in namespace</div>
+                </div>
+            </div>
+
+            <!-- Debugging -->
+            <div class="section">
+                <div class="section-title">🔍 Debugging</div>
+                
+                <div class="command" data-category="debugging">
+                    <div class="cmd-name">Get Events</div>
+                    <div class="cmd-syntax">kubectl get events --sort-by='.lastTimestamp'<span class="copy-btn" onclick="copyToClipboard('kubectl get events --sort-by=\'.lastTimestamp\'')">Copy</span></div>
+                    <div class="cmd-desc">Show recent events</div>
+                </div>
+                
+                <div class="command" data-category="debugging">
+                    <div class="cmd-name">Resource Usage</div>
+                    <div class="cmd-syntax">kubectl top nodes<span class="copy-btn" onclick="copyToClipboard('kubectl top nodes')">Copy</span></div>
+                    <div class="cmd-desc">Show node resource usage</div>
+                </div>
+                
+                <div class="command" data-category="debugging">
+                    <div class="cmd-name">Pod Resource Usage</div>
+                    <div class="cmd-syntax">kubectl top pods<span class="copy-btn" onclick="copyToClipboard('kubectl top pods')">Copy</span></div>
+                    <div class="cmd-desc">Show pod resource usage</div>
+                </div>
+                
+                <div class="command" data-category="debugging">
+                    <div class="cmd-name">Follow Logs</div>
+                    <div class="cmd-syntax">kubectl logs -f &lt;pod-name&gt;<span class="copy-btn" onclick="copyToClipboard('kubectl logs -f ')">Copy</span></div>
+                    <div class="cmd-desc">Follow pod logs in real-time</div>
+                </div>
+            </div>
+
+            <!-- Quick Reference -->
+            <div class="section full-section">
+                <div class="section-title">
+                    ⚡ Quick Reference Commands
+                </div>
+                
+                <div class="quick-ref-grid">
+                    <div class="quick-item" onclick="copyToClipboard('kubectl get all')">
+                        <div class="quick-name">get all</div>
+                        <div class="quick-desc">List all resources</div>
+                    </div>
+                    <div class="quick-item" onclick="copyToClipboard('kubectl get pods -o wide')">
+                        <div class="quick-name">get pods -o wide</div>
+                        <div class="quick-desc">Detailed pod list</div>
+                    </div>
+                    <div class="quick-item" onclick="copyToClipboard('kubectl apply -f')">
+                        <div class="quick-name">apply -f</div>
+                        <div class="quick-desc">Apply YAML file</div>
+                    </div>
+                    <div class="quick-item" onclick="copyToClipboard('kubectl delete pod')">
+                        <div class="quick-name">delete pod</div>
+                        <div class="quick-desc">Delete pod</div>
+                    </div>
+                    <div class="quick-item" onclick="copyToClipboard('kubectl get nodes')">
+                        <div class="quick-name">get nodes</div>
+                        <div class="quick-desc">List cluster nodes</div>
+                    </div>
+                    <div class="quick-item" onclick="copyToClipboard('kubectl edit')">
+                        <div class="quick-name">edit</div>
+                        <div class="quick-desc">Edit resource</div>
+                    </div>
+                    <div class="quick-item" onclick="copyToClipboard('kubectl patch')">
+                        <div class="quick-name">patch</div>
+                        <div class="quick-desc">Update resource</div>
+                    </div>
+                    <div class="quick-item" onclick="copyToClipboard('kubectl label')">
+                        <div class="quick-name">label</div>
+                        <div class="quick-desc">Add/update labels</div>
+                    </div>
+                    <div class="quick-item" onclick="copyToClipboard('kubectl annotate')">
+                        <div class="quick-name">annotate</div>
+                        <div class="quick-desc">Add/update annotations</div>
+                    </div>
+                    <div class="quick-item" onclick="copyToClipboard('kubectl drain')">
+                        <div class="quick-name">drain</div>
+                        <div class="quick-desc">Drain node</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Output Formats -->
+            <div class="section">
+                <div class="section-title">📋 Output Formats</div>
+                
+                <div class="command" data-category="output">
+                    <div class="cmd-name">YAML Output</div>
+                    <div class="cmd-syntax">kubectl get pods -o yaml<span class="copy-btn" onclick="copyToClipboard('kubectl get pods -o yaml')">Copy</span></div>
+                    <div class="cmd-desc">Output in YAML format</div>
+                </div>
+                
+                <div class="command" data-category="output">
+                    <div class="cmd-name">JSON Output</div>
+                    <div class="cmd-syntax">kubectl get pods -o json<span class="copy-btn" onclick="copyToClipboard('kubectl get pods -o json')">Copy</span></div>
+                    <div class="cmd-desc">Output in JSON format</div>
+                </div>
+                
+                <div class="command" data-category="output">
+                    <div class="cmd-name">Custom Columns</div>
+                    <div class="cmd-syntax">kubectl get pods -o custom-columns=NAME:.metadata.name,STATUS:.status.phase<span class="copy-btn" onclick="copyToClipboard('kubectl get pods -o custom-columns=NAME:.metadata.name,STATUS:.status.phase')">Copy</span></div>
+                    <div class="cmd-desc">Custom column output</div>
+                </div>
+                
+                <div class="command" data-category="output">
+                    <div class="cmd-name">JSONPath</div>
+                    <div class="cmd-syntax">kubectl get pods -o jsonpath='{.items[*].metadata.name}'<span class="copy-btn" onclick="copyToClipboard('kubectl get pods -o jsonpath=\'{.items[*].metadata.name}\'')">Copy</span></div>
+                    <div class="cmd-desc">JSONPath query</div>
+                </div>
+            </div>
+
+            <!-- Storage -->
+            <div class="section">
+                <div class="section-title">💾 Storage</div>
+                
+                <div class="command" data-category="storage">
+                    <div class="cmd-name">Persistent Volumes</div>
+                    <div class="cmd-syntax">kubectl get pv<span class="copy-btn" onclick="copyToClipboard('kubectl get pv')">Copy</span></div>
+                    <div class="cmd-desc">List persistent volumes</div>
+                </div>
+                
+                <div class="command" data-category="storage">
+                    <div class="cmd-name">PV Claims</div>
+                    <div class="cmd-syntax">kubectl get pvc<span class="copy-btn" onclick="copyToClipboard('kubectl get pvc')">Copy</span></div>
+                    <div class="cmd-desc">List PV claims</div>
+                </div>
+                
+                <div class="command" data-category="storage">
+                    <div class="cmd-name">Storage Classes</div>
+                    <div class="cmd-syntax">kubectl get storageclass<span class="copy-btn" onclick="copyToClipboard('kubectl get storageclass')">Copy</span></div>
+                    <div class="cmd-desc">List storage classes</div>
+                </div>
+                
+                <div class="command" data-category="storage">
+                    <div class="cmd-name">Volume Mounts</div>
+                    <div class="cmd-syntax">kubectl describe pod &lt;pod&gt; | grep -A 10 Mounts<span class="copy-btn" onclick="copyToClipboard('kubectl describe pod  | grep -A 10 Mounts')">Copy</span></div>
+                    <div class="cmd-desc">Show volume mounts</div>
+                </div>
+            </div>
+
+            <!-- Tips & Best Practices -->
+            <div class="section full-section">
+                <div class="section-title">💡 Tips & Best Practices</div>
+                <div class="tips-grid">
+                    <div class="tip">
+                        <div class="tip-title">🏷️ Use Labels</div>
+                        <div class="tip-content">Always use meaningful labels for resource organization and selection</div>
+                    </div>
+                    <div class="tip">
+                        <div class="tip-title">📊 Monitor Resources</div>
+                        <div class="tip-content">Regularly check resource usage with <code>kubectl top</code> commands</div>
+                    </div>
+                    <div class="tip">
+                        <div class="tip-title">🔄 Use Namespaces</div>
+                        <div class="tip-content">Organize resources using namespaces for better isolation</div>
+                    </div>
+                    <div class="tip">
+                        <div class="tip-title">📝 Declarative Config</div>
+                        <div class="tip-content">Use YAML files with <code>kubectl apply</code> for consistent deployments</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-text">
+                ⚙️ <span class="highlight">Master Kubernetes</span> for container orchestration excellence!
+                <br>
+                <div style="margin-top: 10px; font-size: 0.85rem; color: #667eea;">
+                    📱 Follow for more tech guides: <span class="highlight">@night_knightz</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Copy to clipboard functionality
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                // Visual feedback
+                const notification = document.createElement('div');
+                notification.textContent = 'Copied to clipboard!';
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: rgba(102, 126, 234, 0.9);
+                    color: white;
+                    padding: 10px 20px;
+                    border-radius: 5px;
+                    z-index: 1000;
+                    font-size: 0.9rem;
+                `;
+                document.body.appendChild(notification);
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 2000);
+            }).catch(function(err) {
+                console.error('Could not copy text: ', err);
+            });
+        }
+
+        // Search functionality
+        document.getElementById('searchBox').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const commands = document.querySelectorAll('.command');
+            const sections = document.querySelectorAll('.section');
+            const quickItems = document.querySelectorAll('.quick-item');
+
+            // Search commands
+            commands.forEach(command => {
+                const name = command.querySelector('.cmd-name').textContent.toLowerCase();
+                const syntax = command.querySelector('.cmd-syntax').textContent.toLowerCase();
+                const desc = command.querySelector('.cmd-desc').textContent.toLowerCase();
+                
+                if (name.includes(searchTerm) || syntax.includes(searchTerm) || desc.includes(searchTerm)) {
+                    command.style.display = 'block';
+                } else {
+                    command.style.display = 'none';
+                }
+            });
+
+            // Search quick items
+            quickItems.forEach(item => {
+                const name = item.querySelector('.quick-name').textContent.toLowerCase();
+                const desc = item.querySelector('.quick-desc').textContent.toLowerCase();
+                
+                if (name.includes(searchTerm) || desc.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            // Hide sections with no visible commands
+            sections.forEach(section => {
+                const visibleCommands = section.querySelectorAll('.command:not([style*="display: none"])');
+                const visibleQuickItems = section.querySelectorAll('.quick-item:not([style*="display: none"])');
+                const hasQuickRef = section.querySelector('.quick-ref-grid');
+                const hasTips = section.querySelector('.tips-grid');
+                const hasInstall = section.querySelector('.install-section');
+                
+                if (hasInstall || hasTips || (hasQuickRef && visibleQuickItems.length > 0) || visibleCommands.length > 0) {
+                    section.style.display = 'block';
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+        });
+
+        // Click to copy for command syntax boxes
+        document.querySelectorAll('.cmd-syntax').forEach(syntax => {
+            syntax.addEventListener('click', function() {
+                const text = this.textContent.replace('Copy', '').trim();
+                copyToClipboard(text);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Fabric AI Cheat Sheet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 15px;
+            line-height: 1.3;
+        }
+
+        .main-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: rgba(15, 23, 42, 0.95);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+            border-radius: 2px;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #94a3b8;
+            font-weight: 300;
+        }
+
+        .subtitle-arabic {
+            font-size: 1rem;
+            color: #94a3b8;
+            font-weight: 300;
+            margin-top: 4px;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .section {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  padding: 10px;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid rgba(100, 116, 139, 0.2);
+            position: relative;
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .section-title {
+  font-size: 1.3rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .section-title-arabic {
+            font-size: 0.95rem;
+            color: #cbd5e1;
+            font-weight: 500;
+            margin-bottom: 10px;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+        }
+
+        .wide-section {
+            grid-column: span 2;
+        }
+
+        .full-section {
+            grid-column: span 4;
+            background: rgba(15, 23, 42, 0.9);
+            border: 2px solid #667eea;
+        }
+
+        .command {
+            background: rgba(51, 65, 85, 0.4);
+            padding: 8px;
+            border-radius: 6px;
+            border-left: 3px solid #667eea;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .command:hover {
+            border-left-color: #f093fb;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .cmd-name {
+            font-size: 0.85rem;
+            color: #f093fb;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .cmd-name-arabic {
+            font-size: 0.75rem;
+            color: #f093fb;
+            font-weight: 500;
+            margin-bottom: 4px;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+        }
+
+        .cmd-syntax {
+  font-size: 0.85rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            padding: 4px 6px;
+            border-radius: 3px;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            margin-bottom: 3px;
+            word-break: break-all;
+        }
+
+        .cmd-desc {
+            color: #cbd5e1;
+            font-size: 0.7rem;
+            line-height: 1.2;
+        }
+
+        .cmd-desc-arabic {
+            color: #94a3b8;
+            font-size: 0.65rem;
+            line-height: 1.2;
+            margin-top: 2px;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+        }
+
+        .patterns-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .pattern-item {
+            background: rgba(51, 65, 85, 0.6);
+            padding: 8px;
+            border-radius: 6px;
+            text-align: center;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .pattern-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #667eea;
+            transform: scale(1.02);
+        }
+
+        .pattern-name {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #f093fb;
+            margin-bottom: 2px;
+        }
+
+        .pattern-desc {
+            font-size: 0.65rem;
+            color: #94a3b8;
+            line-height: 1.2;
+        }
+
+        .pattern-desc-arabic {
+            font-size: 0.6rem;
+            color: #94a3b8;
+            line-height: 1.2;
+            margin-top: 1px;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+        }
+
+        .install-section {
+            background: rgba(51, 65, 85, 0.6);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            margin-bottom: 15px;
+        }
+
+        .install-title {
+            font-size: 1rem;
+            color: #f093fb;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .install-title-arabic {
+            font-size: 0.9rem;
+            color: #f093fb;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+        }
+
+        .install-steps {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .step {
+            background: rgba(15, 23, 42, 0.7);
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 3px solid #667eea;
+        }
+
+        .step-num {
+            font-size: 0.8rem;
+            color: #667eea;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+
+        .step-cmd {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: #f093fb;
+            background: rgba(240, 147, 251, 0.1);
+            padding: 3px 5px;
+            border-radius: 3px;
+            margin-bottom: 3px;
+        }
+
+        .step-desc {
+            font-size: 0.65rem;
+            color: #cbd5e1;
+            line-height: 1.2;
+        }
+
+        .step-desc-arabic {
+            font-size: 0.6rem;
+            color: #94a3b8;
+            line-height: 1.2;
+            margin-top: 2px;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+        }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .tip {
+            background: rgba(15, 23, 42, 0.7);
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 3px solid #f093fb;
+        }
+
+        .tip-title {
+            font-weight: 600;
+            color: #f093fb;
+            margin-bottom: 4px;
+            font-size: 0.8rem;
+        }
+
+        .tip-content {
+            color: #cbd5e1;
+            line-height: 1.2;
+            font-size: 0.7rem;
+        }
+
+        .tip-content-arabic {
+            color: #cbd5e1;
+            line-height: 1.2;
+            margin-top: 3px;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+            font-size: 0.65rem;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 10px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .footer-text {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .highlight {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        code {
+            background: rgba(102, 126, 234, 0.2);
+            padding: 1px 3px;
+            border-radius: 3px;
+            font-family: 'JetBrains Mono', monospace;
+            color: #667eea;
+            font-size: 0.75em;
+        }
+
+        .category {
+            font-size: 0.9rem;
+            color: #f093fb;
+            font-weight: 600;
+            margin-bottom: 8px;
+            border-bottom: 1px solid rgba(240, 147, 251, 0.3);
+            padding-bottom: 3px;
+        }
+
+        .category-arabic {
+            font-size: 0.8rem;
+            color: #f093fb;
+            font-weight: 500;
+            margin-bottom: 6px;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+        }
+
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .full-section {
+                grid-column: span 2;
+            }
+            
+            .wide-section {
+                grid-column: span 1;
+            }
+            
+            .patterns-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .tips-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .install-steps {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .full-section, .wide-section {
+                grid-column: span 1;
+            }
+            
+            .patterns-grid, .tips-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header">
+            <h1>🧵 FABRIC AI</h1>
+            
+<div style="position: absolute; top: 10px; right: 15px; font-size: 0.85rem; color: #94a3b8;">
+  @night_knightz
+</div>
+<div style="font-size: 0.9rem; margin-top: 8px; color: #f093fb;">
+  🎯 Capture this cheat sheet | Share | Save | Master Fabric AI
+</div>
+<div class="subtitle">Ultimate Cheat Sheet for AI-Powered Text Processing</div>
+            <div class="subtitle-arabic">الدليل النهائي لمعالجة النصوص بالذكاء الاصطناعي</div>
+        </div>
+
+        <div class="main-grid">
+            <!-- Installation & Setup -->
+            <div class="section full-section">
+                <div class="section-title">
+                    🚀 Quick Setup & Installation
+                </div>
+                <div class="section-title-arabic">الإعداد والتثبيت السريع</div>
+                
+                <div class="install-section">
+                    <div class="install-title">Installation Steps</div>
+                    <div class="install-title-arabic">خطوات التثبيت</div>
+                    <div class="install-steps">
+                        <div class="step">
+                            <div class="step-num">1. Install</div>
+                            <div class="step-cmd">go install github.com/danielmiessler/fabric@latest</div>
+                            <div class="step-desc">Install Fabric via Go</div>
+                            <div class="step-desc-arabic">تثبيت Fabric عبر Go</div>
+                        </div>
+                        <div class="step">
+                            <div class="step-num">2. Setup</div>
+                            <div class="step-cmd">fabric --setup</div>
+                            <div class="step-desc">Configure API keys</div>
+                            <div class="step-desc-arabic">تكوين مفاتيح API</div>
+                        </div>
+                        <div class="step">
+                            <div class="step-num">3. Update</div>
+                            <div class="step-cmd">fabric --update</div>
+                            <div class="step-desc">Update patterns</div>
+                            <div class="step-desc-arabic">تحديث الأنماط</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; color: #94a3b8; font-size: 0.8rem;">
+                    <strong>Basic Usage:</strong> <span class="highlight">echo "text" | fabric --pattern pattern_name</span>
+                    <br>
+                    <div style="margin-top: 3px; font-family: 'Arial', sans-serif; direction: rtl; font-size: 0.75rem;">
+                        <strong>الاستخدام الأساسي:</strong> <span class="highlight">echo "نص" | fabric --pattern اسم_النمط</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Core Commands -->
+            <div class="section">
+                <div class="section-title">⚡ Core Commands</div>
+                <div class="section-title-arabic">الأوامر الأساسية</div>
+                
+                <div class="command">
+                    <div class="cmd-name">List Patterns</div>
+                    <div class="cmd-name-arabic">عرض الأنماط</div>
+                    <div class="cmd-syntax">fabric --list</div>
+                    <div class="cmd-desc">Show all available patterns</div>
+                    <div class="cmd-desc-arabic">عرض جميع الأنماط المتاحة</div>
+                </div>
+                
+                <div class="command">
+                    <div class="cmd-name">Pattern Info</div>
+                    <div class="cmd-name-arabic">معلومات النمط</div>
+                    <div class="cmd-syntax">fabric --pattern analyze_claims --list</div>
+                    <div class="cmd-desc">Show pattern details</div>
+                    <div class="cmd-desc-arabic">عرض تفاصيل النمط</div>
+                </div>
+                
+                <div class="command">
+                    <div class="cmd-name">Copy to Clipboard</div>
+                    <div class="cmd-name-arabic">نسخ للحافظة</div>
+                    <div class="cmd-syntax">fabric --pattern summarize --copy</div>
+                    <div class="cmd-desc">Copy output to clipboard</div>
+                    <div class="cmd-desc-arabic">نسخ المخرجات للحافظة</div>
+                </div>
+                
+                <div class="command">
+                    <div class="cmd-name">Save Output</div>
+                    <div class="cmd-name-arabic">حفظ المخرجات</div>
+                    <div class="cmd-syntax">fabric --pattern extract_wisdom --output file.md</div>
+                    <div class="cmd-desc">Save to file</div>
+                    <div class="cmd-desc-arabic">حفظ في ملف</div>
+                </div>
+            </div>
+
+            <!-- Analysis Patterns -->
+            <div class="section">
+                <div class="section-title">🔍 Analysis Patterns</div>
+                <div class="section-title-arabic">أنماط التحليل</div>
+                
+                <div class="command">
+                    <div class="cmd-name">Analyze Claims</div>
+                    <div class="cmd-name-arabic">تحليل الادعاءات</div>
+                    <div class="cmd-syntax">fabric --pattern analyze_claims</div>
+                    <div class="cmd-desc">Fact-check statements</div>
+                    <div class="cmd-desc-arabic">التحقق من صحة البيانات</div>
+                </div>
+                
+                <div class="command">
+                    <div class="cmd-name">Find Logical Fallacies</div>
+                    <div class="cmd-name-arabic">العثور على المغالطات</div>
+                    <div class="cmd-syntax">fabric --pattern find_logical_fallacies</div>
+                    <div class="cmd-desc">Identify reasoning errors</div>
+                    <div class="cmd-desc-arabic">تحديد أخطاء التفكير</div>
+                </div>
+                
+                <div class="command">
+                    <div class="cmd-name">Analyze Prose</div>
+                    <div class="cmd-name-arabic">تحليل النثر</div>
+                    <div class="cmd-syntax">fabric --pattern analyze_prose</div>
+                    <div class="cmd-desc">Writing quality analysis</div>
+                    <div class="cmd-desc-arabic">تحليل جودة الكتابة</div>
+                </div>
+                
+                <div class="command">
+                    <div class="cmd-name">Rate Content</div>
+                    <div class="cmd-name-arabic">تقييم المحتوى</div>
+                    <div class="cmd-syntax">fabric --pattern rate_content</div>
+                    <div class="cmd-desc">Quality scoring</div>
+                    <div class="cmd-desc-arabic">تسجيل الجودة</div>
+                </div>
+            </div>
+
+            <!-- Content Creation -->
+            <div class="section">
+                <div class="section-title">✍️ Content Creation</div>
+                <div class="section-title-arabic">إنشاء المحتوى</div>
+                
+                <div class="command">
+                    <div class="cmd-name">Summarize</div>
+                    <div class="cmd-name-arabic">تلخيص</div>
+                    <div class="cmd-syntax">fabric --pattern summarize</div>
+                    <div class="cmd-desc">Create concise summary</div>
+                    <div class="cmd-desc-arabic">إنشاء ملخص موجز</div>
+                </div>
+                
+                <div class="command">
+                    <div class="cmd-name">Extract Wisdom</div>
+                    <div class="cmd-name-arabic">استخراج الحكمة</div>
+                    <div class="cmd-syntax">fabric --pattern extract_wisdom</div>
+                    <div class="cmd-desc">Key insights & quotes</div>
+                    <div class="cmd-desc-arabic">الأفكار الرئيسية والاقتباسات</div>
+                </div>
+                
+                <div class="command">
+                    <div class="cmd-name">Write Essay</div>
+                    <div class="cmd-name-arabic">كتابة مقال</div>
+                    <div class="cmd-syntax">fabric --pattern write_essay</div>
+                    <div class="cmd-desc">Generate structured essay</div>
+                    <div class="cmd-desc-arabic">إنشاء مقال منظم</div>
+                </div>
+                
+                <div class="command">
+                    <div class="cmd-name">Create Logo</div>
+                    <div class="cmd-name-arabic">إنشاء شعار</div>
+                    <div class="cmd-syntax">fabric --pattern create_logo</div>
+                    <div class="cmd-desc">Logo design prompts</div>
+                    <div class="cmd-desc-arabic">مطالبات تصميم الشعار</div>
+                </div>
+            </div>
+
+            <!-- Learning & Study -->
+            <div class="section">
+                <div class="section-title">📚 Learning & Study</div>
+                <div class="section-title-arabic">التعلم والدراسة</div>
+                
+                <div class="command">
+                    <div class="cmd-name">Create Quiz</div>
+                    <div class="cmd-name-arabic">إنشاء اختبار</div>
+                    <div class="cmd-syntax">fabric --pattern create_quiz</div>
+                    <div class="cmd-desc">Generate quiz questions</div>
+                    <div class="cmd-desc-arabic">إنشاء أسئلة اختبار</div>
+                </div>
+                
+                <div class="command">
+                    <div class="cmd-name">Explain Terms</div>
+                    <div class="cmd-name-arabic">شرح المصطلحات</div>
+                    <div class="cmd-syntax">fabric --pattern explain_terms</div>
+                    <div class="cmd-desc">Define complex concepts</div>
+                    <div class="cmd-desc-arabic">تعريف المفاهيم المعقدة</div>
+                </div>
+                
+                <div class="command">
+                    <div class="cmd-name">Create Study Guide</div>
+                    <div class="cmd-name-arabic">إنشاء دليل دراسة</div>
+                    <div class="cmd-syntax">fabric --pattern create_study_guide</div>
+                    <div class="cmd-desc">Structured learning material</div>
+                    <div class="cmd-desc-arabic">مواد تعلم منظمة</div>
+                </div>
+                
+                <div class="command">
+                    <div class="cmd-name">Extract Questions</div>
+                    <div class="cmd-name-arabic">استخراج الأسئلة</div>
+                    <div class="cmd-syntax">fabric --pattern extract_questions</div>
+                    <div class="cmd-desc">Pull key questions</div>
+                    <div class="cmd-desc-arabic">استخراج الأسئلة الرئيسية</div>
+                </div>
+            </div>
+
+            <!-- Popular Patterns Grid -->
+            <div class="section full-section">
+                <div class="section-title">
+                    🔥 Popular Patterns Reference
+                </div>
+                <div class="section-title-arabic">مرجع الأنماط الشائعة</div>
+                
+                <div class="patterns-grid">
+                    <div class="pattern-item">
+                        <div class="pattern-name">analyze_claims</div>
+                        <div class="pattern-desc">Fact verification</div>
+                        <div class="pattern-desc-arabic">التحقق من الحقائق</div>
+                    </div>
+                    <div class="pattern-item">
+                        <div class="pattern-name">summarize</div>
+                        <div class="pattern-desc">Text summarization</div>
+                        <div class="pattern-desc-arabic">تلخيص النص</div>
+                    </div>
+                    <div class="pattern-item">
+                        <div class="pattern-name">extract_wisdom</div>
+                        <div class="pattern-desc">Key insights</div>
+                        <div class="pattern-desc-arabic">الأفكار الرئيسية</div>
+                    </div>
+                    <div class="pattern-item">
+                        <div class="pattern-name">improve_writing</div>
+                        <div class="pattern-desc">Writing enhancement</div>
+                        <div class="pattern-desc-arabic">تحسين الكتابة</div>
+                    </div>
+                    <div class="pattern-item">
+                        <div class="pattern-name">create_quiz</div>
+                        <div class="pattern-desc">Quiz generation</div>
+                        <div class="pattern-desc-arabic">إنشاء اختبارات</div>
+                    </div>
+                    <div class="pattern-item">
+                        <div class="pattern-name">analyze_prose</div>
+                        <div class="pattern-desc">Style analysis</div>
+                        <div class="pattern-desc-arabic">تحليل الأسلوب</div>
+                    </div>
+                    <div class="pattern-item">
+                        <div class="pattern-name">find_logical_fallacies</div>
+                        <div class="pattern-desc">Logic checking</div>
+                        <div class="pattern-desc-arabic">فحص المنطق</div>
+                    </div>
+                    <div class="pattern-item">
+                        <div class="pattern-name">extract_article_wisdom</div>
+                        <div class="pattern-desc">Article insights</div>
+                        <div class="pattern-desc-arabic">رؤى المقال</div>
+                    </div>
+                    <div class="pattern-item">
+                        <div class="pattern-name">create_story</div>
+                        <div class="pattern-desc">Story generation</div>
+                        <div class="pattern-desc-arabic">إنشاء القصص</div>
+                    </div>
+                    <div class="pattern-item">
+                        <div class="pattern-name">write_essay</div>
+                        <div class="pattern-desc">Essay writing</div>
+                        <div class="pattern-desc-arabic">كتابة المقالات</div>
+                    </div>
+                    <div class="pattern-item">
+                        <div class="pattern-name">explain_code</div>
+                        <div class="pattern-desc">Code explanation</div>
+                        <div class="pattern-desc-arabic">شرح الكود</div>
+                    </div>
+                    <div class="pattern-item">
+                        <div class="pattern-name">create_art_prompt</div>
+                        <div class="pattern-desc">Art prompts</div>
+                        <div class="pattern-desc-arabic">مطالبات فنية</div>
+                    </div>
+                    <div class="pattern-item">
+                        <div class="pattern-name">extract_recommendations</div>
+                        <div class="pattern-desc">Recommendations</div>
+                        <div class="pattern-desc-arabic">التوصيات</div>
+                    </div>
+                    <div class="pattern-item">
+                        <div class="pattern-name">analyze_tech_impact</div>
+                        <div class="pattern-desc">Tech analysis</div>
+                        <div class="pattern-desc-arabic">تحليل التقنية</div>
+                    </div>
+                    <div class="pattern-item">
+                        <div class="pattern-name">create_security_update</div>
+                        <div class="pattern-desc">Security updates</div>
+                        <div class="pattern-desc-arabic">تحديثات الأمان</div>
+                    </div>
+                    <div class="pattern-item">
+                        <div class="pattern-name">rate_content</div>
+                        <div class="pattern-desc">Content rating</div>
+                        <div class="pattern-desc-arabic">تقييم المحتوى</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advanced Usage -->
+            <div class="section">
+                <div class="section-title">🔧 Advanced Usage</div>
+                <div class="section-title-arabic">الاستخدام المتقدم</div>
+                
+                <div class="command">
+                    <div class="cmd-name">Stream Mode</div>
+                    <div class="cmd-name-arabic">وضع البث</div>
+                    <div class="cmd-syntax">fabric --pattern summarize --stream</div>
+                    <div class="cmd-desc">Real-time streaming output</div>
+                    <div class="cmd-desc-arabic">إخراج البث في الوقت الفعلي</div>
+                </div>
+                
+                <div class="command">
+                    <div class="cmd-name">Custom Model</div>
+                    <div class="cmd-name-arabic">نموذج مخصص</div>
+                    <div class="cmd-syntax">fabric --pattern analyze --model gpt-4</div>
+                    <div class="cmd-desc">Specify AI model</div>
+                    <div class="cmd-desc-arabic">تحديد نموذج الذكاء الاصطناعي</div>
+                </div>
+                
+                <div class="command">
+                    <div class="cmd-name">Variable Input</div>
+                    <div class="cmd-name-arabic">إدخال متغير</div>
+                    <div class="cmd-syntax">fabric --pattern create_story --variable topic="space"</div>
+                    <div class="cmd-desc">Pass variables to patterns</div>
+                    <div class="cmd-desc-arabic">تمرير متغيرات للأنماط</div>
+                </div>
+                
+                <div class="command">
+                    <div class="cmd-name">Dry Run</div>
+                    <div class="cmd-name-arabic">تشغيل تجريبي</div>
+                    <div class="cmd-syntax">fabric --pattern summarize --dry-run</div>
+                    <div class="cmd-desc">Preview without execution</div>
+                    <div class="cmd-desc-arabic">معاينة بدون تنفيذ</div>
+                </div>
+            </div>
+
+            <!-- YouTube Integration -->
+            <div class="section">
+                <div class="section-title">📺 YouTube Integration</div>
+                <div class="section-title-arabic">تكامل يوتيوب</div>
+                
+                <div class="command">
+                    <div class="cmd-name">Summarize Video</div>
+                    <div class="cmd-name-arabic">تلخيص الفيديو</div>
+                    <div class="cmd-syntax">yt --transcript https://youtube.com/watch?v=... | fabric --pattern summarize</div>
+                    <div class="cmd-desc">Summarize YouTube videos</div>
+                    <div class="cmd-desc-arabic">تلخيص مقاطع الفيديو</div>
+                </div>
+                
+                <div class="command">
+                    <div class="cmd-name">Extract Wisdom</div>
+                    <div class="cmd-name-arabic">استخراج الحكمة</div>
+                    <div class="cmd-syntax">yt --transcript [URL] | fabric --pattern extract_wisdom</div>
+                    <div class="cmd-desc">Get key insights from videos</div>
+                    <div class="cmd-desc-arabic">الحصول على رؤى من الفيديوهات</div>
+                </div>
+                
+                <div class="command">
+                    <div class="cmd-name">Create Quiz</div>
+                    <div class="cmd-name-arabic">إنشاء اختبار</div>
+                    <div class="cmd-syntax">yt --transcript [URL] | fabric --pattern create_quiz</div>
+                    <div class="cmd-desc">Generate quiz from video</div>
+                    <div class="cmd-desc-arabic">إنشاء اختبار من الفيديو</div>
+                </div>
+                
+                <div class="command">
+                    <div class="cmd-name">Analyze Claims</div>
+                    <div class="cmd-name-arabic">تحليل الادعاءات</div>
+                    <div class="cmd-syntax">yt --transcript [URL] | fabric --pattern analyze_claims</div>
+                    <div class="cmd-desc">Fact-check video content</div>
+                    <div class="cmd-desc-arabic">التحقق من محتوى الفيديو</div>
+                </div>
+            </div>
+
+            <!-- Tips & Best Practices -->
+            <div class="section full-section">
+                <div class="section-title">💡 Tips & Best Practices</div>
+                <div class="section-title-arabic">نصائح وأفضل الممارسات</div>
+                <div class="tips-grid">
+                    <div class="tip">
+                        <div class="tip-title">🔄 Chain Patterns</div>
+                        <div class="tip-content">Combine multiple patterns for better results: <code>fabric --pattern summarize | fabric --pattern improve_writing</code></div>
+                        <div class="tip-content-arabic">ادمج عدة أنماط للحصول على نتائج أفضل</div>
+                    </div>
+                    <div class="tip">
+                        <div class="tip-title">📋 Use Clipboard</div>
+                        <div class="tip-content">Always use <code>--copy</code> to save output to clipboard for easy pasting</div>
+                        <div class="tip-content-arabic">استخدم <code>--copy</code> لحفظ المخرجات في الحافظة</div>
+                    </div>
+                    <div class="tip">
+                        <div class="tip-title">🎯 Specific Patterns</div>
+                        <div class="tip-content">Use task-specific patterns instead of generic ones for better accuracy</div>
+                        <div class="tip-content-arabic">استخدم أنماط محددة للمهام للحصول على دقة أفضل</div>
+                    </div>
+                    <div class="tip">
+                        <div class="tip-title">💾 Save Important</div>
+                        <div class="tip-content">Use <code>--output</code> to save important analyses to files for future reference</div>
+                        <div class="tip-content-arabic">استخدم <code>--output</code> لحفظ التحليلات المهمة</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-text">
+                🧵 <span class="highlight">Master Fabric AI</span> to supercharge your text processing workflow!
+                <br>
+                <div style="margin-top: 3px; font-family: 'Arial', sans-serif; direction: rtl;">
+                    🧵 <span class="highlight">اتقن Fabric AI</span> لتعزيز سير عمل معالجة النصوص الخاص بك!
+                </div>
+                <br>
+                <div style="margin-top: 10px; font-size: 0.85rem; color: #667eea;">
+                    📱 Follow for more tech guides: <span class="highlight">@night_knightz</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
