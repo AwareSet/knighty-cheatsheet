@@ -1,90 +1,28 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
+	"io"
 	"log"
 	"net/http"
 	"os"
-	"path"
 	"strings"
 	"time"
+
+	"github.com/labstack/echo/v4" // Import echo.Context
+	"github.com/pocketbase/pocketbase"
 )
 
-// Newsletter subscription data structures
-type NewsletterSubscription struct {
-	Email        string    `json:"email"`
-	SubscribedAt time.Time `json:"subscribed_at"`
-	IPAddress    string    `json:"ip_address,omitempty"`
-}
-
-type NewsletterData struct {
-	Subscriptions []NewsletterSubscription `json:"subscriptions"`
-	TotalCount    int                      `json:"total_count"`
-	LastUpdated   time.Time                `json:"last_updated"`
-}
-
+// Newsletter subscription data structures for external API
 type SubscribeRequest struct {
-	Email string `json:"email"`
+	Email  string `json:"email"`
+	Others string `json:"others,omitempty"` // To store IP address or other metadata
 }
 
 type SubscribeResponse struct {
 	Success bool   `json:"success"`
 	Message string `json:"message"`
-}
-
-const newsletterFile = "newsletter_subscriptions.json"
-
-// Load existing newsletter data from JSON file
-func loadNewsletterData() (*NewsletterData, error) {
-	data := &NewsletterData{
-		Subscriptions: []NewsletterSubscription{},
-		TotalCount:    0,
-		LastUpdated:   time.Now(),
-	}
-
-	// Check if file exists
-	if _, err := os.Stat(newsletterFile); os.IsNotExist(err) {
-		return data, nil // Return empty data if file doesn't exist
-	}
-
-	// Read file
-	file, err := os.ReadFile(newsletterFile)
-	if err != nil {
-		return data, err
-	}
-
-	// Parse JSON
-	if err := json.Unmarshal(file, data); err != nil {
-		return data, err
-	}
-
-	return data, nil
-}
-
-// Save newsletter data to JSON file
-func saveNewsletterData(data *NewsletterData) error {
-	data.LastUpdated = time.Now()
-	data.TotalCount = len(data.Subscriptions)
-
-	// Convert to JSON
-	jsonData, err := json.MarshalIndent(data, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	// Write to file
-	return os.WriteFile(newsletterFile, jsonData, 0644)
-}
-
-// Check if email already exists
-func emailExists(data *NewsletterData, email string) bool {
-	email = strings.ToLower(strings.TrimSpace(email))
-	for _, sub := range data.Subscriptions {
-		if strings.ToLower(sub.Email) == email {
-			return true
-		}
-	}
-	return false
 }
 
 // Get client IP address
@@ -96,11 +34,18 @@ func getClientIP(r *http.Request) string {
 	if ip := r.Header.Get("X-Real-IP"); ip != "" {
 		return ip
 	}
+	// Fallback for direct connections
+	if strings.Contains(r.RemoteAddr, ":") {
+		return strings.Split(r.RemoteAddr, ":")[0]
+	}
 	return r.RemoteAddr
 }
 
-// Newsletter subscription handler
-func subscribeHandler(w http.ResponseWriter, r *http.Request) {
+// Newsletter subscription handler adapted for PocketBase router context
+func subscribeHandler(c echo.Context) error {
+	w := c.Response().Writer
+	r := c.Request()
+
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
@@ -109,7 +54,7 @@ func subscribeHandler(w http.ResponseWriter, r *http.Request) {
 	// Handle preflight request
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
-		return
+		return nil
 	}
 
 	if r.Method != "POST" {
@@ -118,10 +63,10 @@ func subscribeHandler(w http.ResponseWriter, r *http.Request) {
 			Success: false,
 			Message: "Method not allowed",
 		})
-		return
+		return nil
 	}
 
-	// Parse request body
+	// Parse request body from frontend
 	var req SubscribeRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -129,7 +74,7 @@ func subscribeHandler(w http.ResponseWriter, r *http.Request) {
 			Success: false,
 			Message: "Invalid request format",
 		})
-		return
+		return nil
 	}
 
 	// Validate email
@@ -140,7 +85,7 @@ func subscribeHandler(w http.ResponseWriter, r *http.Request) {
 			Success: false,
 			Message: "Email is required",
 		})
-		return
+		return nil
 	}
 
 	// Basic email validation
@@ -150,131 +95,162 @@ func subscribeHandler(w http.ResponseWriter, r *http.Request) {
 			Success: false,
 			Message: "Invalid email format",
 		})
-		return
+		return nil
 	}
 
-	// Load existing data
-	data, err := loadNewsletterData()
+	// Prepare data for the external API
+	externalAPIBody := map[string]string{
+		"email":  email,
+		"others": "IP:" + getClientIP(r), // Store IP in 'others' field
+	}
+	jsonBody, err := json.Marshal(externalAPIBody)
 	if err != nil {
-		log.Printf("Error loading newsletter data: %v", err)
+		log.Printf("Error marshalling JSON for external API: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(SubscribeResponse{
 			Success: false,
-			Message: "Server error occurred",
+			Message: "Internal server error",
 		})
-		return
+		return nil
 	}
 
-	// Check if email already exists
-	if emailExists(data, email) {
+	// Make POST request to external API
+	// IMPORTANT: Replace with the actual API URL and Authorization Token
+	externalAPIURL := "http://pocketbase-wo0s48c8g8w4gcocgc4ks0kc.45.76.250.233.sslip.io/api/collections/cli_newsletters/records"
+	authToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2xsZWN0aW9uSWQiOiJwYmNfMzE0MjYzNTgyMyIsImV4cCI6MTc1MDQxMDYzNSwiaWQiOiJ4MTFyZ2c4NTVkNWUyazAiLCJyZWZyZXNoYWJsZSI6ZmFsc2UsInR5cGUiOiJhdXRoIn0.NU0jnejvHrvG7Q2pFpsvFsWzn-k28sPKS2bfH9r224s"
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	apiReq, err := http.NewRequest("POST", externalAPIURL, bytes.NewBuffer(jsonBody))
+	if err != nil {
+		log.Printf("Error creating external API request: %v", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(SubscribeResponse{
+			Success: false,
+			Message: "Internal server error",
+		})
+		return nil
+	}
+	apiReq.Header.Set("Content-Type", "application/json")
+	apiReq.Header.Set("Authorization", "Bearer "+authToken) // Assuming Bearer token
+
+	apiResp, err := client.Do(apiReq)
+	if err != nil {
+		log.Printf("Error calling external API: %v", err)
+		w.WriteHeader(http.StatusBadGateway) // Or InternalServerError, depending on desired behavior
+		json.NewEncoder(w).Encode(SubscribeResponse{
+			Success: false,
+			Message: "Failed to connect to subscription service",
+		})
+		return nil
+	}
+	defer apiResp.Body.Close()
+
+	// Read external API response
+	apiResponseBody, err := io.ReadAll(apiResp.Body)
+	if err != nil {
+		log.Printf("Error reading external API response: %v", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(SubscribeResponse{
+			Success: false,
+			Message: "Internal server error",
+		})
+		return nil
+	}
+
+	// Handle external API response status
+	if apiResp.StatusCode >= 200 && apiResp.StatusCode < 300 {
+		log.Printf("Successfully subscribed %s via external API. Response: %s", email, string(apiResponseBody))
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(SubscribeResponse{
+			Success: true,
+			Message: "Successfully subscribed to newsletter",
+		})
+	} else if apiResp.StatusCode == http.StatusConflict {
+		log.Printf("Email %s already subscribed via external API. Response: %s", email, string(apiResponseBody))
 		w.WriteHeader(http.StatusConflict)
 		json.NewEncoder(w).Encode(SubscribeResponse{
 			Success: false,
 			Message: "Email already subscribed",
 		})
-		return
-	}
-
-	// Add new subscription
-	subscription := NewsletterSubscription{
-		Email:        email,
-		SubscribedAt: time.Now(),
-		IPAddress:    getClientIP(r),
-	}
-
-	data.Subscriptions = append(data.Subscriptions, subscription)
-
-	// Save data
-	if err := saveNewsletterData(data); err != nil {
-		log.Printf("Error saving newsletter data: %v", err)
+	} else if apiResp.StatusCode == http.StatusBadRequest {
+		log.Printf("External API returned bad request for %s. Response: %s", email, string(apiResponseBody))
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(SubscribeResponse{
+			Success: false,
+			Message: "Invalid email or request for subscription service",
+		})
+	} else {
+		log.Printf("External API returned unexpected status %d for %s. Response: %s", apiResp.StatusCode, email, string(apiResponseBody))
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(SubscribeResponse{
 			Success: false,
-			Message: "Failed to save subscription",
+			Message: "Subscription service error",
 		})
-		return
 	}
-
-	log.Printf("New newsletter subscription: %s", email)
-
-	// Success response
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(SubscribeResponse{
-		Success: true,
-		Message: "Successfully subscribed to newsletter",
-	})
+	return nil // Return nil for no error
 }
 
 func main() {
+	app := pocketbase.New()
+
 	// Get port from environment variable or default to 8080
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
 
+	// Set the address for the PocketBase server
+	app.SetAddr("0.0.0.0:" + port)
+
+	// Setup admin authentication and token refresh
+	setupAdminAuth(app)
+
+	// Register custom handlers with PocketBase's router
 	// Newsletter API endpoint
-	http.HandleFunc("/api/subscribe", subscribeHandler)
-
-	// Create a custom file server handler
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		// Add CORS headers for development
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "*")
-
-		// Add security headers
-		w.Header().Set("X-Content-Type-Options", "nosniff")
-		w.Header().Set("X-Frame-Options", "SAMEORIGIN")
-		w.Header().Set("X-XSS-Protection", "1; mode=block")
-
-		// Log the request
-		log.Printf("Request: %s %s", r.Method, r.URL.Path)
-
-		// Handle root path
-		if r.URL.Path == "/" || r.URL.Path == "" {
-			http.ServeFile(w, r, "index.html")
-			return
-		}
-
-		// Clean the path and remove leading slash
-		cleanPath := path.Clean(r.URL.Path)
-		if strings.HasPrefix(cleanPath, "/") {
-			cleanPath = cleanPath[1:]
-		}
-
-		// Log what file we're trying to serve
-		log.Printf("Trying to serve file: %s", cleanPath)
-
-		// Check if file exists
-		if _, err := os.Stat(cleanPath); err != nil {
-			log.Printf("File not found: %s, error: %v", cleanPath, err)
-			// For HTML files in htmls directory, try to serve index.html as fallback
-			if strings.HasPrefix(cleanPath, "htmls/") && strings.HasSuffix(cleanPath, ".html") {
-				http.Error(w, "File not found", http.StatusNotFound)
-				return
-			}
-			// For other paths, serve index.html (SPA fallback)
-			http.ServeFile(w, r, "index.html")
-			return
-		}
-
-		// Set proper content type based on file extension
-		if strings.HasSuffix(cleanPath, ".html") {
-			w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		} else if strings.HasSuffix(cleanPath, ".css") {
-			w.Header().Set("Content-Type", "text/css")
-		} else if strings.HasSuffix(cleanPath, ".js") {
-			w.Header().Set("Content-Type", "application/javascript")
-		}
-
-		// Serve the file
-		http.ServeFile(w, r, cleanPath)
-	})
+	app.Router.POST("/api/subscribe", subscribeHandler)
+	app.Router.OPTIONS("/api/subscribe", subscribeHandler) // Handle OPTIONS for CORS preflight
 
 	// Health check endpoint
-	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("OK"))
+	app.Router.GET("/health", func(c echo.Context) error {
+		return c.String(http.StatusOK, "OK")
+	})
+
+	// Serve static HTML cheat sheets directly
+	app.Router.GET("/htmls/*", func(c echo.Context) error {
+		// Extract the file path from the URL
+		filePath := c.Request().URL.Path[1:] // Remove leading slash
+
+		// Check if file exists
+		if _, err := os.Stat(filePath); os.IsNotExist(err) {
+			return c.String(http.StatusNotFound, "Cheat sheet not found")
+		}
+
+		// Serve the HTML file
+		return c.File(filePath)
+	})
+
+	// Serve other static files (CSS, JS, images, etc.) from public directory
+	app.Router.Static("/static", "./public/static")
+	app.Router.GET("/favicon.ico", func(c echo.Context) error {
+		return c.File("./public/favicon.ico")
+	})
+	app.Router.GET("/manifest.json", func(c echo.Context) error {
+		return c.File("./public/manifest.json")
+	})
+
+	// SPA fallback - serve index.html for all other routes (including /cheatsheet/*)
+	// This ensures React Router can handle client-side routing
+	app.Router.GET("/*", func(c echo.Context) error {
+		path := c.Request().URL.Path
+
+		// Don't serve index.html for API routes
+		if strings.HasPrefix(path, "/api/") {
+			return c.String(http.StatusNotFound, "API endpoint not found")
+		}
+
+		// For all other routes (including /cheatsheet/*), serve index.html
+		// This allows React Router to handle the routing client-side
+		return c.File("./index.html")
 	})
 
 	log.Printf("Server starting on port %s", port)
@@ -296,10 +272,8 @@ func main() {
 		log.Println("htmls directory found")
 	}
 
-	// Railway requires binding to 0.0.0.0
-	addr := "0.0.0.0:" + port
-	log.Printf("Starting server on %s", addr)
-	if err := http.ListenAndServe(addr, nil); err != nil {
+	// Start the PocketBase server
+	if err := app.Start(); err != nil {
 		log.Fatal("Server failed to start:", err)
 	}
 }

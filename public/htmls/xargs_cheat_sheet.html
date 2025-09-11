@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ultimate xargs Cheat Sheet</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont,
+          "Segoe UI", system-ui, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #ffffff;
+        min-height: 100vh;
+        padding: 15px;
+        line-height: 1.3;
+      }
+      .main-container {
+        max-width: 1600px;
+        margin: 0 auto;
+        background: rgba(15, 23, 42, 0.95);
+        border-radius: 16px;
+        padding: 25px;
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 20px;
+        position: relative;
+      }
+      .header::before {
+        content: "";
+        position: absolute;
+        top: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 120px;
+        height: 3px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        border-radius: 2px;
+      }
+      h1 {
+        font-size: 2.8rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 8px;
+      }
+      .subtitle {
+        font-size: 1.1rem;
+        color: #94a3b8;
+        font-weight: 300;
+      }
+      .search-container {
+        margin: 20px 0;
+        position: relative;
+      }
+      .search-box {
+        width: 100%;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 25px;
+        background: rgba(30, 41, 59, 0.8);
+        color: #ffffff;
+        font-size: 1rem;
+        outline: none;
+        transition: all 0.3s ease;
+      }
+      .search-box:focus {
+        background: rgba(30, 41, 59, 0.9);
+        box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.4);
+      }
+      .search-box::placeholder {
+        color: #94a3b8;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+      }
+      .card {
+        background: rgba(30, 41, 59, 0.8);
+        border-radius: 12px;
+        padding: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+      }
+      .card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        border-color: rgba(102, 126, 234, 0.3);
+      }
+      .card h3 {
+        color: #667eea;
+        margin-bottom: 15px;
+        font-size: 1.3rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .cmd-group {
+        background: rgba(15, 23, 42, 0.8);
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 12px;
+        border-left: 3px solid #667eea;
+      }
+      .cmd {
+        color: #22d3ee;
+        font-family: "SF Mono", "Monaco", "Inconsolata", monospace;
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-bottom: 4px;
+      }
+      .desc {
+        color: #94a3b8;
+        font-size: 0.85rem;
+        margin-bottom: 8px;
+      }
+      .desc-ar {
+        color: #64748b;
+        font-size: 0.8rem;
+        font-style: italic;
+        direction: rtl;
+        text-align: right;
+      }
+      .icon {
+        font-size: 1.2rem;
+      }
+      .highlight {
+        color: #f59e0b;
+        font-weight: 600;
+      }
+      @media (max-width: 768px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+        h1 {
+          font-size: 2.2rem;
+        }
+        .card {
+          padding: 15px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main-container">
+      <div class="header">
+        <h1>xargs Cheat Sheet</h1>
+        <p class="subtitle">Command Construction & Parallel Execution</p>
+      </div>
+
+      <div class="search-container">
+        <input
+          type="text"
+          class="search-box"
+          placeholder="Search xargs commands..."
+          id="searchBox"
+        />
+      </div>
+
+      <div class="grid" id="commandGrid">
+        <div class="card">
+          <h3><span class="icon">🚀</span> Basic Usage</h3>
+          <div class="cmd-group">
+            <div class="cmd">echo "file1 file2" | xargs ls</div>
+            <div class="desc">Convert input to command arguments</div>
+            <div class="desc-ar">تحويل المدخلات إلى معاملات أوامر</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">find . -name "*.txt" | xargs rm</div>
+            <div class="desc">Remove files found by find</div>
+            <div class="desc-ar">حذف الملفات الموجودة بواسطة find</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">ls | xargs -I {} echo "File: {}"</div>
+            <div class="desc">Replace placeholder with input</div>
+            <div class="desc-ar">استبدال العنصر النائب بالمدخل</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">echo "a b c" | xargs -n1 echo</div>
+            <div class="desc">Process one argument at a time</div>
+            <div class="desc-ar">معالجة معامل واحد في كل مرة</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">cat files.txt | xargs cat</div>
+            <div class="desc">Concatenate files listed in input</div>
+            <div class="desc-ar">دمج الملفات المذكورة في المدخل</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3><span class="icon">⚡</span> Parallel Processing</h3>
+          <div class="cmd-group">
+            <div class="cmd">
+              find . -name "*.jpg" | xargs -P 4 -I {} convert {} {}.png
+            </div>
+            <div class="desc">Process 4 files in parallel</div>
+            <div class="desc-ar">معالجة 4 ملفات بشكل متوازي</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">echo {1..10} | xargs -n1 -P5 sleep</div>
+            <div class="desc">Run 5 parallel processes</div>
+            <div class="desc-ar">تشغيل 5 عمليات متوازية</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">ls *.zip | xargs -P 0 -I {} unzip {}</div>
+            <div class="desc">Use maximum parallel processes</div>
+            <div class="desc-ar">استخدام أقصى عدد من العمليات المتوازية</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">seq 1 100 | xargs -n1 -P10 curl -s</div>
+            <div class="desc">Make 10 parallel HTTP requests</div>
+            <div class="desc-ar">إجراء 10 طلبات HTTP متوازية</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">find . -name "*.log" | xargs -P 8 gzip</div>
+            <div class="desc">Compress files with 8 parallel jobs</div>
+            <div class="desc-ar">ضغط الملفات مع 8 مهام متوازية</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3><span class="icon">🔧</span> Argument Control</h3>
+          <div class="cmd-group">
+            <div class="cmd">echo "a b c d" | xargs -n2 echo</div>
+            <div class="desc">Process 2 arguments per command</div>
+            <div class="desc-ar">معالجة معاملين لكل أمر</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">ls | xargs -L1 echo "Processing:"</div>
+            <div class="desc">Process one line at a time</div>
+            <div class="desc-ar">معالجة سطر واحد في كل مرة</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">find . -name "*.txt" | xargs -r rm</div>
+            <div class="desc">Don't run if input is empty</div>
+            <div class="desc-ar">عدم التشغيل إذا كان المدخل فارغاً</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">echo "file with spaces.txt" | xargs -d'\n' ls</div>
+            <div class="desc">Use newline as delimiter</div>
+            <div class="desc-ar">استخدام السطر الجديد كفاصل</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">printf "a\0b\0c" | xargs -0 echo</div>
+            <div class="desc">Use null character as delimiter</div>
+            <div class="desc-ar">استخدام الحرف الفارغ كفاصل</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3><span class="icon">📁</span> File Operations</h3>
+          <div class="cmd-group">
+            <div class="cmd">
+              find . -name "*.bak" | xargs -I {} mv {} backup/
+            </div>
+            <div class="desc">Move backup files to directory</div>
+            <div class="desc-ar">نقل ملفات النسخ الاحتياطية إلى مجلد</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">ls *.txt | xargs -I {} cp {} {}.backup</div>
+            <div class="desc">Create backup copies of files</div>
+            <div class="desc-ar">إنشاء نسخ احتياطية من الملفات</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">find . -name "*.log" -print0 | xargs -0 rm</div>
+            <div class="desc">Remove files with spaces in names</div>
+            <div class="desc-ar">
+              حذف الملفات التي تحتوي على مسافات في الأسماء
+            </div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">echo "dir1 dir2 dir3" | xargs mkdir</div>
+            <div class="desc">Create multiple directories</div>
+            <div class="desc-ar">إنشاء مجلدات متعددة</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">
+              find . -name "*.jpg" | xargs -I {} basename {}
+            </div>
+            <div class="desc">Get filenames without paths</div>
+            <div class="desc-ar">الحصول على أسماء الملفات بدون مسارات</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3><span class="icon">🔍</span> Text Processing</h3>
+          <div class="cmd-group">
+            <div class="cmd">find . -name "*.txt" | xargs grep "pattern"</div>
+            <div class="desc">Search pattern in multiple files</div>
+            <div class="desc-ar">البحث عن نمط في ملفات متعددة</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">ls *.txt | xargs wc -l</div>
+            <div class="desc">Count lines in multiple files</div>
+            <div class="desc-ar">عد الأسطر في ملفات متعددة</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">echo "file1.txt file2.txt" | xargs cat</div>
+            <div class="desc">Concatenate multiple files</div>
+            <div class="desc-ar">دمج ملفات متعددة</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">
+              find . -name "*.md" | xargs -I {} sed -i 's/old/new/g' {}
+            </div>
+            <div class="desc">Replace text in multiple files</div>
+            <div class="desc-ar">استبدال النص في ملفات متعددة</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">ls *.log | xargs -I {} tail -n 10 {}</div>
+            <div class="desc">Show last 10 lines of each file</div>
+            <div class="desc-ar">عرض آخر 10 أسطر من كل ملف</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3><span class="icon">📊</span> System Commands</h3>
+          <div class="cmd-group">
+            <div class="cmd">
+              ps aux | grep firefox | awk '{print $2}' | xargs kill
+            </div>
+            <div class="desc">Kill processes by name</div>
+            <div class="desc-ar">إنهاء العمليات بالاسم</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">docker ps -q | xargs docker stop</div>
+            <div class="desc">Stop all running containers</div>
+            <div class="desc-ar">إيقاف جميع الحاويات الجارية</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">find /tmp -name "temp*" -mtime +7 | xargs rm</div>
+            <div class="desc">Remove old temporary files</div>
+            <div class="desc-ar">حذف الملفات المؤقتة القديمة</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">ls /var/log/*.log | xargs -I {} du -h {}</div>
+            <div class="desc">Check size of log files</div>
+            <div class="desc-ar">فحص حجم ملفات السجل</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">echo "user1 user2 user3" | xargs -n1 finger</div>
+            <div class="desc">Get info about multiple users</div>
+            <div class="desc-ar">الحصول على معلومات عن مستخدمين متعددين</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3><span class="icon">🌐</span> Network & Downloads</h3>
+          <div class="cmd-group">
+            <div class="cmd">cat urls.txt | xargs -n1 -P5 curl -O</div>
+            <div class="desc">Download URLs in parallel</div>
+            <div class="desc-ar">تنزيل الروابط بشكل متوازي</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">
+              echo "google.com github.com" | xargs -n1 ping -c1
+            </div>
+            <div class="desc">Ping multiple hosts</div>
+            <div class="desc-ar">فحص اتصال مضيفين متعددين</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">cat servers.txt | xargs -I {} ssh {} 'uptime'</div>
+            <div class="desc">Check uptime on multiple servers</div>
+            <div class="desc-ar">فحص وقت التشغيل على خوادم متعددة</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">
+              seq 1 254 | xargs -P50 -I {} ping -c1 192.168.1.{}
+            </div>
+            <div class="desc">Scan network range for live hosts</div>
+            <div class="desc-ar">مسح نطاق الشبكة للمضيفين النشطين</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">cat images.txt | xargs -n1 -P10 wget</div>
+            <div class="desc">Download images with 10 parallel connections</div>
+            <div class="desc-ar">تنزيل الصور مع 10 اتصالات متوازية</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3><span class="icon">🛠️</span> Advanced Patterns</h3>
+          <div class="cmd-group">
+            <div class="cmd">
+              find . -name "*.c" | xargs -I {} sh -c 'echo "=== {} ==="; cat {}'
+            </div>
+            <div class="desc">Execute shell command with header</div>
+            <div class="desc-ar">تنفيذ أمر shell مع عنوان</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">
+              printf '%s\n' *.txt | xargs -I {} bash -c 'echo "Lines in {}: $(wc
+              -l < {})"'
+            </div>
+            <div class="desc">Count lines with custom output</div>
+            <div class="desc-ar">عد الأسطر مع مخرجات مخصصة</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">
+              find . -name "*.jpg" | xargs -I {} sh -c 'convert {} $(dirname
+              {})/thumb_$(basename {})'
+            </div>
+            <div class="desc">Create thumbnails with path manipulation</div>
+            <div class="desc-ar">إنشاء صور مصغرة مع معالجة المسار</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">
+              echo "file1 file2" | xargs -I {} -P2 sh -c 'echo "Processing {}";
+              sleep 2; echo "{} done"'
+            </div>
+            <div class="desc">Parallel execution with status updates</div>
+            <div class="desc-ar">التنفيذ المتوازي مع تحديثات الحالة</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">
+              seq 1 10 | xargs -I {} -P5 sh -c 'curl -s "api.com/item/{}" >
+              item_{}.json'
+            </div>
+            <div class="desc">Parallel API calls with file output</div>
+            <div class="desc-ar">استدعاءات API متوازية مع إخراج الملفات</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3><span class="icon">⚠️</span> Safety & Error Handling</h3>
+          <div class="cmd-group">
+            <div class="cmd">find . -name "*.tmp" | xargs -r rm</div>
+            <div class="desc">Only run if input exists (-r flag)</div>
+            <div class="desc-ar">
+              التشغيل فقط إذا كان المدخل موجوداً (علامة -r)
+            </div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">echo "file1 file2" | xargs -t ls</div>
+            <div class="desc">Print commands before executing (-t flag)</div>
+            <div class="desc-ar">طباعة الأوامر قبل التنفيذ (علامة -t)</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">find . -name "*.txt" | xargs -p rm</div>
+            <div class="desc">Prompt before executing (-p flag)</div>
+            <div class="desc-ar">المطالبة قبل التنفيذ (علامة -p)</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">find . -name "*.log" -print0 | xargs -0 rm</div>
+            <div class="desc">Handle filenames with spaces safely</div>
+            <div class="desc-ar">التعامل مع أسماء الملفات بمسافات بأمان</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">
+              cat files.txt | xargs -I {} test -f {} && echo "{} exists"
+            </div>
+            <div class="desc">Check if files exist before processing</div>
+            <div class="desc-ar">فحص وجود الملفات قبل المعالجة</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document
+        .getElementById("searchBox")
+        .addEventListener("input", function () {
+          const searchTerm = this.value.toLowerCase();
+          const cards = document.querySelectorAll(".card");
+
+          cards.forEach((card) => {
+            const text = card.textContent.toLowerCase();
+            if (text.includes(searchTerm)) {
+              card.style.display = "block";
+            } else {
+              card.style.display = "none";
+            }
+          });
+        });
+    </script>
+  </body>
+</html>

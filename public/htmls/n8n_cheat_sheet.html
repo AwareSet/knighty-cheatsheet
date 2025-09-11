@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>n8n Cheat Sheet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 15px;
+            line-height: 1.3;
+        }
+
+        .main-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: rgba(15, 23, 42, 0.95);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+            border-radius: 2px;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #94a3b8;
+            font-weight: 300;
+        }
+
+        .search-container {
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 12px 20px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .search-box::placeholder {
+            color: #94a3b8;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .section {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid rgba(100, 116, 139, 0.2);
+            position: relative;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .section-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .wide-section {
+            grid-column: span 2;
+        }
+
+        .full-section {
+            grid-column: span 4;
+            background: rgba(15, 23, 42, 0.9);
+            border: 2px solid #667eea;
+        }
+
+        .command {
+            background: rgba(51, 65, 85, 0.4);
+            padding: 8px;
+            border-radius: 6px;
+            border-left: 3px solid #667eea;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .command:hover {
+            border-left-color: #f093fb;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .cmd-name {
+            font-size: 0.8rem;
+            color: #f093fb;
+            font-weight: 600;
+            margin-bottom: 2px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cmd-syntax {
+            font-family: 'JetBrains Mono', 'Consolas', 'Monaco', monospace;
+            font-size: 0.7rem;
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            padding: 6px 8px;
+            border-radius: 4px;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            margin-bottom: 4px;
+            word-break: break-all;
+            position: relative;
+            line-height: 1.3;
+            white-space: pre-wrap;
+        }
+
+        .cmd-desc {
+            color: #cbd5e1;
+            font-size: 0.7rem;
+            line-height: 1.2;
+        }
+
+        .copy-btn {
+            background: rgba(240, 147, 251, 0.2);
+            border: 1px solid rgba(240, 147, 251, 0.3);
+            color: #f093fb;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.6rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: rgba(240, 147, 251, 0.3);
+        }
+
+        .syntax-table {
+            background: rgba(51, 65, 85, 0.6);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+
+        .syntax-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .syntax-table th,
+        .syntax-table td {
+            padding: 6px 8px;
+            text-align: left;
+            border-bottom: 1px solid rgba(100, 116, 139, 0.3);
+        }
+
+        .syntax-table th {
+            background: rgba(102, 126, 234, 0.2);
+            color: #f093fb;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .syntax-table td {
+            font-size: 0.7rem;
+        }
+
+        .syntax-table td:first-child {
+            font-family: 'JetBrains Mono', monospace;
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .syntax-table td:last-child {
+            color: #cbd5e1;
+        }
+
+        .pattern-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .pattern-item {
+            background: rgba(51, 65, 85, 0.6);
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .pattern-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #667eea;
+            transform: scale(1.02);
+        }
+
+        .pattern-name {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #f093fb;
+            margin-bottom: 2px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .pattern-desc {
+            font-size: 0.65rem;
+            color: #94a3b8;
+            line-height: 1.2;
+        }
+
+        .example-section {
+            background: rgba(51, 65, 85, 0.6);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            margin-bottom: 12px;
+        }
+
+        .example-title {
+            font-size: 0.8rem;
+            color: #f093fb;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .example-code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            color: #667eea;
+            background: rgba(15, 23, 42, 0.7);
+            padding: 8px 10px;
+            border-radius: 4px;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            margin-bottom: 6px;
+            white-space: pre-wrap;
+            word-break: break-all;
+            line-height: 1.4;
+        }
+
+        .example-desc {
+            color: #cbd5e1;
+            font-size: 0.65rem;
+            line-height: 1.2;
+        }
+
+        .install-section {
+            background: rgba(51, 65, 85, 0.6);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            margin-bottom: 15px;
+        }
+
+        .install-title {
+            font-size: 1rem;
+            color: #f093fb;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .install-content {
+            font-size: 0.75rem;
+            color: #cbd5e1;
+            line-height: 1.4;
+        }
+
+        .install-content code {
+            background: rgba(102, 126, 234, 0.2);
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'JetBrains Mono', monospace;
+            color: #667eea;
+        }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .tip {
+            background: rgba(15, 23, 42, 0.7);
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 3px solid #f093fb;
+        }
+
+        .tip-title {
+            font-weight: 600;
+            color: #f093fb;
+            margin-bottom: 4px;
+            font-size: 0.75rem;
+        }
+
+        .tip-content {
+            color: #cbd5e1;
+            line-height: 1.2;
+            font-size: 0.7rem;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 10px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .footer-text {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .highlight {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        code {
+            background: rgba(102, 126, 234, 0.2);
+            padding: 1px 3px;
+            border-radius: 3px;
+            font-family: 'JetBrains Mono', monospace;
+            color: #667eea;
+            font-size: 0.75em;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .operator-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+
+        .operator-item {
+            background: rgba(51, 65, 85, 0.6);
+            padding: 6px;
+            border-radius: 4px;
+            text-align: center;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .operator-symbol {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: #f093fb;
+            font-weight: 600;
+        }
+
+        .operator-desc {
+            font-size: 0.6rem;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .full-section {
+                grid-column: span 3;
+            }
+            
+            .wide-section {
+                grid-column: span 2;
+            }
+            
+            .tips-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .full-section, .wide-section {
+                grid-column: span 1;
+            }
+            
+            .tips-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .pattern-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .operator-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header">
+            <h1>n8n</h1>
+            <div class="subtitle">Ultimate Interactive Cheat Sheet for n8n</div>
+        </div>
+
+        <div class="search-container">
+            <input type="text" class="search-box" placeholder="Search n8n commands, syntax, or examples..." id="searchBox">
+        </div>
+
+        <div class="main-grid">
+            <!-- Basic Commands -->
+            <div class="section">
+                <div class="section-title">🚀 Basic Commands</div>
+                <div class="section-content">
+                    <div class="command" data-category="basic">
+                        <div class="cmd-name">Print Text <span class="copy-btn" onclick="copyToClipboard('echo "Hello World"')">Copy</span></div>
+                        <div class="cmd-syntax">echo "Hello World"</div>
+                        <div class="cmd-desc">Display text or variables.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-text">
+                 <span class="highlight">Master n8n</span> for powerful command-line automation and scripting!
+                <br>
+                <div style="margin-top: 10px; font-size: 0.85rem; color: #667eea;">
+                    📱 Follow for more tech guides: <span class="highlight">@night_knightz</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Copy to clipboard functionality
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                // Visual feedback
+                const notification = document.createElement('div');
+                notification.textContent = 'Copied to clipboard!';
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: rgba(102, 126, 234, 0.9);
+                    color: white;
+                    padding: 10px 20px;
+                    border-radius: 5px;
+                    z-index: 1000;
+                    font-size: 0.9rem;
+                    font-weight: 600;
+                `;
+                document.body.appendChild(notification);
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 2000);
+            }).catch(function(err) {
+                console.error('Could not copy text: ', err);
+            });
+        }
+
+        // Search functionality
+        document.getElementById('searchBox').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const commands = document.querySelectorAll('.command');
+            const sections = document.querySelectorAll('.section');
+            const exampleSections = document.querySelectorAll('.example-section');
+
+            // Search commands
+            commands.forEach(command => {
+                const name = command.querySelector('.cmd-name').textContent.toLowerCase();
+                const syntax = command.querySelector('.cmd-syntax').textContent.toLowerCase();
+                const desc = command.querySelector('.cmd-desc').textContent.toLowerCase();
+                
+                if (name.includes(searchTerm) || syntax.includes(searchTerm) || desc.includes(searchTerm)) {
+                    command.style.display = 'block';
+                } else {
+                    command.style.display = 'none';
+                }
+            });
+
+            // Search example sections
+            exampleSections.forEach(item => {
+                const title = item.querySelector('.example-title').textContent.toLowerCase();
+                const code = item.querySelector('.example-code').textContent.toLowerCase();
+                const desc = item.querySelector('.example-desc').textContent.toLowerCase();
+                
+                if (title.includes(searchTerm) || code.includes(searchTerm) || desc.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            // Hide sections with no visible content
+            sections.forEach(section => {
+                const visibleCommands = section.querySelectorAll('.command:not([style*="display: none"])');
+                const visibleExamples = section.querySelectorAll('.example-section:not([style*="display: none"])');
+                const hasTips = section.querySelector('.tips-grid');
+                
+                if (hasTips || visibleCommands.length > 0 || visibleExamples.length > 0) {
+                    section.style.display = 'flex'; /* Use flex to maintain column layout */
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+        });
+
+        // Click to copy for command syntax boxes
+        document.querySelectorAll('.cmd-syntax').forEach(syntax => {
+            syntax.addEventListener('click', function() {
+                const text = this.textContent.trim();
+                copyToClipboard(text);
+            });
+        });
+
+        // Click to copy for example code
+        document.querySelectorAll('.example-code').forEach(code => {
+            code.addEventListener('click', function() {
+                const text = this.textContent.trim();
+                copyToClipboard(text);
+            });
+        });
+    </script>
+</body>
+</html>

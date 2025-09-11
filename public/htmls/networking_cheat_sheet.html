@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ultimate Networking Cheat Sheet</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont,
+          "Segoe UI", system-ui, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #ffffff;
+        min-height: 100vh;
+        padding: 15px;
+        line-height: 1.3;
+      }
+      .main-container {
+        max-width: 1600px;
+        margin: 0 auto;
+        background: rgba(15, 23, 42, 0.95);
+        border-radius: 16px;
+        padding: 25px;
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 20px;
+        position: relative;
+      }
+      .header::before {
+        content: "";
+        position: absolute;
+        top: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 120px;
+        height: 3px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        border-radius: 2px;
+      }
+      h1 {
+        font-size: 2.8rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 8px;
+      }
+      .subtitle {
+        font-size: 1.1rem;
+        color: #94a3b8;
+        font-weight: 300;
+      }
+      .search-container {
+        margin: 20px 0;
+        position: relative;
+      }
+      .search-box {
+        width: 100%;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 25px;
+        background: rgba(30, 41, 59, 0.8);
+        color: #ffffff;
+        font-size: 1rem;
+        outline: none;
+        transition: all 0.3s ease;
+      }
+      .search-box:focus {
+        background: rgba(30, 41, 59, 0.9);
+        box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.4);
+      }
+      .search-box::placeholder {
+        color: #94a3b8;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+      }
+      .card {
+        background: rgba(30, 41, 59, 0.8);
+        border-radius: 12px;
+        padding: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+      }
+      .card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        border-color: rgba(102, 126, 234, 0.3);
+      }
+      .card h3 {
+        color: #667eea;
+        margin-bottom: 15px;
+        font-size: 1.3rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .cmd-group {
+        background: rgba(15, 23, 42, 0.8);
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 12px;
+        border-left: 3px solid #667eea;
+      }
+      .cmd {
+        color: #22d3ee;
+        font-family: "SF Mono", "Monaco", "Inconsolata", monospace;
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-bottom: 4px;
+      }
+      .desc {
+        color: #94a3b8;
+        font-size: 0.85rem;
+        margin-bottom: 8px;
+      }
+      .desc-ar {
+        color: #64748b;
+        font-size: 0.8rem;
+        font-style: italic;
+        direction: rtl;
+        text-align: right;
+      }
+      .icon {
+        font-size: 1.2rem;
+      }
+      .highlight {
+        color: #f59e0b;
+        font-weight: 600;
+      }
+      @media (max-width: 768px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+        h1 {
+          font-size: 2.2rem;
+        }
+        .card {
+          padding: 15px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main-container">
+      <div class="header">
+        <h1>Networking Cheat Sheet</h1>
+        <p class="subtitle">Network Commands by OSI/TCP-IP Layers</p>
+      </div>
+
+      <div class="search-container">
+        <input
+          type="text"
+          class="search-box"
+          placeholder="Search networking commands..."
+          id="searchBox"
+        />
+      </div>
+
+      <div class="grid" id="commandGrid">
+        <div class="card">
+          <h3>
+            <span class="icon">🔌</span> Physical & Data Link Layer (L1-L2)
+          </h3>
+          <div class="cmd-group">
+            <div class="cmd">ip link show</div>
+            <div class="desc">Show network interfaces and status</div>
+            <div class="desc-ar">عرض واجهات الشبكة والحالة</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">ip link set eth0 up</div>
+            <div class="desc">Bring interface up</div>
+            <div class="desc-ar">تشغيل الواجهة</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">ethtool eth0</div>
+            <div class="desc">Show ethernet interface details</div>
+            <div class="desc-ar">عرض تفاصيل واجهة الإيثرنت</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">iwconfig</div>
+            <div class="desc">Configure wireless interface</div>
+            <div class="desc-ar">تكوين واجهة لاسلكية</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">iwlist scan</div>
+            <div class="desc">Scan for wireless networks</div>
+            <div class="desc-ar">مسح الشبكات اللاسلكية</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">arp -a</div>
+            <div class="desc">Show ARP table (MAC addresses)</div>
+            <div class="desc-ar">عرض جدول ARP (عناوين MAC)</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>
+            <span class="icon">🌐</span> Network Layer (L3) - IP & Routing
+          </h3>
+          <div class="cmd-group">
+            <div class="cmd">ip addr show</div>
+            <div class="desc">Show IP addresses on interfaces</div>
+            <div class="desc-ar">عرض عناوين IP على الواجهات</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">ip addr add 192.168.1.100/24 dev eth0</div>
+            <div class="desc">Add IP address to interface</div>
+            <div class="desc-ar">إضافة عنوان IP للواجهة</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">ip route show</div>
+            <div class="desc">Show routing table</div>
+            <div class="desc-ar">عرض جدول التوجيه</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">ip route add default via 192.168.1.1</div>
+            <div class="desc">Add default route</div>
+            <div class="desc-ar">إضافة مسار افتراضي</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">ping google.com</div>
+            <div class="desc">Test ICMP connectivity</div>
+            <div class="desc-ar">اختبار اتصال ICMP</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">traceroute google.com</div>
+            <div class="desc">Trace ICMP route to destination</div>
+            <div class="desc-ar">تتبع مسار ICMP إلى الوجهة</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>
+            <span class="icon">🚢</span> Transport Layer (L4) - TCP/UDP Ports
+          </h3>
+          <div class="cmd-group">
+            <div class="cmd">netstat -tuln</div>
+            <div class="desc">Show listening TCP/UDP ports</div>
+            <div class="desc-ar">عرض منافذ TCP/UDP المستمعة</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">ss -tuln</div>
+            <div class="desc">Modern alternative to netstat</div>
+            <div class="desc-ar">بديل حديث لـ netstat</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">lsof -i :80</div>
+            <div class="desc">Show processes using port 80</div>
+            <div class="desc-ar">عرض العمليات التي تستخدم المنفذ 80</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">nc -zv google.com 80</div>
+            <div class="desc">Test TCP port connectivity</div>
+            <div class="desc-ar">اختبار اتصال منفذ TCP</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">nc -l 8080</div>
+            <div class="desc">Listen on TCP port 8080</div>
+            <div class="desc-ar">الاستماع على منفذ TCP 8080</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">telnet google.com 80</div>
+            <div class="desc">Connect to TCP port manually</div>
+            <div class="desc-ar">الاتصال بمنفذ TCP يدوياً</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>
+            <span class="icon">📋</span> Application Layer (L5-L7) - DNS, HTTP,
+            Services
+          </h3>
+          <div class="cmd-group">
+            <div class="cmd">nslookup google.com</div>
+            <div class="desc">DNS lookup</div>
+            <div class="desc-ar">البحث في DNS</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">dig google.com</div>
+            <div class="desc">Detailed DNS query</div>
+            <div class="desc-ar">استعلام DNS مفصل</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">dig @8.8.8.8 google.com MX</div>
+            <div class="desc">Query specific DNS server for MX records</div>
+            <div class="desc-ar">استعلام خادم DNS محدد لسجلات MX</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">curl -I google.com</div>
+            <div class="desc">Get HTTP headers</div>
+            <div class="desc-ar">الحصول على رؤوس HTTP</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">wget google.com</div>
+            <div class="desc">Download webpage via HTTP</div>
+            <div class="desc-ar">تنزيل صفحة ويب عبر HTTP</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">whois google.com</div>
+            <div class="desc">Domain registration information</div>
+            <div class="desc-ar">معلومات تسجيل النطاق</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3><span class="icon">🔍</span> Network Scanning & Discovery</h3>
+          <div class="cmd-group">
+            <div class="cmd">nmap -sP 192.168.1.0/24</div>
+            <div class="desc">Ping scan network range</div>
+            <div class="desc-ar">مسح الشبكة بالفحص</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">nmap -sS 192.168.1.1</div>
+            <div class="desc">SYN scan for open ports</div>
+            <div class="desc-ar">مسح SYN للمنافذ المفتوحة</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">nmap -p 22,80,443 192.168.1.1</div>
+            <div class="desc">Scan specific ports</div>
+            <div class="desc-ar">مسح منافذ محددة</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">nmap -A 192.168.1.1</div>
+            <div class="desc">Aggressive scan with OS detection</div>
+            <div class="desc-ar">مسح عدواني مع كشف نظام التشغيل</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">masscan -p1-65535 192.168.1.0/24</div>
+            <div class="desc">Fast port scanner</div>
+            <div class="desc-ar">ماسح منافذ سريع</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3><span class="icon">📊</span> Network Monitoring & Analysis</h3>
+          <div class="cmd-group">
+            <div class="cmd">tcpdump -i eth0 host google.com</div>
+            <div class="desc">Capture packets to/from host</div>
+            <div class="desc-ar">التقاط الحزم من/إلى المضيف</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">wireshark</div>
+            <div class="desc">GUI packet analyzer</div>
+            <div class="desc-ar">محلل الحزم بواجهة رسومية</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">iftop</div>
+            <div class="desc">Real-time network bandwidth usage</div>
+            <div class="desc-ar">استخدام النطاق الترددي في الوقت الفعلي</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">nethogs</div>
+            <div class="desc">Network usage by process</div>
+            <div class="desc-ar">استخدام الشبكة حسب العملية</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">vnstat</div>
+            <div class="desc">Network statistics history</div>
+            <div class="desc-ar">تاريخ إحصائيات الشبكة</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">mtr google.com</div>
+            <div class="desc">Continuous traceroute with stats</div>
+            <div class="desc-ar">تتبع مستمر للمسار مع الإحصائيات</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3><span class="icon">🔒</span> Firewall & Security</h3>
+          <div class="cmd-group">
+            <div class="cmd">iptables -L</div>
+            <div class="desc">List firewall rules</div>
+            <div class="desc-ar">عرض قواعد الجدار الناري</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">ufw status</div>
+            <div class="desc">Check UFW firewall status</div>
+            <div class="desc-ar">فحص حالة جدار UFW الناري</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">ufw allow 22</div>
+            <div class="desc">Allow port through firewall</div>
+            <div class="desc-ar">السماح للمنفذ عبر الجدار الناري</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">fail2ban-client status</div>
+            <div class="desc">Check fail2ban status</div>
+            <div class="desc-ar">فحص حالة fail2ban</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">iptables -A INPUT -p tcp --dport 80 -j ACCEPT</div>
+            <div class="desc">Allow HTTP traffic</div>
+            <div class="desc-ar">السماح لحركة HTTP</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3><span class="icon">📡</span> Wireless Networks (WiFi)</h3>
+          <div class="cmd-group">
+            <div class="cmd">nmcli dev wifi</div>
+            <div class="desc">List available WiFi networks</div>
+            <div class="desc-ar">عرض شبكات WiFi المتاحة</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">
+              nmcli dev wifi connect "SSID" password "password"
+            </div>
+            <div class="desc">Connect to WiFi network</div>
+            <div class="desc-ar">الاتصال بشبكة WiFi</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">iw dev wlan0 scan</div>
+            <div class="desc">Scan with iw tool</div>
+            <div class="desc-ar">المسح باستخدام أداة iw</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">wavemon</div>
+            <div class="desc">Monitor wireless signal strength</div>
+            <div class="desc-ar">مراقبة قوة الإشارة اللاسلكية</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">iwconfig wlan0 essid "NetworkName"</div>
+            <div class="desc">Set wireless network name</div>
+            <div class="desc-ar">تعيين اسم الشبكة اللاسلكية</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3><span class="icon">🔄</span> Network Services & DHCP</h3>
+          <div class="cmd-group">
+            <div class="cmd">dhclient eth0</div>
+            <div class="desc">Renew DHCP lease</div>
+            <div class="desc-ar">تجديد عقد DHCP</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">systemctl restart network-manager</div>
+            <div class="desc">Restart network manager</div>
+            <div class="desc-ar">إعادة تشغيل مدير الشبكة</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">systemctl status networking</div>
+            <div class="desc">Check networking service status</div>
+            <div class="desc-ar">فحص حالة خدمة الشبكة</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">resolvectl flush-caches</div>
+            <div class="desc">Flush DNS cache</div>
+            <div class="desc-ar">مسح ذاكرة DNS التخزينية</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">systemd-resolve --status</div>
+            <div class="desc">Show DNS configuration</div>
+            <div class="desc-ar">عرض إعدادات DNS</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>
+            <span class="icon">🌍</span> Internet Connectivity & Performance
+          </h3>
+          <div class="cmd-group">
+            <div class="cmd">curl ifconfig.me</div>
+            <div class="desc">Get public IP address</div>
+            <div class="desc-ar">الحصول على عنوان IP العام</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">speedtest-cli</div>
+            <div class="desc">Internet speed test</div>
+            <div class="desc-ar">اختبار سرعة الإنترنت</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">iperf3 -s</div>
+            <div class="desc">Start bandwidth test server</div>
+            <div class="desc-ar">تشغيل خادم اختبار النطاق الترددي</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">iperf3 -c server_ip</div>
+            <div class="desc">Test bandwidth to server</div>
+            <div class="desc-ar">اختبار النطاق الترددي للخادم</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">curl -w "%{time_total}" google.com</div>
+            <div class="desc">Measure HTTP response time</div>
+            <div class="desc-ar">قياس وقت استجابة HTTP</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3><span class="icon">🛠️</span> Advanced Tools & Utilities</h3>
+          <div class="cmd-group">
+            <div class="cmd">socat TCP-LISTEN:8080,fork TCP:google.com:80</div>
+            <div class="desc">Port forwarding with socat</div>
+            <div class="desc-ar">إعادة توجيه المنفذ باستخدام socat</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">nload</div>
+            <div class="desc">Real-time network load monitor</div>
+            <div class="desc-ar">مراقب حمولة الشبكة في الوقت الفعلي</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">bmon</div>
+            <div class="desc">Bandwidth monitor and rate estimator</div>
+            <div class="desc-ar">مراقب النطاق الترددي ومقدر المعدل</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">bandwhich</div>
+            <div class="desc">Modern network utilization tool</div>
+            <div class="desc-ar">أداة حديثة لاستخدام الشبكة</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">sar -n DEV 1</div>
+            <div class="desc">Network device statistics</div>
+            <div class="desc-ar">إحصائيات أجهزة الشبكة</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3><span class="icon">⚡</span> Performance & Troubleshooting</h3>
+          <div class="cmd-group">
+            <div class="cmd">ping -c 4 -i 0.2 google.com</div>
+            <div class="desc">Fast ping test for latency</div>
+            <div class="desc-ar">اختبار ping سريع للكمون</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">traceroute -n google.com</div>
+            <div class="desc">Traceroute without DNS resolution</div>
+            <div class="desc-ar">تتبع المسار بدون تحليل DNS</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">mtr --report-cycles 10 google.com</div>
+            <div class="desc">Network diagnostic report</div>
+            <div class="desc-ar">تقرير تشخيص الشبكة</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">nslookup -debug google.com</div>
+            <div class="desc">DNS troubleshooting with debug</div>
+            <div class="desc-ar">استكشاف أخطاء DNS مع التصحيح</div>
+          </div>
+          <div class="cmd-group">
+            <div class="cmd">timeout 5 nc -zv google.com 80</div>
+            <div class="desc">Port connectivity test with timeout</div>
+            <div class="desc-ar">اختبار اتصال المنفذ مع مهلة زمنية</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document
+        .getElementById("searchBox")
+        .addEventListener("input", function () {
+          const searchTerm = this.value.toLowerCase();
+          const cards = document.querySelectorAll(".card");
+
+          cards.forEach((card) => {
+            const text = card.textContent.toLowerCase();
+            if (text.includes(searchTerm)) {
+              card.style.display = "block";
+            } else {
+              card.style.display = "none";
+            }
+          });
+        });
+    </script>
+  </body>
+</html>
