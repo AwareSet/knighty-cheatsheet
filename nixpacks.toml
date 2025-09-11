@@ -1,14 +1,28 @@
+# Nixpacks configuration for KnightyApp (React + Go hybrid)
+
 [phases.setup]
-nixPkgs = ["nodejs", "go"]
+nixPkgs = ["nodejs_18", "go_1_21", "git"]
+
+[phases.install]
+cmds = ["npm ci --only=production --no-audit --no-fund"]
 
 [phases.build]
 cmds = [
-    "npm ci --only=production",
-    "npm run build",
+    "echo 'Starting React build...'",
+    "CI=false npm run build",
+    "echo 'React build completed'",
+    "ls -la build/",
+    "echo 'Copying build files...'",
     "cp -r build/* ./",
-    "cp -r public/htmls ./htmls/",
-    "go mod tidy",
-    "CGO_ENABLED=0 GOOS=linux go build -o main *.go",
+    "echo 'Copying HTML files...'",
+    "mkdir -p htmls",
+    "cp -r public/htmls/* ./htmls/ || echo 'No htmls directory found'",
+    "echo 'Building Go application...'",
+    "go mod download",
+    "go mod verify",
+    "CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags='-w -s' -o main *.go",
+    "echo 'Build completed successfully'",
+    "ls -la",
 ]
 
 [start]
@@ -17,3 +31,4 @@ cmd = "./main"
 [variables]
 PORT = "8080"
 NODE_ENV = "production"
+GO111MODULE = "on"

@@ -119,6 +119,35 @@ const LandingPage = () => {
                 Use ↑↓ to navigate, Enter to select, ESC to return
               </p>
             </div>
+            
+            {/* Results directly under search in focused mode */}
+            <div className="search-focused-results">
+              {searchQuery ? (
+                // Show search results when there's a query
+                filteredCheatsheets.length > 0 ? (
+                  <div className="cheatsheets-grid">
+                    {filteredCheatsheets.map(sheet => (
+                      <CheatSheetCard key={sheet.id} cheatsheet={sheet} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="no-results">
+                    <div className="no-results-icon">🔍</div>
+                    <h3>{t.sections.noResults}</h3>
+                    <p>
+                      {t.sections.noResultsDesc.replace('{query}', searchQuery)}
+                    </p>
+                  </div>
+                )
+              ) : (
+                // Show all cheat sheets when no search query
+                <div className="cheatsheets-grid">
+                  {cheatsheets.map(sheet => (
+                    <CheatSheetCard key={sheet.id} cheatsheet={sheet} />
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
@@ -150,9 +179,9 @@ const LandingPage = () => {
             </section>
           )}
 
-          {/* Results Section */}
-          <section className="results-section">
-            {!searchFocused && (
+          {/* Results Section - Only show when NOT in search-focused mode */}
+          {!searchFocused && (
+            <section className="results-section">
               <div className="section-header">
                 <h2>
                   {showFeaturedOnly ? `⭐ ${t.sections.featured}` : 
@@ -164,40 +193,40 @@ const LandingPage = () => {
                   {searchQuery && ` ${language === 'en' ? 'for' : 'لـ'} "${searchQuery}"`}
                 </p>
               </div>
-            )}
-            
-            {filteredCheatsheets.length > 0 ? (
-              <div className="cheatsheets-grid">
-                {filteredCheatsheets.map(sheet => (
-                  <CheatSheetCard key={sheet.id} cheatsheet={sheet} />
-                ))}
-              </div>
-            ) : (
-              <div className="no-results">
-                <div className="no-results-icon">🔍</div>
-                <h3>{t.sections.noResults}</h3>
-                <p>
-                  {searchQuery ? 
-                    t.sections.noResultsDesc.replace('{query}', searchQuery) :
-                    (language === 'en' ? 
-                      'No cheat sheets match your current filters. Try adjusting your selection.' :
-                      'لا توجد مراجع تطابق المرشحات الحالية. جرب تعديل اختيارك.'
-                    )
-                  }
-                </p>
-                <button 
-                  className="reset-filters"
-                  onClick={() => {
-                    setSearchQuery('');
-                    setSelectedCategory('All');
-                    setShowFeaturedOnly(false);
-                  }}
-                >
-                  {t.sections.resetFilters}
-                </button>
-              </div>
-            )}
-          </section>
+              
+              {filteredCheatsheets.length > 0 ? (
+                <div className="cheatsheets-grid">
+                  {filteredCheatsheets.map(sheet => (
+                    <CheatSheetCard key={sheet.id} cheatsheet={sheet} />
+                  ))}
+                </div>
+              ) : (
+                <div className="no-results">
+                  <div className="no-results-icon">🔍</div>
+                  <h3>{t.sections.noResults}</h3>
+                  <p>
+                    {searchQuery ? 
+                      t.sections.noResultsDesc.replace('{query}', searchQuery) :
+                      (language === 'en' ? 
+                        'No cheat sheets match your current filters. Try adjusting your selection.' :
+                        'لا توجد مراجع تطابق المرشحات الحالية. جرب تعديل اختيارك.'
+                      )
+                    }
+                  </p>
+                  <button 
+                    className="reset-filters"
+                    onClick={() => {
+                      setSearchQuery('');
+                      setSelectedCategory('All');
+                      setShowFeaturedOnly(false);
+                    }}
+                  >
+                    {t.sections.resetFilters}
+                  </button>
+                </div>
+              )}
+            </section>
+          )}
         </div>
       </main>
 
