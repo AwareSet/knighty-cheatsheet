@@ -1,0 +1,19 @@
+[phases.setup]
+nixPkgs = ["nodejs", "go"]
+
+[phases.build]
+cmds = [
+    "npm ci --only=production",
+    "npm run build",
+    "cp -r build/* ./",
+    "cp -r public/htmls ./htmls/",
+    "go mod tidy",
+    "CGO_ENABLED=0 GOOS=linux go build -o main *.go",
+]
+
+[start]
+cmd = "./main"
+
+[variables]
+PORT = "8080"
+NODE_ENV = "production"

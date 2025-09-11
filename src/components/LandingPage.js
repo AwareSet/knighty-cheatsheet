@@ -80,6 +80,11 @@ const LandingPage = () => {
   const handleSearch = (query) => {
     setSearchQuery(query);
     setShowFeaturedOnly(false); // Reset featured filter when searching
+    
+    // If search is cleared, exit search focused mode
+    if (!query.trim()) {
+      setSearchFocused(false);
+    }
   };
 
   const handleCategoryChange = (category) => {
@@ -95,49 +100,71 @@ const LandingPage = () => {
 
   return (
     <div className="landing-page">
-      <Hero />
+      {!searchFocused && <Hero />}
       
-      <Stats totalCheatsheets={cheatsheets.length} categories={categories.length - 1} />
+      {!searchFocused && <Stats totalCheatsheets={cheatsheets.length} categories={categories.length - 1} />}
       
-      <main className="main-content">
-        <div className="container">
-          {/* Search and Filter Controls */}
-          <section className="controls-section">
-            <div className="controls-container">
+      {searchFocused && (
+        <div className="search-focused-header">
+          <div className="container">
+            <div className="search-focused-container">
+              <h1 className="search-focused-title">🔍 Search Cheat Sheets</h1>
               <SearchBar 
                 ref={searchBarRef}
                 onSearch={handleSearch}
                 searchQuery={searchQuery}
                 placeholder={t.search.placeholder}
               />
-              <CategoryFilter
-                categories={categories}
-                selectedCategory={selectedCategory}
-                onCategoryChange={handleCategoryChange}
-                translations={t.categories}
-              />
-              <button 
-                className={`featured-toggle ${showFeaturedOnly ? 'active' : ''}`}
-                onClick={toggleFeatured}
-              >
-                ⭐ {t.search.featuredOnly}
-              </button>
+              <p className="search-focused-hint">
+                Use ↑↓ to navigate, Enter to select, ESC to return
+              </p>
             </div>
-          </section>
+          </div>
+        </div>
+      )}
+      
+      <main className="main-content">
+        <div className="container">
+          {!searchFocused && (
+            <section className="controls-section">
+              <div className="controls-container">
+                <SearchBar 
+                  ref={searchBarRef}
+                  onSearch={handleSearch}
+                  searchQuery={searchQuery}
+                  placeholder={t.search.placeholder}
+                />
+                <CategoryFilter
+                  categories={categories}
+                  selectedCategory={selectedCategory}
+                  onCategoryChange={handleCategoryChange}
+                  translations={t.categories}
+                />
+                <button 
+                  className={`featured-toggle ${showFeaturedOnly ? 'active' : ''}`}
+                  onClick={toggleFeatured}
+                >
+                  ⭐ {t.search.featuredOnly}
+                </button>
+              </div>
+            </section>
+          )}
 
           {/* Results Section */}
           <section className="results-section">
-            <div className="section-header">
-              <h2>
-                {showFeaturedOnly ? `⭐ ${t.sections.featured}` : 
-                 selectedCategory !== 'All' ? `📁 ${t.categories[selectedCategory.toLowerCase()] || selectedCategory}` :
-                 searchQuery ? `🔍 ${t.sections.searchResults}` : `📚 ${t.sections.allSheets}`}
-              </h2>
-              <p>
-                {filteredCheatsheets.length} {t.stats.cheatsheets.toLowerCase()}{language === 'en' && filteredCheatsheets.length !== 1 ? 's' : ''} {language === 'en' ? 'found' : 'موجود'}
-                {searchQuery && ` ${language === 'en' ? 'for' : 'لـ'} "${searchQuery}"`}
-              </p>
-            </div>
+            {!searchFocused && (
+              <div className="section-header">
+                <h2>
+                  {showFeaturedOnly ? `⭐ ${t.sections.featured}` : 
+                   selectedCategory !== 'All' ? `📁 ${t.categories[selectedCategory.toLowerCase()] || selectedCategory}` :
+                   searchQuery ? `🔍 ${t.sections.searchResults}` : `📚 ${t.sections.allSheets}`}
+                </h2>
+                <p>
+                  {filteredCheatsheets.length} {t.stats.cheatsheets.toLowerCase()}{language === 'en' && filteredCheatsheets.length !== 1 ? 's' : ''} {language === 'en' ? 'found' : 'موجود'}
+                  {searchQuery && ` ${language === 'en' ? 'for' : 'لـ'} "${searchQuery}"`}
+                </p>
+              </div>
+            )}
             
             {filteredCheatsheets.length > 0 ? (
               <div className="cheatsheets-grid">

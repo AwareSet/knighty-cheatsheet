@@ -1,0 +1,28 @@
+{
+  "name": "knightyapp-cheatsheets",
+  "description": "Professional developer cheat sheets with bilingual support",
+  "keywords": ["cheatsheets", "developer", "reference", "go", "react"],
+  "website": "https://github.com/AwareSet/knighty-cheatsheet",
+  "repository": "https://github.com/AwareSet/knighty-cheatsheet",
+  "logo": "https://raw.githubusercontent.com/AwareSet/knighty-cheatsheet/main/public/logo192.png",
+  "success_url": "/",
+  "env": {
+    "NODE_ENV": {
+      "description": "Node environment",
+      "value": "production"
+    },
+    "PORT": {
+      "description": "Port number",
+      "value": "8080"
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    },
+    {
+      "url": "heroku/go"
+    }
+  ],
+  "stack": "heroku-22"
+}
