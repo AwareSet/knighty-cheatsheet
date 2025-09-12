@@ -4,25 +4,39 @@
 nixPkgs = ["nodejs_18", "go_1_21", "git"]
 
 [phases.install]
-cmds = ["npm ci --only=production --no-audit --no-fund"]
+cmds = [
+    "echo 'Installing Node.js dependencies...'",
+    "npm ci --only=production --no-audit --no-fund",
+    "echo 'Installing Go dependencies...'",
+    "go mod download",
+    "go mod verify",
+]
 
 [phases.build]
 cmds = [
     "echo 'Starting React build...'",
     "CI=false npm run build",
     "echo 'React build completed'",
-    "ls -la build/",
-    "echo 'Copying build files...'",
-    "cp -r build/* ./",
-    "echo 'Copying HTML files...'",
+    "ls -la build/ || echo 'Build directory not found'",
+    "echo 'Copying React build files to root...'",
+    "cp -r build/* ./ || echo 'Failed to copy build files'",
+    "echo 'Creating required directories...'",
     "mkdir -p htmls",
-    "cp -r public/htmls/* ./htmls/ || echo 'No htmls directory found'",
+    "mkdir -p public/static",
+    "echo 'Copying HTML cheatsheets...'",
+    "cp -r public/htmls/* ./htmls/ 2>/dev/null || echo 'No htmls directory found in public'",
+    "echo 'Copying favicon and manifest...'",
+    "cp public/favicon.ico ./ 2>/dev/null || echo 'No favicon found'",
+    "cp public/manifest.json ./ 2>/dev/null || echo 'No manifest found'",
     "echo 'Building Go application...'",
-    "go mod download",
-    "go mod verify",
     "CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags='-w -s' -o main *.go",
     "echo 'Build completed successfully'",
+    "echo 'Final directory structure:'",
     "ls -la",
+    "echo 'Checking for required files:'",
+    "test -f main && echo '✅ main binary exists' || echo '❌ main binary missing'",
+    "test -f index.html && echo '✅ index.html exists' || echo '❌ index.html missing'",
+    "test -d htmls && echo '✅ htmls directory exists' || echo '❌ htmls directory missing'",
 ]
 
 [start]
