@@ -1,0 +1,11 @@
+# Minimal Nixpacks - Go only for testing
+# This removes React complexity to isolate the issue
+
+[phases.setup]
+nixPkgs = ["go_1_21"]
+
+[phases.build]
+cmds = ["go mod download", "go build -o main *.go"]
+
+[start]
+cmd = "./main"

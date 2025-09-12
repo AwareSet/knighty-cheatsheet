@@ -1,0 +1,49 @@
+{
+  "providers": ["node", "go"],
+  "buildImage": "ghcr.io/railwayapp/nixpacks:ubuntu-1693777693",
+  "phases": {
+    "setup": {
+      "nixPkgs": ["nodejs_18", "go_1_21", "git", "curl"]
+    },
+    "install": {
+      "cmds": [
+        "echo '=== INSTALL PHASE ==='",
+        "echo 'Current directory:' && pwd",
+        "echo 'Available files:' && ls -la",
+        "echo 'Installing Node.js dependencies...'",
+        "npm ci --only=production --no-audit --no-fund",
+        "echo 'Node.js dependencies installed'",
+        "echo 'Installing Go dependencies...'",
+        "go mod download",
+        "echo 'Go dependencies installed'"
+      ]
+    },
+    "build": {
+      "cmds": [
+        "echo '=== BUILD PHASE ==='",
+        "echo 'Starting React build...'",
+        "CI=false npm run build",
+        "echo 'React build completed'",
+        "echo 'Build directory contents:'",
+        "ls -la build/",
+        "echo 'Copying React files to root...'",
+        "cp -r build/* ./",
+        "echo 'Creating directories...'",
+        "mkdir -p htmls",
+        "echo 'Copying HTML files...'",
+        "if [ -d 'public/htmls' ]; then cp -r public/htmls/* ./htmls/; fi",
+        "echo 'Building Go binary...'",
+        "go build -o main *.go",
+        "echo 'Build complete. Final structure:'",
+        "ls -la"
+      ]
+    }
+  },
+  "start": {
+    "cmd": "./main"
+  },
+  "variables": {
+    "PORT": "8080",
+    "NODE_ENV": "production"
+  }
+}
