@@ -1,5 +1,4 @@
-# Simplified Nixpacks for KnightyApp - Focus on Go deployment only
-# React build will be handled separately
+# Clean Nixpacks for KnightyApp - Simple Go + React deployment
 
 [phases.setup]
 nixPkgs = ["nodejs_18", "go_1_21"]
@@ -13,8 +12,7 @@ cmds = [
     "cp -r build/* ./",
     "mkdir -p htmls",
     "cp -r public/htmls/* ./htmls/ || true",
-    "cp go.simple.mod go.mod",
-    "go build -o main main.simple.go",
+    "go build -o main main.go"
 ]
 
 [start]
