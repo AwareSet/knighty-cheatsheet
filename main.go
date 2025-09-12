@@ -9,10 +9,6 @@ import (
 	"os"
 	"strings"
 	"time"
-
-	"github.com/labstack/echo/v4"
-	"github.com/pocketbase/pocketbase"
-	"github.com/pocketbase/pocketbase/core"
 )
 
 // Newsletter subscription data structures for external API
@@ -42,11 +38,8 @@ func getClientIP(r *http.Request) string {
 	return r.RemoteAddr
 }
 
-// Newsletter subscription handler adapted for PocketBase router context
-func subscribeHandler(c echo.Context) error {
-	w := c.Response().Writer
-	r := c.Request()
-
+// Newsletter subscription handler
+func subscribeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
@@ -55,7 +48,7 @@ func subscribeHandler(c echo.Context) error {
 	// Handle preflight request
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
-		return nil
+		return
 	}
 
 	if r.Method != "POST" {
@@ -64,7 +57,7 @@ func subscribeHandler(c echo.Context) error {
 			Success: false,
 			Message: "Method not allowed",
 		})
-		return nil
+		return
 	}
 
 	// Parse request body from frontend
@@ -75,7 +68,7 @@ func subscribeHandler(c echo.Context) error {
 			Success: false,
 			Message: "Invalid request format",
 		})
-		return nil
+		return
 	}
 
 	// Validate email
@@ -86,7 +79,7 @@ func subscribeHandler(c echo.Context) error {
 			Success: false,
 			Message: "Email is required",
 		})
-		return nil
+		return
 	}
 
 	// Basic email validation
@@ -96,7 +89,7 @@ func subscribeHandler(c echo.Context) error {
 			Success: false,
 			Message: "Invalid email format",
 		})
-		return nil
+		return
 	}
 
 	// Prepare data for the external API
@@ -112,11 +105,10 @@ func subscribeHandler(c echo.Context) error {
 			Success: false,
 			Message: "Internal server error",
 		})
-		return nil
+		return
 	}
 
 	// Make POST request to external API
-	// IMPORTANT: Replace with the actual API URL and Authorization Token
 	externalAPIURL := "http://pocketbase-wo0s48c8g8w4gcocgc4ks0kc.45.76.250.233.sslip.io/api/collections/cli_newsletters/records"
 	authToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2xsZWN0aW9uSWQiOiJwYmNfMzE0MjYzNTgyMyIsImV4cCI6MTc1MDQxMDYzNSwiaWQiOiJ4MTFyZ2c4NTVkNWUyazAiLCJyZWZyZXNoYWJsZSI6ZmFsc2UsInR5cGUiOiJhdXRoIn0.NU0jnejvHrvG7Q2pFpsvFsWzn-k28sPKS2bfH9r224s"
 
@@ -129,20 +121,20 @@ func subscribeHandler(c echo.Context) error {
 			Success: false,
 			Message: "Internal server error",
 		})
-		return nil
+		return
 	}
 	apiReq.Header.Set("Content-Type", "application/json")
-	apiReq.Header.Set("Authorization", "Bearer "+authToken) // Assuming Bearer token
+	apiReq.Header.Set("Authorization", "Bearer "+authToken)
 
 	apiResp, err := client.Do(apiReq)
 	if err != nil {
 		log.Printf("Error calling external API: %v", err)
-		w.WriteHeader(http.StatusBadGateway) // Or InternalServerError, depending on desired behavior
+		w.WriteHeader(http.StatusBadGateway)
 		json.NewEncoder(w).Encode(SubscribeResponse{
 			Success: false,
 			Message: "Failed to connect to subscription service",
 		})
-		return nil
+		return
 	}
 	defer apiResp.Body.Close()
 
@@ -155,7 +147,7 @@ func subscribeHandler(c echo.Context) error {
 			Success: false,
 			Message: "Internal server error",
 		})
-		return nil
+		return
 	}
 
 	// Handle external API response status
@@ -188,71 +180,66 @@ func subscribeHandler(c echo.Context) error {
 			Message: "Subscription service error",
 		})
 	}
-	return nil // Return nil for no error
 }
 
 func main() {
-	app := pocketbase.New()
-
 	// Get port from environment variable or default to 8080
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
 
-	// Setup admin authentication and token refresh
-	setupAdminAuth(app)
+	// Create HTTP server
+	mux := http.NewServeMux()
 
-	// Register custom handlers using OnBeforeServe hook
-	app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
-		// Newsletter API endpoint
-		e.Router.POST("/api/subscribe", subscribeHandler)
-		e.Router.OPTIONS("/api/subscribe", subscribeHandler) // Handle OPTIONS for CORS preflight
+	// Newsletter API endpoint
+	mux.HandleFunc("/api/subscribe", subscribeHandler)
 
-		// Health check endpoint
-		e.Router.GET("/health", func(c echo.Context) error {
-			return c.String(http.StatusOK, "OK")
-		})
+	// Health check endpoint
+	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("OK"))
+	})
 
-		// Serve static HTML cheat sheets directly
-		e.Router.GET("/htmls/*", func(c echo.Context) error {
-			// Extract the file path from the URL
-			filePath := c.Request().URL.Path[1:] // Remove leading slash
+	// Serve static HTML cheat sheets directly
+	mux.HandleFunc("/htmls/", func(w http.ResponseWriter, r *http.Request) {
+		// Extract the file path from the URL
+		filePath := r.URL.Path[1:] // Remove leading slash
 
-			// Check if file exists
-			if _, err := os.Stat(filePath); os.IsNotExist(err) {
-				return c.String(http.StatusNotFound, "Cheat sheet not found")
-			}
+		// Check if file exists
+		if _, err := os.Stat(filePath); os.IsNotExist(err) {
+			http.Error(w, "Cheat sheet not found", http.StatusNotFound)
+			return
+		}
 
-			// Serve the HTML file
-			return c.File(filePath)
-		})
+		// Serve the HTML file
+		http.ServeFile(w, r, filePath)
+	})
 
-		// Serve other static files (CSS, JS, images, etc.) from public directory
-		e.Router.Static("/static", "./static")
-		e.Router.GET("/favicon.ico", func(c echo.Context) error {
-			return c.File("./favicon.ico")
-		})
-		e.Router.GET("/manifest.json", func(c echo.Context) error {
-			return c.File("./manifest.json")
-		})
+	// Serve other static files
+	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 
-		// SPA fallback - serve index.html for all other routes (including /cheatsheet/*)
-		// This ensures React Router can handle client-side routing
-		e.Router.GET("/*", func(c echo.Context) error {
-			path := c.Request().URL.Path
+	// Serve favicon and manifest
+	mux.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./favicon.ico")
+	})
+	mux.HandleFunc("/manifest.json", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./manifest.json")
+	})
 
-			// Don't serve index.html for API routes
-			if strings.HasPrefix(path, "/api/") {
-				return c.String(http.StatusNotFound, "API endpoint not found")
-			}
+	// SPA fallback - serve index.html for all other routes
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		path := r.URL.Path
 
-			// For all other routes (including /cheatsheet/*), serve index.html
-			// This allows React Router to handle the routing client-side
-			return c.File("./index.html")
-		})
+		// Don't serve index.html for API routes
+		if strings.HasPrefix(path, "/api/") {
+			http.Error(w, "API endpoint not found", http.StatusNotFound)
+			return
+		}
 
-		return nil
+		// For all other routes, serve index.html
+		// This allows React Router to handle the routing client-side
+		http.ServeFile(w, r, "./index.html")
 	})
 
 	log.Printf("Server starting on port %s", port)
@@ -274,8 +261,13 @@ func main() {
 		log.Println("htmls directory found")
 	}
 
-	// Start the PocketBase server
-	if err := app.Start(); err != nil {
+	// Start the HTTP server
+	server := &http.Server{
+		Addr:    "0.0.0.0:" + port,
+		Handler: mux,
+	}
+
+	if err := server.ListenAndServe(); err != nil {
 		log.Fatal("Server failed to start:", err)
 	}
 }
