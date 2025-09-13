@@ -1,7 +1,0 @@
-# Dokploy configuration hint
-# This file helps Dokploy understand the project structure
-
-# Project type: Go with Nixpacks
-# Entry point: main.minimal.go
-# Build command: go build -o main main.minimal.go
-# Start command: ./main

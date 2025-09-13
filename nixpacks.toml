@@ -1,10 +1,19 @@
-# Ultra-minimal Nixpacks for debugging Dokploy
+# KnightyApp - React + Go deployment
 
 [phases.setup]
-nixPkgs = ["go_1_21"]
+nixPkgs = ["nodejs_18", "go_1_21"]
+
+[phases.install]
+cmds = ["npm ci --production"]
 
 [phases.build]
-cmds = ["go build -o main main.minimal.go"]
+cmds = [
+    "npm run build",
+    "cp -r build/* ./",
+    "mkdir -p htmls",
+    "cp -r public/htmls/* ./htmls/ || true",
+    "go build -o main main.go",
+]
 
 [start]
 cmd = "./main"
