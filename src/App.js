@@ -12,6 +12,7 @@ function App() {
         <div className="App">
           <Routes>
             <Route path="/" element={<LandingPage />} />
+            <Route path="/cheatsheet" element={<LandingPage />} />
             <Route path="/cheatsheet/:name" element={<CheatSheetViewer />} />
           </Routes>
         </div>
