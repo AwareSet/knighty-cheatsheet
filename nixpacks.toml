@@ -4,7 +4,10 @@
 nixPkgs = ["nodejs_18", "go_1_21"]
 
 [phases.install]
-cmds = ["npm ci --production"]
+cmds = [
+    "npm config set registry https://registry.npmjs.org/",
+    "npm ci --production --retry=3 --fetch-timeout=60000 --maxsockets=1"
+]
 
 [phases.build]
 cmds = [
