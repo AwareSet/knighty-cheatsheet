@@ -227,6 +227,16 @@ func main() {
 		http.ServeFile(w, r, "./manifest.json")
 	})
 
+	// Cheatsheet route - serve React app
+	mux.HandleFunc("/cheatsheet", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./index.html")
+	})
+
+	// Cheatsheet sub-routes - serve React app for client-side routing
+	mux.HandleFunc("/cheatsheet/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./index.html")
+	})
+
 	// SPA fallback - serve index.html for all other routes
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		path := r.URL.Path
